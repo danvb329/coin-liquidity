@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Liquidity Data</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script type="text/javascript" src="/jquery-3.1.0.min.js"></script>
+    <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
+</head>
+<body>
+
+<table id="myTable" class="tablesorter">
+    <thead>
+    <tr>
+        <th>Exchange</th>
+        <th>Pair</th>
+        <th th:text="'Cost to Sell ' + ${liquidityData.amount} + ' USD (%)'" />
+        <th th:text="'Cost to Buy ' + ${liquidityData.amount} + ' USD (%)'" />
+        <th>Best Bid</th>
+        <th>Best Ask</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="liquidityDatum : ${liquidityData.liquidityData}">
+        <td th:text="${liquidityDatum.exchange}">GDAX</td>
+        <td th:text="${liquidityDatum.currencyPair}">BTC/USD</td>
+        <td th:text="${liquidityDatum.sellCost}">1.23</td>
+        <td th:text="${liquidityDatum.buyCost}">1.55</td>
+        <td th:text="${liquidityDatum.bestBid}">100.42</td>
+        <td th:text="${liquidityDatum.bestAsk}">100.43</td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    $(document).ready(function()
+    {
+        $("#myTable").tablesorter();
+    }
+);
+</script>
+
+</body>
+</html>
