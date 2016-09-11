@@ -27,10 +27,9 @@ public class OrderBookDownloader implements Runnable {
 
     private List<OrderBook> orderBooks = new ArrayList<>();
 
-    public OrderBookDownloader(final Exchange exchange,
-                               final ObjectMapper mapper) {
+    public OrderBookDownloader(final Exchange exchange) {
         this.exchange = exchange;
-        this.mapper = mapper;
+        this.mapper = new ObjectMapper();
     }
 
     public void run() {

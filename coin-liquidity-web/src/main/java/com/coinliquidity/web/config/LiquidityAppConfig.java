@@ -3,7 +3,6 @@ package com.coinliquidity.web.config;
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.rest.LiquidityController;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,9 +15,8 @@ public class LiquidityAppConfig {
     }
 
     @Bean
-    public LiquidityCache liquidityCache(final ExchangeConfig exchangeConfig,
-                                         final ObjectMapper objectMapper) {
-        return new LiquidityCache(exchangeConfig, objectMapper);
+    public LiquidityCache liquidityCache(final ExchangeConfig exchangeConfig) {
+        return new LiquidityCache(exchangeConfig);
     }
 
     @Bean

@@ -7,7 +7,6 @@ import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.analyzer.TotalAnalyzer;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,13 +26,11 @@ public class LiquidityCache {
     private static final Logger LOGGER = LoggerFactory.getLogger(LiquidityCache.class);
 
     private final ExchangeConfig exchangeConfig;
-    private final ObjectMapper mapper;
 
     private LiquidityData liquidityData;
 
-    public LiquidityCache(final ExchangeConfig exchangeConfig, final ObjectMapper mapper) {
+    public LiquidityCache(final ExchangeConfig exchangeConfig) {
         this.exchangeConfig = exchangeConfig;
-        this.mapper = mapper;
         refresh();
     }
 
@@ -42,7 +39,7 @@ public class LiquidityCache {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
         final List<OrderBookDownloader> obds = exchanges.getExchangeList().stream()
-                .map(exchange -> new OrderBookDownloader(exchange, mapper)).collect(Collectors.toList());
+                .map(OrderBookDownloader::new).collect(Collectors.toList());
 
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
 
