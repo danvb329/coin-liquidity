@@ -66,7 +66,7 @@ public class OrderBookDownloader implements Runnable {
             final JsonNode tree = mapper.readTree(response.readEntity(InputStream.class));
             final OrderBook orderBook = exchange.getParser().parse(exchange.getName(), currencyPair.normalize(), tree);
             orderBooks.add(orderBook);
-            LOGGER.info("Download for {} took {}", orderBook.getName(), stopwatch.stop());
+            LOGGER.info("Download for {} took {}", orderBook.getName() + " " + currencyPair, stopwatch.stop());
         } catch (Exception e) {
             LOGGER.error("Error processing {}_{}", exchange.getName(), currencyPair);
         }

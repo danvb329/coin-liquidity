@@ -2,19 +2,24 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Liquidity Data</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <script type="text/javascript" src="/jquery-3.1.0.min.js"></script>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="text/javascript" src="/jquery-latest.js"></script>
     <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" id="js">
+    $(document).ready(function() {
+        $("#table").tablesorter();
+    }
+
+    </script>
 </head>
 <body>
-
-<table id="myTable" class="tablesorter">
+<table id="table" class="tablesorter">
     <thead>
     <tr>
         <th>Exchange</th>
         <th>Pair</th>
-        <th th:text="'Cost to Sell ' + ${liquidityData.amount} + ' USD (%)'" />
-        <th th:text="'Cost to Buy ' + ${liquidityData.amount} + ' USD (%)'" />
+        <th th:text="'Cost to Sell ' + ${liquidityData.amount} + ' USD (%)'">Cost to Sell</th>
+        <th th:text="'Cost to Buy ' + ${liquidityData.amount} + ' USD (%)'">Cost to Buy</th>
         <th>Best Bid</th>
         <th>Best Ask</th>
     </tr>
@@ -30,14 +35,6 @@
     </tr>
     </tbody>
 </table>
-
-<script>
-    $(document).ready(function()
-    {
-        $("#myTable").tablesorter();
-    }
-);
-</script>
 
 </body>
 </html>
