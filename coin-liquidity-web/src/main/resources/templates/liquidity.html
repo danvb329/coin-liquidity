@@ -7,11 +7,21 @@
     <script type="text/javascript" src="/jquery-latest.js"></script>
     <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" id="js">
-       $(document).ready(function() {
+    jQuery.tablesorter.addParser({
+        id: "fancyNumber",
+        is: function(s) {
+            return /^[0-9]?[0-9,\.]*$/.test(s);
+        },
+        format: function(s) {
+            return jQuery.tablesorter.formatFloat( s.replace(/,/g,'') );
+        },
+        type: "numeric"
+    });
+    $(document).ready(function() {
         $("table").tablesorter({
             sortList: [[2,0]]
         });
-        });
+     });
 
     </script>
 </head>
@@ -48,7 +58,7 @@
     </tbody>
 </table>
 
-<p th:text="'Last updated at ' + ${liquidityData.updateTime}"></p>
+<p th:text="'Last updated on ' + ${liquidityData.updateTime}"></p>
 
 </body>
 </html>
