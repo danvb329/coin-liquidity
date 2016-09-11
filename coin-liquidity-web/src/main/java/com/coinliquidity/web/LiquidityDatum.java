@@ -12,6 +12,8 @@ public class LiquidityDatum implements Comparable<LiquidityDatum> {
     private BigDecimal sellCost;
     private BigDecimal bestAsk;
     private BigDecimal bestBid;
+    private BigDecimal totalAsks;
+    private BigDecimal totalBids;
 
     public String getExchange() {
         return exchange;
@@ -59,6 +61,22 @@ public class LiquidityDatum implements Comparable<LiquidityDatum> {
 
     public void setBestBid(final BigDecimal bestBid) {
         this.bestBid = bestBid;
+    }
+
+    public BigDecimal getTotalAsks() {
+        return totalAsks;
+    }
+
+    public void setTotalAsks(BigDecimal totalAsks) {
+        this.totalAsks = totalAsks;
+    }
+
+    public BigDecimal getTotalBids() {
+        return totalBids;
+    }
+
+    public void setTotalBids(BigDecimal totalBids) {
+        this.totalBids = totalBids;
     }
 
     @Override

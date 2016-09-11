@@ -4,6 +4,7 @@ import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.core.FxConverter;
 import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.analyzer.SlippageAnalyzer;
+import com.coinliquidity.core.analyzer.TotalAnalyzer;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,18 +71,24 @@ public class LiquidityCache {
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks, final BigDecimal amount) {
-        final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(amount);
+
         final List<LiquidityDatum> dataList = new ArrayList<>();
         orderBooks.forEach(orderBook -> {
+            final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(amount);
+            final TotalAnalyzer totalAnalyzer = new TotalAnalyzer();
             slippageAnalyzer.analyze(orderBook);
-            final LiquidityDatum liquidityDatum = new LiquidityDatum();
-            liquidityDatum.setExchange(orderBook.getName());
-            liquidityDatum.setCurrencyPair(orderBook.getOriginalCurrencyPair().toString());
-            liquidityDatum.setBuyCost(slippageAnalyzer.getBuyCost());
-            liquidityDatum.setSellCost(slippageAnalyzer.getSellCost());
-            liquidityDatum.setBestAsk(slippageAnalyzer.getBestAsk().setScale(2, BigDecimal.ROUND_HALF_UP));
-            liquidityDatum.setBestBid(slippageAnalyzer.getBestBid().setScale(2, BigDecimal.ROUND_HALF_UP));
-            dataList.add(liquidityDatum);
+            totalAnalyzer.analyze(orderBook);
+
+            final LiquidityDatum datum = new LiquidityDatum();
+            datum.setExchange(orderBook.getName());
+            datum.setCurrencyPair(orderBook.getOriginalCurrencyPair().toString());
+            datum.setBuyCost(slippageAnalyzer.getBuyCost());
+            datum.setSellCost(slippageAnalyzer.getSellCost());
+            datum.setBestAsk(slippageAnalyzer.getBestAsk().setScale(2, BigDecimal.ROUND_HALF_UP));
+            datum.setBestBid(slippageAnalyzer.getBestBid().setScale(2, BigDecimal.ROUND_HALF_UP));
+            datum.setTotalBids(totalAnalyzer.getTotalBids());
+            datum.setTotalAsks(totalAnalyzer.getTotalAsks());
+            dataList.add(datum);
         });
         Collections.sort(dataList);
 
