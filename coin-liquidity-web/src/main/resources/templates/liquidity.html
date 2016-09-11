@@ -3,24 +3,31 @@
 <head>
     <title>Liquidity Data</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" id="" media="print, projection, screen" />
+    <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" id="" media="print, projection, screen"/>
     <script type="text/javascript" src="/jquery-latest.js"></script>
     <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" id="js">
-    $(document).ready(function() {
-        $("#table").tablesorter();
-    }
+       $(document).ready(function() {
+        $("table").tablesorter({
+            sortList: [[2,0]]
+        });
+        });
 
     </script>
 </head>
 <body>
-<table id="table" class="tablesorter">
+<h1>Liquidity Data</h1>
+<table class="tablesorter">
     <thead>
     <tr>
         <th>Exchange</th>
         <th>Pair</th>
-        <th th:text="'Cost to Sell ' + ${liquidityData.amount} + ' USD (%)'">Cost to Sell</th>
-        <th th:text="'Cost to Buy ' + ${liquidityData.amount} + ' USD (%)'">Cost to Buy</th>
+        <th th:text="'Cost to Sell ' + ${#numbers.formatDecimal(liquidityData.amount, 0, 'COMMA', 0, 'POINT')} + ' USD (%)'">
+            Cost to Sell
+        </th>
+        <th th:text="'Cost to Buy ' + ${#numbers.formatDecimal(liquidityData.amount, 0, 'COMMA', 0, 'POINT')} + ' USD (%)'">
+            Cost to Buy
+        </th>
         <th>Best Bid</th>
         <th>Best Ask</th>
         <th>Total Bids (USD)</th>
@@ -40,6 +47,8 @@
     </tr>
     </tbody>
 </table>
+
+<p th:text="'Last updated at ' + ${liquidityData.updateTime}"></p>
 
 </body>
 </html>
