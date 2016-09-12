@@ -7,21 +7,26 @@
     <script type="text/javascript" src="/jquery-latest.js"></script>
     <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" id="js">
-    jQuery.tablesorter.addParser({
-        id: "fancyNumber",
-        is: function(s) {
-            return /^[0-9]?[0-9,\.]*$/.test(s);
+$.tablesorter.addParser({
+    id: 'thousands',
+    is: function(s) {
+        return false;
+    },
+    format: function(s) {
+        return s.replace('$','').replace(/,/g,'');
+    },
+    type: 'numeric'
+});
+
+$(function() {
+    $("table").tablesorter({
+        headers: {
+            6: { sorter:'thousands' },
+            7: { sorter:'thousands' }
         },
-        format: function(s) {
-            return jQuery.tablesorter.formatFloat( s.replace(/,/g,'') );
-        },
-        type: "numeric"
+        sortList: [[2,0]]
     });
-    $(document).ready(function() {
-        $("table").tablesorter({
-            sortList: [[2,0]]
-        });
-     });
+});
 
     </script>
 </head>
@@ -32,12 +37,8 @@
     <tr>
         <th>Exchange</th>
         <th>Pair</th>
-        <th th:text="'Cost to Sell ' + ${#numbers.formatDecimal(liquidityData.amount, 0, 'COMMA', 0, 'POINT')} + ' USD (%)'">
-            Cost to Sell
-        </th>
-        <th th:text="'Cost to Buy ' + ${#numbers.formatDecimal(liquidityData.amount, 0, 'COMMA', 0, 'POINT')} + ' USD (%)'">
-            Cost to Buy
-        </th>
+        <th>Cost to Sell (%)</th>
+        <th>Cost to Buy (%)</th>
         <th>Best Bid</th>
         <th>Best Ask</th>
         <th>Total Bids (USD)</th>
