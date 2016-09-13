@@ -78,7 +78,7 @@ public class LiquidityCache {
 
             final LiquidityDatum datum = new LiquidityDatum();
             datum.setExchange(orderBook.getName());
-            datum.setCurrencyPair(orderBook.getOriginalCurrencyPair().toString());
+            datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
             datum.setBuyCost(slippageAnalyzer.getBuyCost());
             datum.setSellCost(slippageAnalyzer.getSellCost());
             datum.setBestAsk(slippageAnalyzer.getBestAsk().setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -87,7 +87,6 @@ public class LiquidityCache {
             datum.setTotalAsks(totalAnalyzer.getTotalAsks());
             dataList.add(datum);
         });
-        Collections.sort(dataList);
 
         final LiquidityData liquidityData = new LiquidityData();
         liquidityData.setAmount(amount);

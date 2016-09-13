@@ -1,13 +1,13 @@
 package com.coinliquidity.web;
 
-import org.apache.commons.lang3.builder.CompareToBuilder;
+import com.coinliquidity.core.model.CurrencyPair;
 
 import java.math.BigDecimal;
 
-public class LiquidityDatum implements Comparable<LiquidityDatum> {
+public class LiquidityDatum {
 
     private String exchange;
-    private String currencyPair;
+    private CurrencyPair currencyPair;
     private BigDecimal buyCost;
     private BigDecimal sellCost;
     private BigDecimal bestAsk;
@@ -23,11 +23,11 @@ public class LiquidityDatum implements Comparable<LiquidityDatum> {
         this.exchange = exchange;
     }
 
-    public String getCurrencyPair() {
+    public CurrencyPair getCurrencyPair() {
         return currencyPair;
     }
 
-    public void setCurrencyPair(final String currencyPair) {
+    public void setCurrencyPair(final CurrencyPair currencyPair) {
         this.currencyPair = currencyPair;
     }
 
@@ -79,11 +79,12 @@ public class LiquidityDatum implements Comparable<LiquidityDatum> {
         this.totalBids = totalBids;
     }
 
-    @Override
-    public int compareTo(final LiquidityDatum o) {
-        return new CompareToBuilder()
-                .append(sellCost, o.sellCost)
-                .append(buyCost, o.buyCost)
-                .build();
+    public boolean matches(final String baseCurrency, final String quoteCurrency) {
+        return ("*".equals(baseCurrency) || currencyPair.getBaseCurrency().equals(baseCurrency)) &&
+                ("*".equals(quoteCurrency) || currencyPair.getQuoteCurrency().equals(quoteCurrency));
+    }
+
+    public boolean matches(final String exchange) {
+        return "*".equals(exchange) || this.exchange.equals(exchange);
     }
 }
