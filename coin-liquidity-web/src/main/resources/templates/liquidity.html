@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Liquidity Data</title>
+    <title th:text="'Liquidity Data - ' + ${title}">Liquidity Data</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" id="" media="print, projection, screen"/>
     <script type="text/javascript" src="/jquery-latest.js"></script>
@@ -31,7 +31,7 @@ $(function() {
     </script>
 </head>
 <body>
-<h1>Liquidity Data</h1>
+<h1 th:text="'Liquidity Data - ' + ${title}">Liquidity Data</h1>
 <table class="tablesorter">
     <thead>
     <tr>
@@ -47,8 +47,12 @@ $(function() {
     </thead>
     <tbody>
     <tr th:each="datum : ${liquidityData.liquidityData}">
-        <td th:text="${datum.exchange}">GDAX</td>
-        <td th:text="${datum.currencyPair}">BTC/USD</td>
+        <td>
+            <a th:href="@{'/liquidity/view/exchange/' + ${datum.exchange}}" th:text="${datum.exchange}">gdax.com</a>
+        </td>
+        <td>
+            <a th:href="@{'/liquidity/view/currency/' + ${datum.currencyPair}}" th:text="${datum.currencyPair}">BTC/USD</a>
+        </td>
         <td th:text="${datum.sellCost}">1.23</td>
         <td th:text="${datum.buyCost}">1.55</td>
         <td th:text="${datum.bestBid}">100.42</td>

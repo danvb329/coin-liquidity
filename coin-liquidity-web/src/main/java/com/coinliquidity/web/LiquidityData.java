@@ -3,6 +3,7 @@ package com.coinliquidity.web;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class LiquidityData {
@@ -36,21 +37,19 @@ public class LiquidityData {
     }
 
     public LiquidityData filter(final String baseCurrency, final String quoteCurrency) {
-        final LiquidityData liquidityData = new LiquidityData();
-        liquidityData.setUpdateTime(this.updateTime);
-        liquidityData.setAmount(this.amount);
-        final List<LiquidityDatum> filteredDatums = this.liquidityData.stream()
-                .filter(d -> d.matches(baseCurrency, quoteCurrency)).collect(Collectors.toList());
-        liquidityData.setLiquidityData(filteredDatums);
-        return liquidityData;
+        return filter(datum -> datum.matches(baseCurrency, quoteCurrency));
     }
 
-    public LiquidityData filter(String exchange) {
+    public LiquidityData filter(final String exchange) {
+        return filter(datum -> datum.matches(exchange));
+    }
+
+    private LiquidityData filter(final Predicate<LiquidityDatum> predicate) {
         final LiquidityData liquidityData = new LiquidityData();
         liquidityData.setUpdateTime(this.updateTime);
         liquidityData.setAmount(this.amount);
         final List<LiquidityDatum> filteredDatums = this.liquidityData.stream()
-                .filter(d -> d.matches(exchange)).collect(Collectors.toList());
+                .filter(predicate).collect(Collectors.toList());
         liquidityData.setLiquidityData(filteredDatums);
         return liquidityData;
     }
