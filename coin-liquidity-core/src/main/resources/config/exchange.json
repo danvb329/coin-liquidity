@@ -4,7 +4,13 @@
       "name": "bitfinex.com",
       "url": "https://api.bitfinex.com/v1/book/<base><quote>",
       "currencies": [
-        "BTC/USD"
+        "BTC/USD",
+        "ETC/USD",
+        "ETC/BTC",
+        "ETH/USD",
+        "ETH/BTC",
+        "LTC/USD",
+        "LTC/BTC"
       ],
       "parserType": "LABELED",
       "docUrl": "http://docs.bitfinex.com/#orderbook"
@@ -99,6 +105,26 @@
       ],
       "parserType": "ARRAY",
       "docUrl": "https://www.kraken.com/help/api#public-market-data"
+    },
+    {
+      "name": "lakebtc.com",
+      "url": "https://www.lakebtc.com/api_v1/bcorderbook?symbol=<base><quote>",
+      "currencies": [
+        "BTC/USD",
+        "BTC/CNY",
+        "BTC/EUR",
+        "BTC/HKD",
+        "BTC/USD",
+        "BTC/JPY",
+        "BTC/GBP",
+        "BTC/AUD",
+        "BTC/CAD",
+        "BTC/SGD",
+        "BTC/CHF",
+        "BTC/NZD"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.lakebtc.com/s/api"
     },
     {
       "name": "okcoin.cn",
