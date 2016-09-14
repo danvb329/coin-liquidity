@@ -31,6 +31,16 @@
       "docUrl": "https://btc-e.com/api/3/docs"
     },
     {
+      "name": "btcc.com",
+      "url": "https://data.btcchina.com/data/orderbook?market=<base><quote>",
+      "currencies": [
+        "BTC/CNY",
+        "LTC/CNY"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.btcc.com/apidocs/spot-exchange-market-data-rest-api"
+    },
+    {
       "name": "coinfloor.co.uk",
       "url": "https://webapi.coinfloor.co.uk:8090/bist/<BASE>/<QUOTE>/order_book/",
       "currencies": [
@@ -94,7 +104,8 @@
       "name": "okcoin.cn",
       "url": "https://www.okcoin.cn/api/v1/depth.do?symbol=<base>_<quote>",
       "currencies": [
-        "BTC/CNY"
+        "BTC/CNY",
+        "LTC/CNY"
       ],
       "parserType": "ARRAY",
       "docUrl": "https://www.okcoin.cn/about/rest_api.do"
