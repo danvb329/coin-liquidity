@@ -50,7 +50,13 @@ public class Exchange {
         final List<CurrencyPair> currencyPairs = new ArrayList<>(currencies.size());
         for (final String currency : currencies) {
             final String[] values = currency.split("/");
-            currencyPairs.add(new CurrencyPair(values[0], values[1]));
+            final String baseCurrency = values[0];
+            final String quoteCurrency = values[1];
+
+            // skip commented-out exchanges
+            if (!baseCurrency.startsWith("--")) {
+                currencyPairs.add(new CurrencyPair(baseCurrency, quoteCurrency));
+            }
         }
         return currencyPairs;
     }
