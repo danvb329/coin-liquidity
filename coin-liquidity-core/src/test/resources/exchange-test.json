@@ -1,0 +1,17 @@
+{
+  "exchangeList": [
+    {
+      "name": "kraken.com",
+      "url": "https://api.kraken.com/0/public/Depth?pair=<BASE><QUOTE>",
+      "currencies": [
+        "XBT/USD",
+        "XBT/EUR",
+        "XBT/CAD",
+        "ETH/XBT",
+        "ETH/EUR"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.kraken.com/help/api#public-market-data"
+    }
+  ]
+}

@@ -1,0 +1,131 @@
+{
+  "exchangeList": [
+    {
+      "name": "bitfinex.com",
+      "url": "https://api.bitfinex.com/v1/book/<base><quote>",
+      "currencies": [
+        "BTC/USD"
+      ],
+      "parserType": "LABELED",
+      "docUrl": "http://docs.bitfinex.com/#orderbook"
+    },
+    {
+      "name": "bitstamp.net",
+      "url": "https://www.bitstamp.net/api/v2/order_book/<base><quote>/",
+      "currencies": [
+        "BTC/USD",
+        "BTC/EUR"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.bitstamp.net/api/"
+    },
+    {
+      "name": "btc-e.com",
+      "url": "https://btc-e.com/api/3/depth/<base>_<quote>?limit=2000",
+      "currencies": [
+        "BTC/USD",
+        "BTC/RUR",
+        "BTC/EUR"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://btc-e.com/api/3/docs"
+    },
+    {
+      "name": "coinfloor.co.uk",
+      "url": "https://webapi.coinfloor.co.uk:8090/bist/<BASE>/<QUOTE>/order_book/",
+      "currencies": [
+        "XBT/USD",
+        "XBT/EUR",
+        "XBT/GBP",
+        "XBT/PLN"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://github.com/coinfloor/API/blob/master/BIST.md"
+    },
+    {
+      "name": "gdax.com",
+      "url": "https://api.exchange.coinbase.com/products/<BASE>-<QUOTE>/book?level=3",
+      "currencies": [
+        "BTC/USD",
+        "BTC/EUR",
+        "BTC/GBP",
+        "ETH/USD",
+        "ETH/BTC",
+        "LTC/USD",
+        "LTC/BTC"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://docs.exchange.coinbase.com/#get-product-order-book"
+    },
+    {
+      "name": "gemini.com",
+      "url": "https://api.gemini.com/v1/book/<base><quote>?limit_bids=0&limit_asks=0",
+      "currencies": [
+        "BTC/USD"
+      ],
+      "parserType": "LABELED",
+      "docUrl": "https://api.itbit.com/docs#market-data-get-order-book"
+    },
+    {
+      "name": "itbit.com",
+      "url": "https://api.itbit.com/v1/markets/<BASE><QUOTE>/order_book",
+      "currencies": [
+        "XBT/USD",
+        "XBT/SGD",
+        "XBT/EUR"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://api.itbit.com/docs#market-data-get-order-book"
+    },
+    {
+      "name": "kraken.com",
+      "url": "https://api.kraken.com/0/public/Depth?pair=<BASE><QUOTE>",
+      "currencies": [
+        "XBT/USD",
+        "XBT/EUR",
+        "XBT/CAD",
+        "ETH/XBT",
+        "ETH/EUR"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.kraken.com/help/api#public-market-data"
+    },
+    {
+      "name": "okcoin.cn",
+      "url": "https://www.okcoin.cn/api/v1/depth.do?symbol=<base>_<quote>",
+      "currencies": [
+        "BTC/CNY"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.okcoin.cn/about/rest_api.do"
+    },
+    {
+      "name": "okcoin.com",
+      "url": "https://www.okcoin.com/api/v1/depth.do?symbol=<base>_<quote>",
+      "currencies": [
+        "BTC/USD"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.okcoin.com/about/rest_api.do"
+    },
+    {
+      "name": "poloniex.com",
+      "url": "https://poloniex.com/public?command=returnOrderBook&currencyPair=<QUOTE>_<BASE>&depth=9999",
+      "currencies": [
+        "XMR/BTC",
+        "ETH/BTC",
+        "ETC/BTC",
+        "DOGE/BTC",
+        "MAID/BTC",
+        "FCT/BTC",
+        "XRP/BTC",
+        "LTC/BTC",
+        "STEEM/BTC",
+        "DASH/BTC",
+        "XEM/BTC"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://poloniex.com/support/api/"
+    }
+  ]
+}
