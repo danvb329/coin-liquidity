@@ -9,6 +9,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class SlippageAnalyzerTest {
 
@@ -28,7 +29,22 @@ public class SlippageAnalyzerTest {
         orderBook = new OrderBook("exchange", new CurrencyPair("BTC", "USD"), bids, asks);
     }
 
-    // TODO: 9/10/16  test best bid & ask
+    @Test
+    public void test_bestBidAsk() {
+        final Orders bids = new Orders();
+        bids.put(new BigDecimal("99"), new BigDecimal("10"));
+        bids.put(new BigDecimal("100"), new BigDecimal("10"));
+        final Orders asks = new Orders();
+        asks.put(new BigDecimal("101"), new BigDecimal("10"));
+        asks.put(new BigDecimal("102"), new BigDecimal("10"));
+        final OrderBook orderBook = new OrderBook("exchange", new CurrencyPair("BTC", "USD"), bids, asks);
+        final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(BigDecimal.ONE);
+        slippageAnalyzer.analyze(orderBook);
+
+        assertEquals(new BigDecimal("100"), slippageAnalyzer.getBestBid());
+        assertEquals(new BigDecimal("101"), slippageAnalyzer.getBestAsk());
+    }
+
     @Test
     public void test_firstOrder() {
         final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(new BigDecimal("1000"));
@@ -61,7 +77,7 @@ public class SlippageAnalyzerTest {
     public void test_notEnoughLiquidity() {
         final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(new BigDecimal("10000"));
         slippageAnalyzer.analyze(orderBook);
-        assertEquals(SlippageAnalyzer.INVALID, slippageAnalyzer.getBuyCost());
-        assertEquals(SlippageAnalyzer.INVALID, slippageAnalyzer.getSellCost());
+        assertNull(slippageAnalyzer.getBuyCost());
+        assertNull(slippageAnalyzer.getSellCost());
     }
 }

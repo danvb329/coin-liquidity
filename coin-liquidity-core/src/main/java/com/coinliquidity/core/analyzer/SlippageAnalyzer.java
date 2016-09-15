@@ -8,8 +8,6 @@ import java.util.List;
 
 public class SlippageAnalyzer implements Analyzer {
 
-    public static final BigDecimal INVALID = new BigDecimal(Long.MAX_VALUE);
-
     private final BigDecimal amount;
     private BigDecimal buyCost;
     private BigDecimal sellCost;
@@ -34,7 +32,7 @@ public class SlippageAnalyzer implements Analyzer {
 
     private BigDecimal calculateCost(final List<Order> orders, final BigDecimal bestPrice) {
         if (orders.isEmpty()) {
-            return INVALID;
+            return null;
         }
 
         BigDecimal totalUnits = BigDecimal.ZERO;
@@ -52,7 +50,7 @@ public class SlippageAnalyzer implements Analyzer {
         }
 
         if (remaining.compareTo(BigDecimal.ZERO) > 0) {
-            return INVALID;
+            return null;
         } else {
             final BigDecimal averagePrice = amount.divide(totalUnits, 6, BigDecimal.ROUND_HALF_UP);
             return percent(bestPrice, averagePrice);
