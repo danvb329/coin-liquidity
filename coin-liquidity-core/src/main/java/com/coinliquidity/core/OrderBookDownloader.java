@@ -6,6 +6,7 @@ import com.coinliquidity.core.model.OrderBook;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Stopwatch;
+import org.glassfish.jersey.client.ClientProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,8 @@ public class OrderBookDownloader implements Runnable {
         orderBooks.clear();
 
         final Client client = ClientBuilder.newClient();
+        client.property(ClientProperties.CONNECT_TIMEOUT, 10000);
+        client.property(ClientProperties.READ_TIMEOUT,    10000);
 
         int count = 0;
         for (final CurrencyPair currencyPair : exchange.getCurrencyPairs()) {

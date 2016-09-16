@@ -103,6 +103,16 @@
       "docUrl": "https://api.itbit.com/docs#market-data-get-order-book"
     },
     {
+      "name": "huobi.com",
+      "url": "http://api.huobi.com/staticmarket/depth_<base>_json.js",
+      "currencies": [
+        "BTC/CNY",
+        "LTC/CNY"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://www.huobi.com/help/index.php?a=market_help&lang=en"
+    },
+    {
       "name": "itbit.com",
       "url": "https://api.itbit.com/v1/markets/<BASE><QUOTE>/order_book",
       "currencies": [
@@ -182,6 +192,17 @@
       ],
       "parserType": "ARRAY",
       "docUrl": "https://poloniex.com/support/api/"
+    },
+    {
+      "name": "yunbi.com",
+      "url": "https://yunbi.com/api/v2/depth.json?market=<base><quote>&limit=1000",
+      "currencies": [
+        "BTC/CNY",
+        "ETH/CNY",
+        "ETC/CNY"
+      ],
+      "parserType": "ARRAY",
+      "docUrl": "https://yunbi.com/swagger/#/default"
     }
   ]
 }
