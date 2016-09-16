@@ -10,6 +10,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.coinliquidity.core.model.CurrencyPair.BTC;
+
 public class FxConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FxConverter.class);
@@ -36,7 +38,7 @@ public class FxConverter {
 
         // add BTC rate
         tree = HttpUtil.get("https://api.bitcoinaverage.com/ticker/USD/");
-        rates.put("BTC", inverse(new BigDecimal(tree.get("last").asText())));
+        rates.put(BTC, inverse(new BigDecimal(tree.get("last").asText())));
 
         LOGGER.info("FX rates: {}", rates);
 

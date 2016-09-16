@@ -1,7 +1,7 @@
 package com.coinliquidity.web.rest;
 
 import com.coinliquidity.web.LiquidityCache;
-import com.coinliquidity.web.LiquidityData;
+import com.coinliquidity.web.model.LiquidityData;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
