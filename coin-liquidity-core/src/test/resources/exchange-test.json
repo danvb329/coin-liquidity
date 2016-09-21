@@ -1,17 +1,24 @@
 {
   "exchangeList": [
     {
-      "name": "kraken.com",
-      "url": "https://api.kraken.com/0/public/Depth?pair=<BASE><QUOTE>",
+      "name": "poloniex.com",
+      "url": "https://poloniex.com/public?command=returnOrderBook&currencyPair=<QUOTE>_<BASE>&depth=9999",
       "currencies": [
-        "XBT/USD",
-        "XBT/EUR",
-        "XBT/CAD",
-        "ETH/XBT",
-        "ETH/EUR"
+        "XMR/BTC",
+        "ETH/BTC",
+        "ETC/BTC",
+        "DOGE/BTC",
+        "MAID/BTC",
+        "FCT/BTC",
+        "XRP/BTC",
+        "LTC/BTC",
+        "STEEM/BTC",
+        "DASH/BTC",
+        "XEM/BTC"
       ],
       "parserType": "ARRAY",
-      "docUrl": "https://www.kraken.com/help/api#public-market-data"
+      "rateLimit": 6,
+      "docUrl": "https://poloniex.com/support/api/"
     }
   ]
 }

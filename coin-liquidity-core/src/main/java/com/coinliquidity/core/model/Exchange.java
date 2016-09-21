@@ -13,6 +13,7 @@ public class Exchange {
     private List<String> currencies;
     private List<CurrencyPair> currencyPairs;
     private String docUrl;
+    private Integer rateLimit = 1;
 
     public String getName() {
         return name;
@@ -63,12 +64,24 @@ public class Exchange {
         this.docUrl = docUrl;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    /**
+     * Maximum calls per second (default = 1)
+     * @return the maximum calls per second
+     */
+    public Integer getRateLimit() {
+        return rateLimit;
+    }
+
+    public void setRateLimit(Integer rateLimit) {
+        this.rateLimit = rateLimit;
     }
 
     public Parser getParser() {
         return parserType.getParser();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

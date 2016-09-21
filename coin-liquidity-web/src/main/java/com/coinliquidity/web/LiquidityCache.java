@@ -34,14 +34,16 @@ public class LiquidityCache {
         refresh();
     }
 
-    @Scheduled(initialDelay = 600000, fixedDelay = 600000)
+    @Scheduled(cron = "*/10 * * * *")
     public void refresh() {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
         final List<OrderBookDownloader> obds = exchanges.getExchangeList().stream()
                 .map(OrderBookDownloader::new).collect(Collectors.toList());
 
-        final ExecutorService executorService = Executors.newFixedThreadPool(10);
+        LOGGER.info("Creating pool of {} threads", obds.size());
+
+        final ExecutorService executorService = Executors.newFixedThreadPool(obds.size());
 
         for (final OrderBookDownloader obd : obds) {
             executorService.execute(obd);

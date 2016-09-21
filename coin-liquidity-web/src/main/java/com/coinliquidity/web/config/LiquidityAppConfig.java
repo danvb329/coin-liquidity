@@ -21,6 +21,6 @@ public class LiquidityAppConfig {
 
     @Bean
     public ExchangeConfig exchangeConfig() {
-        return new ExchangeConfig("config/exchange.json");
+        return new ExchangeConfig("https://raw.githubusercontent.com/coin-liquidity/coin-liquidity-config/master/exchange.json");
     }
 }
