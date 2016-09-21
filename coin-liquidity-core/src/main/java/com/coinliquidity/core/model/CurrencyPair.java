@@ -3,6 +3,9 @@ package com.coinliquidity.core.model;
 import java.util.Objects;
 
 public class CurrencyPair {
+
+    public static final String BTC = "BTC";
+
     private final String baseCurrency;
     private final String quoteCurrency;
 
@@ -30,7 +33,7 @@ public class CurrencyPair {
     private String normalize(final String currency) {
         switch(currency) {
             case "XBT":
-                return "BTC";
+                return BTC;
             case "RUR":
                 return "RUB";
             default:

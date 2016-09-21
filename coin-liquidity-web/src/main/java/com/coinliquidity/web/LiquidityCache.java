@@ -7,13 +7,14 @@ import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.analyzer.TotalAnalyzer;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
+import com.coinliquidity.web.model.LiquidityData;
+import com.coinliquidity.web.model.LiquidityDatum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;

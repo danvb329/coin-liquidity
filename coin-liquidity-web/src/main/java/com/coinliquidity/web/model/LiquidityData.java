@@ -1,4 +1,4 @@
-package com.coinliquidity.web;
+package com.coinliquidity.web.model;
 
 import java.math.BigDecimal;
 import java.util.Date;
