@@ -35,7 +35,7 @@ public class LiquidityCache {
         refresh();
     }
 
-    @Scheduled(cron = "*/10 * * * *")
+    @Scheduled(cron = "* */10 * * * *")
     public void refresh() {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
