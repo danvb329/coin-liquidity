@@ -29,7 +29,6 @@ public class LiquidityData {
         validExchanges.addAll(liquidityData.stream().map(LiquidityDatum::getExchange).collect(Collectors.toSet()));
 
         validBaseCurrencies.add("ALT");
-        validQuoteCurrencies.add("ALT");
 
         this.liquidityData = liquidityData;
     }
