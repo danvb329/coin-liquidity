@@ -94,4 +94,12 @@ public class LiquidityDatum {
         return "*".equals(testCurrency) || currency.equals(testCurrency) ||
                 ("ALT".equals(testCurrency) && !BTC.equals(currency));
     }
+
+    String getBaseCurrency() {
+        return currencyPair.getBaseCurrency();
+    }
+
+    String getQuoteCurrency() {
+        return currencyPair.getQuoteCurrency();
+    }
 }
