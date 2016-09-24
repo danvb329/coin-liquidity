@@ -4,6 +4,7 @@ import com.coinliquidity.web.IllegalFilterException;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -14,18 +15,22 @@ public class LiquidityData {
     private List<LiquidityDatum> liquidityData;
     private Date updateTime;
     private BigDecimal amount;
-    private Set<String> validBaseCurrencies;
-    private Set<String> validQuoteCurrencies;
-    private Set<String> validExchanges;
+    private Set<String> validBaseCurrencies = new HashSet<>();
+    private Set<String> validQuoteCurrencies = new HashSet<>();
+    private Set<String> validExchanges = new HashSet<>();
 
     public List<LiquidityDatum> getLiquidityData() {
         return liquidityData;
     }
 
     public void setLiquidityData(final List<LiquidityDatum> liquidityData) {
-        validBaseCurrencies = liquidityData.stream().map(LiquidityDatum::getBaseCurrency).collect(Collectors.toSet());
-        validQuoteCurrencies = liquidityData.stream().map(LiquidityDatum::getQuoteCurrency).collect(Collectors.toSet());
-        validExchanges = liquidityData.stream().map(LiquidityDatum::getExchange).collect(Collectors.toSet());
+        validBaseCurrencies.addAll(liquidityData.stream().map(LiquidityDatum::getBaseCurrency).collect(Collectors.toSet()));
+        validQuoteCurrencies.addAll(liquidityData.stream().map(LiquidityDatum::getQuoteCurrency).collect(Collectors.toSet()));
+        validExchanges.addAll(liquidityData.stream().map(LiquidityDatum::getExchange).collect(Collectors.toSet()));
+
+        validBaseCurrencies.add("ALT");
+        validQuoteCurrencies.add("ALT");
+
         this.liquidityData = liquidityData;
     }
 
