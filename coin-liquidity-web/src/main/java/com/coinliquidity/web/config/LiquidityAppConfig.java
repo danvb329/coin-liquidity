@@ -5,8 +5,10 @@ import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.rest.LiquidityController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 @Configuration
+@Profile("production")
 public class LiquidityAppConfig {
 
     @Bean
