@@ -105,7 +105,6 @@ public class LiquidityCache {
         });
 
         final LiquidityData liquidityData = new LiquidityData();
-        liquidityData.setAmount(amount);
         liquidityData.setLiquidityData(dataList);
         liquidityData.setUpdateTime(Instant.now());
         return liquidityData;

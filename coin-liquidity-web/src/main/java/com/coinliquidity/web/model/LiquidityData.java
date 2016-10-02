@@ -2,9 +2,7 @@ package com.coinliquidity.web.model;
 
 import com.coinliquidity.web.IllegalFilterException;
 
-import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +13,6 @@ public class LiquidityData {
 
     private List<LiquidityDatum> liquidityData;
     private Instant updateTime;
-    private BigDecimal amount;
     private Set<String> validBaseCurrencies = new HashSet<>();
     private Set<String> validQuoteCurrencies = new HashSet<>();
     private Set<String> validExchanges = new HashSet<>();
@@ -42,14 +39,6 @@ public class LiquidityData {
         this.updateTime = updateTime;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(final BigDecimal amount) {
-        this.amount = amount;
-    }
-
     public LiquidityData filter(final String baseCurrency, final String quoteCurrency) {
         if (isValid(baseCurrency, validBaseCurrencies) && isValid(quoteCurrency, validQuoteCurrencies)) {
             return filter(datum -> datum.matches(baseCurrency, quoteCurrency));
@@ -73,7 +62,6 @@ public class LiquidityData {
     private LiquidityData filter(final Predicate<LiquidityDatum> predicate) {
         final LiquidityData liquidityData = new LiquidityData();
         liquidityData.setUpdateTime(this.updateTime);
-        liquidityData.setAmount(this.amount);
         final List<LiquidityDatum> filteredDatums = this.liquidityData.stream()
                 .filter(predicate).collect(Collectors.toList());
         liquidityData.setLiquidityData(filteredDatums);
