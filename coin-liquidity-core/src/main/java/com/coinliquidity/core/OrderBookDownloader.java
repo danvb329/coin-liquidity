@@ -30,6 +30,10 @@ public class OrderBookDownloader implements Runnable {
         int maxRate = (1000 / exchange.getRateLimit()) + 1;
 
         for (final CurrencyPair currencyPair : exchange.getCurrencyPairs()) {
+            // skip disabled currencies
+            if (currencyPair.isDisabled()) {
+                continue;
+            }
             final Stopwatch stopwatch = Stopwatch.createStarted();
             downloadOrderBook(currencyPair);
             LOGGER.info("Download for {} {} took {}", exchange, currencyPair, stopwatch.stop());

@@ -2,7 +2,6 @@ package com.coinliquidity.core.model;
 
 import com.coinliquidity.core.Parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Exchange {
@@ -10,8 +9,7 @@ public class Exchange {
     private String name;
     private String url;
     private ParserType parserType;
-    private List<String> currencies;
-    private List<CurrencyPair> currencyPairs;
+    private List<CurrencyPair> currencies;
     private String docUrl;
     private Integer rateLimit = 1;
 
@@ -39,27 +37,17 @@ public class Exchange {
         this.parserType = parserType;
     }
 
-    public List<String> getCurrencies() {
+    // TODO - remove this
+    public List<CurrencyPair> getCurrencies() {
         return currencies;
     }
 
-    public void setCurrencies(final List<String> currencies) {
+    public void setCurrencies(final List<CurrencyPair> currencies) {
         this.currencies = currencies;
     }
 
     public List<CurrencyPair> getCurrencyPairs() {
-        final List<CurrencyPair> currencyPairs = new ArrayList<>(currencies.size());
-        for (final String currency : currencies) {
-            final String[] values = currency.split("/");
-            final String baseCurrency = values[0];
-            final String quoteCurrency = values[1];
-
-            // skip commented-out exchanges
-            if (!baseCurrency.startsWith("--")) {
-                currencyPairs.add(new CurrencyPair(baseCurrency, quoteCurrency));
-            }
-        }
-        return currencyPairs;
+        return currencies;
     }
 
     public String getDocUrl() {
