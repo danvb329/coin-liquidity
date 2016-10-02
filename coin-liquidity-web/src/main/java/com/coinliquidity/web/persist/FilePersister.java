@@ -57,7 +57,7 @@ public class FilePersister implements LiquidityDataPersister {
                 }
             }
 
-            return Optional.of(fromPath(latest));
+            return dataDir.equals(latest) ? Optional.empty() : Optional.of(fromPath(latest));
         } catch (IOException e) {
             LOGGER.error("Could not load latest data", e);
             return Optional.empty();
