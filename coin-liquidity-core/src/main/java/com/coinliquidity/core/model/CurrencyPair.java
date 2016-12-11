@@ -1,8 +1,16 @@
 package com.coinliquidity.core.model;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.util.Objects;
 
+@JsonDeserialize(using = CurrencyPairDeserializer.class)
+@JsonSerialize(using = CurrencyPairSerializer.class)
 public class CurrencyPair {
+
+    public static final String BTC = "BTC";
+
     private final String baseCurrency;
     private final String quoteCurrency;
 
@@ -30,12 +38,16 @@ public class CurrencyPair {
     private String normalize(final String currency) {
         switch(currency) {
             case "XBT":
-                return "BTC";
+                return BTC;
             case "RUR":
                 return "RUB";
             default:
                 return currency;
         }
+    }
+
+    public boolean isDisabled() {
+        return baseCurrency.startsWith("--");
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.coinliquidity.core.model;
 
 import com.coinliquidity.core.Parser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Exchange {
@@ -10,9 +9,9 @@ public class Exchange {
     private String name;
     private String url;
     private ParserType parserType;
-    private List<String> currencies;
-    private List<CurrencyPair> currencyPairs;
+    private List<CurrencyPair> currencies;
     private String docUrl;
+    private Integer rateLimit = 1;
 
     public String getName() {
         return name;
@@ -38,21 +37,17 @@ public class Exchange {
         this.parserType = parserType;
     }
 
-    public List<String> getCurrencies() {
+    // TODO - remove this
+    public List<CurrencyPair> getCurrencies() {
         return currencies;
     }
 
-    public void setCurrencies(final List<String> currencies) {
+    public void setCurrencies(final List<CurrencyPair> currencies) {
         this.currencies = currencies;
     }
 
     public List<CurrencyPair> getCurrencyPairs() {
-        final List<CurrencyPair> currencyPairs = new ArrayList<>(currencies.size());
-        for (final String currency : currencies) {
-            final String[] values = currency.split("/");
-            currencyPairs.add(new CurrencyPair(values[0], values[1]));
-        }
-        return currencyPairs;
+        return currencies;
     }
 
     public String getDocUrl() {
@@ -63,12 +58,24 @@ public class Exchange {
         this.docUrl = docUrl;
     }
 
-    @Override
-    public String toString() {
-        return name;
+    /**
+     * Maximum calls per second (default = 1)
+     * @return the maximum calls per second
+     */
+    public Integer getRateLimit() {
+        return rateLimit;
+    }
+
+    public void setRateLimit(Integer rateLimit) {
+        this.rateLimit = rateLimit;
     }
 
     public Parser getParser() {
         return parserType.getParser();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

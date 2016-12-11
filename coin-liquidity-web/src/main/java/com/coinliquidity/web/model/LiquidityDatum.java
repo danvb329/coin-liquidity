@@ -1,8 +1,10 @@
-package com.coinliquidity.web;
+package com.coinliquidity.web.model;
 
 import com.coinliquidity.core.model.CurrencyPair;
 
 import java.math.BigDecimal;
+
+import static com.coinliquidity.core.model.CurrencyPair.BTC;
 
 public class LiquidityDatum {
 
@@ -80,11 +82,24 @@ public class LiquidityDatum {
     }
 
     public boolean matches(final String baseCurrency, final String quoteCurrency) {
-        return ("*".equals(baseCurrency) || currencyPair.getBaseCurrency().equals(baseCurrency)) &&
-                ("*".equals(quoteCurrency) || currencyPair.getQuoteCurrency().equals(quoteCurrency));
+        return isMatch(baseCurrency, currencyPair.getBaseCurrency())
+                && isMatch(quoteCurrency, currencyPair.getQuoteCurrency());
     }
 
     public boolean matches(final String exchange) {
         return "*".equals(exchange) || this.exchange.equals(exchange);
+    }
+
+    private static boolean isMatch(final String testCurrency, final String currency) {
+        return "*".equals(testCurrency) || currency.equals(testCurrency) ||
+                ("ALT".equals(testCurrency) && !BTC.equals(currency));
+    }
+
+    String getBaseCurrency() {
+        return currencyPair.getBaseCurrency();
+    }
+
+    String getQuoteCurrency() {
+        return currencyPair.getQuoteCurrency();
     }
 }

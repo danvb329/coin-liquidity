@@ -1,9 +1,9 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <title th:text="'Liquidity Data - ' + ${title}">Liquidity Data</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" id="" media="print, projection, screen"/>
+    <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" media="all"/>
     <script type="text/javascript" src="/jquery-latest.js"></script>
     <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
     <script type="text/javascript" id="js">
@@ -13,6 +13,7 @@ $.tablesorter.addParser({
         return false;
     },
     format: function(s) {
+        if (s == 'n/a') return "99999999999999";
         return s.replace('$','').replace(/,/g,'');
     },
     type: 'numeric'
@@ -21,10 +22,14 @@ $.tablesorter.addParser({
 $(function() {
     $("table").tablesorter({
         headers: {
+            2: { sorter:'thousands' },
+            3: { sorter:'thousands' },
+            4: { sorter:'thousands' },
+            5: { sorter:'thousands' },
             6: { sorter:'thousands' },
             7: { sorter:'thousands' }
         },
-        sortList: [[2,0]]
+        sortList: [[2,0],[3,0]]
     });
 });
 
@@ -53,10 +58,10 @@ $(function() {
         <td>
             <a th:href="@{'/liquidity/view/currency/' + ${datum.currencyPair}}" th:text="${datum.currencyPair}">BTC/USD</a>
         </td>
-        <td th:text="${datum.sellCost}">1.23</td>
-        <td th:text="${datum.buyCost}">1.55</td>
-        <td th:text="${datum.bestBid}">100.42</td>
-        <td th:text="${datum.bestAsk}">100.43</td>
+        <td th:text="${datum.sellCost} ?: 'n/a'">1.23</td>
+        <td th:text="${datum.buyCost} ?: 'n/a'">1.55</td>
+        <td th:text="${datum.bestBid} ?: 'n/a'">100.42</td>
+        <td th:text="${datum.bestAsk} ?: 'n/a'">100.43</td>
         <td th:text="${#numbers.formatDecimal(datum.totalBids, 0, 'COMMA', 0, 'POINT')}">3500</td>
         <td th:text="${#numbers.formatDecimal(datum.totalAsks, 0, 'COMMA', 0, 'POINT')}">1234</td>
     </tr>

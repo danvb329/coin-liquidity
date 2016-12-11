@@ -17,10 +17,10 @@ public class TotalAnalyzer implements Analyzer {
     }
 
     public BigDecimal getTotalBids() {
-        return totalBids;
+        return totalBids.setScale(2, RoundingMode.DOWN);
     }
 
     public BigDecimal getTotalAsks() {
-        return totalAsks;
+        return totalAsks.setScale(0, RoundingMode.DOWN);
     }
 }

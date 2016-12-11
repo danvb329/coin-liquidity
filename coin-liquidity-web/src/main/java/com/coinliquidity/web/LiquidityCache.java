@@ -7,15 +7,18 @@ import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.analyzer.TotalAnalyzer;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
+import com.coinliquidity.web.model.LiquidityData;
+import com.coinliquidity.web.model.LiquidityDatum;
+import com.coinliquidity.web.persist.LiquidityDataPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -26,22 +29,33 @@ public class LiquidityCache {
     private static final Logger LOGGER = LoggerFactory.getLogger(LiquidityCache.class);
 
     private final ExchangeConfig exchangeConfig;
+    private final LiquidityDataPersister dataPersister;
 
     private LiquidityData liquidityData;
 
-    public LiquidityCache(final ExchangeConfig exchangeConfig) {
+    public LiquidityCache(final ExchangeConfig exchangeConfig, LiquidityDataPersister dataPersister) {
         this.exchangeConfig = exchangeConfig;
-        refresh();
+        this.dataPersister = dataPersister;
+
+        final Optional<LiquidityData> latestData = dataPersister.loadLatest();
+
+        if (latestData.isPresent()) {
+            liquidityData = latestData.get();
+        } else {
+            refresh();
+        }
     }
 
-    @Scheduled(initialDelay = 600000, fixedDelay = 600000)
-    public void refresh() {
+    @Scheduled(cron = "0 */10 * * * *")
+    private void refresh() {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
         final List<OrderBookDownloader> obds = exchanges.getExchangeList().stream()
                 .map(OrderBookDownloader::new).collect(Collectors.toList());
 
-        final ExecutorService executorService = Executors.newFixedThreadPool(10);
+        LOGGER.info("Creating pool of {} threads", obds.size());
+
+        final ExecutorService executorService = Executors.newFixedThreadPool(obds.size());
 
         for (final OrderBookDownloader obd : obds) {
             executorService.execute(obd);
@@ -65,6 +79,8 @@ public class LiquidityCache {
         orderBooks.forEach(orderBook -> orderBook.convert(fxConverter));
 
         this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
+
+        dataPersister.persist(this.liquidityData);
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks, final BigDecimal amount) {
@@ -89,9 +105,8 @@ public class LiquidityCache {
         });
 
         final LiquidityData liquidityData = new LiquidityData();
-        liquidityData.setAmount(amount);
         liquidityData.setLiquidityData(dataList);
-        liquidityData.setUpdateTime(new Date());
+        liquidityData.setUpdateTime(Instant.now());
         return liquidityData;
     }
 
