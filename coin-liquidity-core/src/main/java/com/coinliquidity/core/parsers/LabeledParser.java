@@ -17,11 +17,15 @@ public class LabeledParser implements Parser {
         return new OrderBook(exchange, currencyPair, toOrders(bids), toOrders(asks));
     }
 
-    private Orders toOrders(JsonNode nodes) {
+    private Orders toOrders(final JsonNode nodes) {
         final Orders retVal = new Orders();
-        for (JsonNode node : nodes) {
-            retVal.put(new BigDecimal(node.get("price").asText()),
-                    new BigDecimal(node.get("amount").asText()));
+        for (final JsonNode node : nodes) {
+            final String price = node.path("price").asText();
+            String amount = node.path("amount").asText();
+            if (amount == null || amount.trim().length() == 0) {
+                amount = node.get("size").asText();
+            }
+            retVal.put(new BigDecimal(price), new BigDecimal(amount));
         }
         return retVal;
     }
