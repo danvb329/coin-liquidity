@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,8 @@ public class LiquidityController {
             temp.forEach(d -> d.setUpdateTime(liquidityData.getUpdateTime()));
             datums.addAll(temp);
         }
+
+        datums.sort(Comparator.comparing(LiquidityDatum::getUpdateTime));
 
         final LiquidityData data = new LiquidityData();
         data.setLiquidityData(datums);

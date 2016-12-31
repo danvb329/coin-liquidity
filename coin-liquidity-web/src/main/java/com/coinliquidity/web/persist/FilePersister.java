@@ -74,7 +74,7 @@ public class FilePersister implements LiquidityDataPersister {
                     data.add(fromPath(path));
                 }
             }
-            data.sort(Comparator.comparing(LiquidityData::getUpdateTime));
+            //data.sort(Comparator.comparing(LiquidityData::getUpdateTime));
             return data;
         } catch (IOException e) {
             LOGGER.error("Could not load history data", e);
