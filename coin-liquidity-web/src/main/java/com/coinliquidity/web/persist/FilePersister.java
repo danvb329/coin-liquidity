@@ -14,8 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 public class FilePersister implements LiquidityDataPersister {
 
@@ -64,12 +68,23 @@ public class FilePersister implements LiquidityDataPersister {
         }
     }
 
-    private LiquidityData fromPath(final Path path) throws IOException {
-        return mapper.readValue(path.toFile(), LiquidityData.class);
+    public List<LiquidityData> loadHistory(final Instant threshold) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dataDir)) {
+            final List<LiquidityData> data = new ArrayList<>();
+            for (final Path path : directoryStream) {
+                final long timestamp = Long.parseLong(removeExtension(path.toFile().getName()));
+                if (Instant.ofEpochSecond(timestamp).isAfter(threshold)) {
+                    data.add(fromPath(path));
+                }
+            }
+            return data;
+        } catch (IOException e) {
+            LOGGER.error("Could not load history data", e);
+            return Collections.emptyList();
+        }
     }
 
-    @Override
-    public List<LiquidityData> loadSince(final Instant instant) {
-        return null;
+    private LiquidityData fromPath(final Path path) throws IOException {
+        return mapper.readValue(path.toFile(), LiquidityData.class);
     }
 }

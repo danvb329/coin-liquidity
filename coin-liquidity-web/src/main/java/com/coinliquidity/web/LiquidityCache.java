@@ -25,6 +25,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 public class LiquidityCache {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LiquidityCache.class);
@@ -34,11 +36,16 @@ public class LiquidityCache {
 
     private LiquidityData liquidityData;
     private List<DownloadStatus> downloadStatuses;
+    private List<LiquidityData> liquidityDataHistory;
 
     public LiquidityCache(final ExchangeConfig exchangeConfig, LiquidityDataPersister dataPersister) {
         this.exchangeConfig = exchangeConfig;
         this.dataPersister = dataPersister;
         this.downloadStatuses = new ArrayList<>();
+
+
+        final Instant threshold = Instant.now().minus(30, DAYS);
+        this.liquidityDataHistory = dataPersister.loadHistory(threshold);
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
 
@@ -82,8 +89,8 @@ public class LiquidityCache {
         orderBooks.forEach(orderBook -> orderBook.convert(fxConverter));
 
         this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
-
         dataPersister.persist(this.liquidityData);
+        updateHistory(liquidityData);
 
         final List<DownloadStatus> statuses = new ArrayList<>();
         obds.forEach(obd -> statuses.addAll(obd.getDownloadStatuses()));
@@ -117,11 +124,21 @@ public class LiquidityCache {
         return liquidityData;
     }
 
+    private void updateHistory(final LiquidityData liquidityData) {
+        final Instant threshold = Instant.now().minus(30, DAYS);
+        liquidityDataHistory.add(liquidityData);
+        liquidityDataHistory.removeIf(data -> data.getUpdateTime().isBefore(threshold));
+    }
+
     public LiquidityData getLiquidityData() {
         return liquidityData;
     }
 
     public List<DownloadStatus> getDownloadStatuses() {
         return downloadStatuses;
+    }
+
+    public List<LiquidityData> getLiquidityDataHistory() {
+        return liquidityDataHistory;
     }
 }

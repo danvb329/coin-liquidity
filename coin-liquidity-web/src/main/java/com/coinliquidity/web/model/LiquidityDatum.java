@@ -3,6 +3,7 @@ package com.coinliquidity.web.model;
 import com.coinliquidity.core.model.CurrencyPair;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 
 import static com.coinliquidity.core.model.CurrencyPair.BTC;
 
@@ -16,6 +17,7 @@ public class LiquidityDatum {
     private BigDecimal bestBid;
     private BigDecimal totalAsks;
     private BigDecimal totalBids;
+    private Instant updateTime;
 
     public String getExchange() {
         return exchange;
@@ -79,6 +81,14 @@ public class LiquidityDatum {
 
     public void setTotalBids(BigDecimal totalBids) {
         this.totalBids = totalBids;
+    }
+
+    public Instant getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(Instant updateTime) {
+        this.updateTime = updateTime;
     }
 
     public boolean matches(final String baseCurrency, final String quoteCurrency) {

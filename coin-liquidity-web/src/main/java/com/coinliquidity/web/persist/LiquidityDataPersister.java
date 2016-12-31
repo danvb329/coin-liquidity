@@ -12,5 +12,5 @@ public interface LiquidityDataPersister {
 
     Optional<LiquidityData> loadLatest();
 
-    List<LiquidityData> loadSince(final Instant instant);
+    List<LiquidityData> loadHistory(final Instant threshold);
 }
