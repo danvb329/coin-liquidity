@@ -14,10 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
@@ -77,6 +74,7 @@ public class FilePersister implements LiquidityDataPersister {
                     data.add(fromPath(path));
                 }
             }
+            data.sort(Comparator.comparing(LiquidityData::getUpdateTime));
             return data;
         } catch (IOException e) {
             LOGGER.error("Could not load history data", e);
