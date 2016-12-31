@@ -29,6 +29,8 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
 
+    private static final int THREHOLD_DAYS = 10;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(LiquidityCache.class);
 
     private final ExchangeConfig exchangeConfig;
@@ -44,7 +46,7 @@ public class LiquidityCache {
         this.downloadStatuses = new ArrayList<>();
 
 
-        final Instant threshold = Instant.now().minus(30, DAYS);
+        final Instant threshold = Instant.now().minus(THREHOLD_DAYS, DAYS);
         this.liquidityDataHistory = dataPersister.loadHistory(threshold);
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
@@ -125,7 +127,7 @@ public class LiquidityCache {
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
-        final Instant threshold = Instant.now().minus(30, DAYS);
+        final Instant threshold = Instant.now().minus(THREHOLD_DAYS, DAYS);
         liquidityDataHistory.add(liquidityData);
         liquidityDataHistory.removeIf(data -> data.getUpdateTime().isBefore(threshold));
     }
