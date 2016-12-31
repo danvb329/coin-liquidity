@@ -1,0 +1,12 @@
+[Unit]
+Description=coin-liquidity
+After=syslog.target
+
+[Service]
+User=cl
+ExecStart=/home/cl/coin-liquidity/coin-liquidity.jar
+SuccessExitStatus=143
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
