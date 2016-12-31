@@ -14,6 +14,14 @@ public class LabeledParser implements Parser {
         final JsonNode bids = json.get("bids");
         final JsonNode asks = json.get("asks");
 
+        if (bids == null) {
+            throw new OrderBookParseException("bids not found in json");
+        }
+
+        if (asks == null) {
+            throw new OrderBookParseException("asks not found in json");
+        }
+
         return new OrderBook(exchange, currencyPair, toOrders(bids), toOrders(asks));
     }
 

@@ -48,6 +48,10 @@ public class Orders implements Iterable<Order> {
         orderMap.values().forEach(order -> order.convert(rate));
     }
 
+    public int size() {
+        return orderMap.size();
+    }
+
     @Override
     public Iterator<Order> iterator() {
         return orderMap.values().iterator();

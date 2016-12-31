@@ -17,6 +17,14 @@ public class ArrayParser implements Parser {
         final JsonNode bids = json.findValue("bids");
         final JsonNode asks = json.findValue("asks");
 
+        if (bids == null) {
+            throw new OrderBookParseException("bids not found in json");
+        }
+
+        if (asks == null) {
+            throw new OrderBookParseException("asks not found in json");
+        }
+
         return new OrderBook(exchange, currencyPair, toOrders(bids), toOrders(asks));
     }
 

@@ -5,6 +5,7 @@ import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.persist.FilePersister;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.coinliquidity.web.rest.LiquidityController;
+import com.coinliquidity.web.rest.StatusController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -16,6 +17,11 @@ public class LiquidityAppConfig {
     @Bean
     public LiquidityController liquidityController(final LiquidityCache liquidityCache) {
         return new LiquidityController(liquidityCache);
+    }
+
+    @Bean
+    public StatusController statusController(final LiquidityCache liquidityCache) {
+        return new StatusController(liquidityCache);
     }
 
     @Bean

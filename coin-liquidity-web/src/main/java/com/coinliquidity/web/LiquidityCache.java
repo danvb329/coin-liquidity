@@ -5,6 +5,7 @@ import com.coinliquidity.core.FxConverter;
 import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.analyzer.TotalAnalyzer;
+import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
 import com.coinliquidity.web.model.LiquidityData;
@@ -32,10 +33,12 @@ public class LiquidityCache {
     private final LiquidityDataPersister dataPersister;
 
     private LiquidityData liquidityData;
+    private List<DownloadStatus> downloadStatuses;
 
     public LiquidityCache(final ExchangeConfig exchangeConfig, LiquidityDataPersister dataPersister) {
         this.exchangeConfig = exchangeConfig;
         this.dataPersister = dataPersister;
+        this.downloadStatuses = new ArrayList<>();
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
 
@@ -73,7 +76,7 @@ public class LiquidityCache {
         } while (!executorService.isTerminated());
 
         final List<OrderBook> orderBooks = new ArrayList<>();
-        obds.forEach(orderBookDownloader -> orderBooks.addAll(orderBookDownloader.getOrderBooks()));
+        obds.forEach(obd -> orderBooks.addAll(obd.getOrderBooks()));
 
         final FxConverter fxConverter = new FxConverter("USD");
         orderBooks.forEach(orderBook -> orderBook.convert(fxConverter));
@@ -81,6 +84,10 @@ public class LiquidityCache {
         this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
 
         dataPersister.persist(this.liquidityData);
+
+        final List<DownloadStatus> statuses = new ArrayList<>();
+        obds.forEach(obd -> statuses.addAll(obd.getDownloadStatuses()));
+        this.downloadStatuses = statuses;
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks, final BigDecimal amount) {
@@ -112,5 +119,9 @@ public class LiquidityCache {
 
     public LiquidityData getLiquidityData() {
         return liquidityData;
+    }
+
+    public List<DownloadStatus> getDownloadStatuses() {
+        return downloadStatuses;
     }
 }
