@@ -50,6 +50,7 @@ public class OrderBookDownloader implements Runnable {
             downloadStatus.setTimeElapsed(elapsed);
 
             if (orderBook != null) {
+                orderBooks.add(orderBook);
                 downloadStatus.setStatus("OK");
                 downloadStatus.setTotalAsks(orderBook.getAsks().size());
                 downloadStatus.setTotalBids(orderBook.getBids().size());
