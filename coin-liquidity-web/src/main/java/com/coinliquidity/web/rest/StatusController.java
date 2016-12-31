@@ -7,7 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/status")
+@RequestMapping("/liquidity/status")
 public class StatusController {
 
     private final LiquidityCache liquidityCache;
