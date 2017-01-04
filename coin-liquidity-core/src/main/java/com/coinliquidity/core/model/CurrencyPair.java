@@ -41,6 +41,8 @@ public class CurrencyPair {
                 return BTC;
             case "RUR":
                 return "RUB";
+            case "USDT":
+                return "USD";
             default:
                 return currency;
         }
