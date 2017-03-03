@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 public class LabeledParser implements Parser {
 
     public OrderBook parse(final String exchange, final CurrencyPair currencyPair, final JsonNode json) {
-        final JsonNode bids = json.get("bids");
-        final JsonNode asks = json.get("asks");
+        final JsonNode bids = path(json, "bids", "bid");
+        final JsonNode asks = path(json, "asks", "ask");
 
         if (bids == null) {
             throw new OrderBookParseException("bids not found in json");
@@ -28,13 +28,26 @@ public class LabeledParser implements Parser {
     private Orders toOrders(final JsonNode nodes) {
         final Orders retVal = new Orders();
         for (final JsonNode node : nodes) {
-            final String price = node.path("price").asText();
-            String amount = node.path("amount").asText();
-            if (amount == null || amount.trim().length() == 0) {
-                amount = node.get("size").asText();
+            final JsonNode price = path(node, "price");
+            final JsonNode amount = path(node, "amount", "size", "qty");
+            if (amount == null) {
+                throw new RuntimeException("Could not determine amount");
             }
-            retVal.put(new BigDecimal(price), new BigDecimal(amount));
+            if (price == null) {
+                throw new RuntimeException("Could not determine price");
+            }
+            retVal.put(new BigDecimal(price.asText()), new BigDecimal(amount.asText()));
         }
         return retVal;
+    }
+
+    private JsonNode path(JsonNode parent, final String... possibleNames) {
+        for (final String name : possibleNames) {
+            final JsonNode node = parent.path(name);
+            if (node != null && !node.isMissingNode()) {
+                return node;
+            }
+        }
+        return null;
     }
 }
