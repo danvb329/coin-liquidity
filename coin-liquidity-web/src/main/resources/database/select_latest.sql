@@ -1,0 +1,1 @@
+SELECT * FROM liquidity_history WHERE run_date = (SELECT max(run_date) from liquidity_history)

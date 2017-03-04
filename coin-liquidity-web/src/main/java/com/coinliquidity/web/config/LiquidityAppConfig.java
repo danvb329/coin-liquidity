@@ -2,13 +2,14 @@ package com.coinliquidity.web.config;
 
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.web.LiquidityCache;
-import com.coinliquidity.web.persist.FilePersister;
+import com.coinliquidity.web.persist.DbPersister;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.coinliquidity.web.rest.LiquidityController;
 import com.coinliquidity.web.rest.StatusController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 @Profile("production")
@@ -31,12 +32,8 @@ public class LiquidityAppConfig {
     }
 
     @Bean
-    public LiquidityDataPersister liquidityDataPersister() {
-        final String dataDir = System.getProperty("liquidity.data.dir");
-        if (dataDir == null) {
-            throw new RuntimeException("Must specify liquidity.data.dir system property!");
-        }
-        return new FilePersister(dataDir);
+    public LiquidityDataPersister liquidityDataPersister(final JdbcTemplate jdbcTemplate) {
+        return new DbPersister(jdbcTemplate);
     }
 
     @Bean

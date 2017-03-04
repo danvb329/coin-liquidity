@@ -113,8 +113,8 @@ public class LiquidityCache {
             datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
             datum.setBuyCost(slippageAnalyzer.getBuyCost());
             datum.setSellCost(slippageAnalyzer.getSellCost());
-            datum.setBestAsk(slippageAnalyzer.getBestAsk().setScale(2, BigDecimal.ROUND_HALF_UP));
-            datum.setBestBid(slippageAnalyzer.getBestBid().setScale(2, BigDecimal.ROUND_HALF_UP));
+            datum.setBestAsk(scale(slippageAnalyzer.getBestAsk()));
+            datum.setBestBid(scale(slippageAnalyzer.getBestBid()));
             datum.setTotalBids(totalAnalyzer.getTotalBids());
             datum.setTotalAsks(totalAnalyzer.getTotalAsks());
             dataList.add(datum);
@@ -124,6 +124,10 @@ public class LiquidityCache {
         liquidityData.setLiquidityData(dataList);
         liquidityData.setUpdateTime(Instant.now());
         return liquidityData;
+    }
+
+    private BigDecimal scale(final BigDecimal decimal) {
+        return decimal == null ? null : decimal.setScale(2, BigDecimal.ROUND_HALF_UP);
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
