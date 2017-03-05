@@ -71,6 +71,13 @@ public class LiquidityController {
         return "detail";
     }
 
+    @RequestMapping("/summary/{baseCurrency}")
+    public String summary(@PathVariable("baseCurrency") final String baseCurrency,
+                          final Model model) {
+        model.addAttribute("baseCurrency", baseCurrency);
+        return "summary";
+    }
+
     private String liquidity(final LiquidityData data, final String title, final Model model) {
         model.addAttribute("title", title);
         model.addAttribute("liquidityData", data);

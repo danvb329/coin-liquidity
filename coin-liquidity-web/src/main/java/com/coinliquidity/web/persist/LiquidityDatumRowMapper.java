@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DbRowMapper implements RowMapper<LiquidityDatum> {
+public class LiquidityDatumRowMapper implements RowMapper<LiquidityDatum> {
 
     @Override
     public LiquidityDatum mapRow(final ResultSet rs, final int i) throws SQLException {

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title th:text="'Liquidity Summary - ' + ${baseCurrency}">Liquidity Summary - BTC</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" media="all"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+<h1 th:text="'Liquidity Summary - ' + ${baseCurrency}">Liquidity Summary - BTC</h1>
+<div id="bids_chart" style="width:100%; height:400px;"></div>
+<div id="asks_chart" style="width:100%; height:400px;"></div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+var baseCurrency = /*[[${baseCurrency}]]*/ 'BTC';
+
+var bidsChart;
+var asksChart;
+
+function requestBids()
+{
+    $.ajax({
+    url: '/liquidity/data/summary/bids/' + baseCurrency,
+    datatype: "json",
+    success: function(data)
+    {
+        bidsChart.series[0].setData(data);
+    },
+    });
+}
+
+function requestAsks()
+{
+    $.ajax({
+    url: '/liquidity/data/summary/asks/' + baseCurrency,
+    datatype: "json",
+    success: function(data)
+    {
+        asksChart.series[0].setData(data);
+    },
+    });
+}
+
+$(document).ready(function() {
+    bidsChart = new Highcharts.Chart({
+     chart: {
+        renderTo: 'bids_chart',
+        type: 'spline',
+        events: {
+            load: requestBids
+        }
+     },
+     title: {
+        text: 'Date'
+     },
+     xAxis: {
+        type: 'datetime'
+     },
+     yAxis: {
+        title: {
+            text: 'Total Bids (USD)'
+        }
+     },
+     series: [{
+        name: 'Total Bids (USD)',
+        data: [],
+     }]
+  });
+
+  asksChart = new Highcharts.Chart({
+     chart: {
+        renderTo: 'asks_chart',
+        type: 'spline',
+        events: {
+            load: requestAsks
+        }
+     },
+     title: {
+        text: 'Date'
+     },
+     xAxis: {
+        type: 'datetime'
+     },
+     yAxis: {
+        title: {
+            text: 'Total Asks'
+        }
+     },
+     series: [{
+        name: 'Total Asks',
+        data: [],
+     }]
+  });
+
+  });
+/*]]>*/
+</script>
+</body>
+</html>

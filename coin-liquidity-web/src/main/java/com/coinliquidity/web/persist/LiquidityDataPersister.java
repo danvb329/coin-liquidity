@@ -1,6 +1,7 @@
 package com.coinliquidity.web.persist;
 
 import com.coinliquidity.web.model.LiquidityData;
+import com.coinliquidity.web.model.LiquiditySummary;
 
 import java.time.Instant;
 import java.util.List;
@@ -13,4 +14,6 @@ public interface LiquidityDataPersister {
     Optional<LiquidityData> loadLatest();
 
     List<LiquidityData> loadHistory(final Instant threshold);
+
+    List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold);
 }

@@ -10,6 +10,7 @@ import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
+import com.coinliquidity.web.model.LiquiditySummary;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,5 +147,9 @@ public class LiquidityCache {
 
     public List<LiquidityData> getLiquidityDataHistory() {
         return liquidityDataHistory;
+    }
+
+    public List<LiquiditySummary> getLiquiditySummary(final String baseCcy, final Instant threshold) {
+        return dataPersister.loadSummary(baseCcy, threshold);
     }
 }

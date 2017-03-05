@@ -1,6 +1,7 @@
 package com.coinliquidity.web.persist;
 
 import com.coinliquidity.web.model.LiquidityData;
+import com.coinliquidity.web.model.LiquiditySummary;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -80,6 +81,11 @@ public class FilePersister implements LiquidityDataPersister {
             LOGGER.error("Could not load history data", e);
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    public List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold) {
+        throw new UnsupportedOperationException("not supported");
     }
 
     private LiquidityData fromPath(final Path path) throws IOException {
