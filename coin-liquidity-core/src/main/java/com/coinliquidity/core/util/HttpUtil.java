@@ -16,7 +16,7 @@ public class HttpUtil {
     public static JsonNode get(final String url) {
         final Client client = ClientBuilder.newClient();
         client.property(ClientProperties.CONNECT_TIMEOUT, 10000);
-        client.property(ClientProperties.READ_TIMEOUT,    10000);
+        client.property(ClientProperties.READ_TIMEOUT,    20000);
 
         final WebTarget target = client.target(url);
         final Response response = target.request().get();
