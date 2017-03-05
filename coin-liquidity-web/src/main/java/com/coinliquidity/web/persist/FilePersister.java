@@ -83,6 +83,17 @@ public class FilePersister implements LiquidityDataPersister {
         }
     }
 
+    public void loadHistoryInto(final LiquidityDataPersister other) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(dataDir)) {
+            for (final Path path : directoryStream) {
+                LOGGER.info("persisting from {}", path);
+                other.persist(fromPath(path));
+            }
+        } catch (IOException e) {
+            LOGGER.error("Could not load history data", e);
+        }
+    }
+
     @Override
     public List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold) {
         throw new UnsupportedOperationException("not supported");
