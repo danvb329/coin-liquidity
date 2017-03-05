@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +74,10 @@ public class LiquidityController {
 
     @RequestMapping("/summary/{baseCurrency}")
     public String summary(@PathVariable("baseCurrency") final String baseCurrency,
+                          @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
                           final Model model) {
         model.addAttribute("baseCurrency", baseCurrency);
+        model.addAttribute("days", days);
         return "summary";
     }
 

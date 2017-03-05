@@ -15,6 +15,7 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 var baseCurrency = /*[[${baseCurrency}]]*/ 'BTC';
+var days = /*[[${days}]]*/ 10;
 
 var bidsChart;
 var asksChart;
@@ -22,7 +23,7 @@ var asksChart;
 function requestBids()
 {
     $.ajax({
-    url: '/liquidity/data/summary/bids/' + baseCurrency,
+    url: '/liquidity/data/summary/bids/' + baseCurrency + '?days=' + days,
     datatype: "json",
     success: function(data)
     {
@@ -34,7 +35,7 @@ function requestBids()
 function requestAsks()
 {
     $.ajax({
-    url: '/liquidity/data/summary/asks/' + baseCurrency,
+    url: '/liquidity/data/summary/asks/' + baseCurrency + '?days=' + days,
     datatype: "json",
     success: function(data)
     {
