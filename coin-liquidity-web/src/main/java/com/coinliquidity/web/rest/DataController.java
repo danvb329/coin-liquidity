@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 @Controller
 @RequestMapping("/liquidity/data")
 public class DataController {
@@ -37,7 +39,9 @@ public class DataController {
 
     private List<Object[]> fetchSummary(final String baseCurrency,
                                             final Function<LiquiditySummary, BigDecimal> function) {
-        final List<LiquiditySummary> summaries = cache.getLiquiditySummary(baseCurrency, Instant.EPOCH);
+        final List<LiquiditySummary> summaries = cache.getLiquiditySummary(
+                baseCurrency,
+                Instant.now().minus(60, DAYS));
 
         return summaries.stream()
                 .map(summary -> new Object[]{summary.getUpdateTime().toEpochMilli(), function.apply(summary)})
