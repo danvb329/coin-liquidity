@@ -3,7 +3,6 @@ package com.coinliquidity.web.config;
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.persist.DbPersister;
-import com.coinliquidity.web.persist.FilePersister;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.coinliquidity.web.rest.DataController;
 import com.coinliquidity.web.rest.LiquidityController;
@@ -40,16 +39,7 @@ public class LiquidityAppConfig {
 
     @Bean
     public LiquidityDataPersister liquidityDataPersister(final JdbcTemplate jdbcTemplate) {
-        final String dataDir = System.getProperty("liquidity.data.dir");
-        if (dataDir == null) {
-            throw new RuntimeException("Must specify liquidity.data.dir system property!");
-        }
-        final FilePersister filePersister = new FilePersister(dataDir);
-
-        final DbPersister dbPersister = new DbPersister(jdbcTemplate);
-        filePersister.loadHistoryInto(dbPersister);
-        return dbPersister;
-        //return new DbPersister(jdbcTemplate);
+        return new DbPersister(jdbcTemplate);
     }
 
     @Bean
