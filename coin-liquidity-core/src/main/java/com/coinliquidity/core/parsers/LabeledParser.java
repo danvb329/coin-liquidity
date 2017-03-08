@@ -43,7 +43,7 @@ public class LabeledParser implements Parser {
 
     private JsonNode path(JsonNode parent, final String... possibleNames) {
         for (final String name : possibleNames) {
-            final JsonNode node = parent.path(name);
+            final JsonNode node = parent.findValue(name);
             if (node != null && !node.isMissingNode()) {
                 return node;
             }
