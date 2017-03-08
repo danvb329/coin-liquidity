@@ -11,10 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DbPersister implements LiquidityDataPersister {
@@ -27,12 +24,17 @@ public class DbPersister implements LiquidityDataPersister {
     private static final String SELECT_SINCE = resource("database/select_since.sql");
     private static final String SELECT_LATEST = resource("database/select_latest.sql");
     private static final String SELECT_SUMMARY = resource("database/select_summary.sql");
+    private static final String DELETE_DUPES = resource("database/delete_dupes.sql");
 
     private final JdbcTemplate jdbcTemplate;
 
-    public DbPersister(final JdbcTemplate jdbcTemplate) {
+    public DbPersister(final JdbcTemplate jdbcTemplate, final boolean deleteDupes) {
         this.jdbcTemplate = jdbcTemplate;
         jdbcTemplate.execute(CREATE);
+
+        if (deleteDupes) {
+            jdbcTemplate.execute(DELETE_DUPES);
+        }
     }
 
     @Override

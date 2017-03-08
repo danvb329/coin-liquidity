@@ -39,7 +39,7 @@ public class LiquidityAppConfig {
 
     @Bean
     public LiquidityDataPersister liquidityDataPersister(final JdbcTemplate jdbcTemplate) {
-        return new DbPersister(jdbcTemplate);
+        return new DbPersister(jdbcTemplate, Boolean.getBoolean("delete.dupes"));
     }
 
     @Bean
