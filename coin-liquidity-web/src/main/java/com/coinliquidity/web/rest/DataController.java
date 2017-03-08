@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,27 +28,22 @@ public class DataController {
         this.cache = cache;
     }
 
-    @RequestMapping("summary/asks/{baseCurrency}")
+    @RequestMapping("summary/{baseCurrency}")
     @ResponseBody
-    public List<Object[]> asks(@PathVariable("baseCurrency") final String baseCurrency,
-                               @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days) {
-        return fetchSummary(baseCurrency, LiquiditySummary::getTotalAsks, days);
-    }
-
-    @RequestMapping("summary/bids/{baseCurrency}")
-    @ResponseBody
-    public List<Object[]> bids(@PathVariable("baseCurrency") final String baseCurrency,
-                               @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days) {
-        return fetchSummary(baseCurrency, LiquiditySummary::getTotalBidsUsd, days);
-    }
-
-    private List<Object[]> fetchSummary(final String baseCurrency,
-                                        final Function<LiquiditySummary, BigDecimal> function,
-                                        final Integer days) {
+    public Map<String, List<Object[]>> summary(@PathVariable("baseCurrency") final String baseCurrency,
+                                               @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days) {
         final List<LiquiditySummary> summaries = cache.getLiquiditySummary(
                 baseCurrency,
                 Instant.now().minus(days, DAYS));
 
+        final Map<String, List<Object[]>> data = new HashMap<>();
+        data.put("bids", toChartData(summaries, LiquiditySummary::getTotalBidsUsd));
+        data.put("asks", toChartData(summaries, LiquiditySummary::getTotalAsks));
+        return data;
+    }
+
+    private List<Object[]> toChartData(final List<LiquiditySummary> summaries,
+                                       final Function<LiquiditySummary, BigDecimal> function) {
         return summaries.stream()
                 .map(summary -> new Object[]{summary.getUpdateTime().toEpochMilli(), function.apply(summary)})
                 .collect(Collectors.toList());
