@@ -29,7 +29,7 @@ public class LabeledParser implements Parser {
         final Orders retVal = new Orders();
         for (final JsonNode node : nodes) {
             final JsonNode price = path(node, "price");
-            final JsonNode amount = path(node, "amount", "size", "qty");
+            final JsonNode amount = path(node, "amount", "size", "qty", "volume");
             if (amount == null) {
                 throw new RuntimeException("Could not determine amount");
             }
