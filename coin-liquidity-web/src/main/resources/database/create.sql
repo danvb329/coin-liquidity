@@ -10,5 +10,3 @@ CREATE TABLE IF NOT EXISTS liquidity_history (
     total_bids_usd decimal,
     total_asks decimal
 );
-
-CREATE INDEX IF NOT EXISTS run_date_idx on liquidity_history (run_date);

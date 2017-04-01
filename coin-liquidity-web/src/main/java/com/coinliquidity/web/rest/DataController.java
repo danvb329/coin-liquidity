@@ -39,6 +39,7 @@ public class DataController {
         final Map<String, List<Object[]>> data = new HashMap<>();
         data.put("bids", toChartData(summaries, LiquiditySummary::getTotalBidsUsd));
         data.put("asks", toChartData(summaries, LiquiditySummary::getTotalAsks));
+        data.put("price", toChartData(summaries, LiquiditySummary::getPrice));
         return data;
     }
 

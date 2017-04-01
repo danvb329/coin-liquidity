@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS liquidity_history_idx_2 ON liquidity_history (base_ccy, run_date);

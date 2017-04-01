@@ -3,42 +3,51 @@ package com.coinliquidity.web.persist;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
+import com.coinliquidity.web.model.PriceSummary;
 import com.google.common.base.Charsets;
+import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.TreeMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class DbPersister implements LiquidityDataPersister {
 
-    private static final LiquidityDatumRowMapper LIQUIDITY_DATUM_ROW_MAPPER = new LiquidityDatumRowMapper();
-    private static final LiquiditySummaryRowMapper LIQUIDITY_SUMMARY_ROW_MAPPER = new LiquiditySummaryRowMapper();
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbPersister.class);
 
-    private static final String CREATE = resource("database/create.sql");
+    private static final LiquidityDatumRowMapper LIQUIDITY_DATUM_MAPPER = new LiquidityDatumRowMapper();
+    private static final LiquiditySummaryRowMapper LIQUIDITY_SUMMARY_MAPPER = new LiquiditySummaryRowMapper();
+    private static final PriceSummaryRowMapper PRICE_SUMMARY_MAPPER = new PriceSummaryRowMapper();
+
     private static final String INSERT = resource("database/insert.sql");
     private static final String SELECT_SINCE = resource("database/select_since.sql");
     private static final String SELECT_LATEST = resource("database/select_latest.sql");
-    private static final String SELECT_SUMMARY = resource("database/select_summary.sql");
-    private static final String DELETE_DUPES = resource("database/delete_dupes.sql");
+    private static final String SELECT_LIQUIDITY_SUMMARY = resource("database/select_liquidity_summary.sql");
+    private static final String SELECT_PRICE_SUMMARY = resource("database/select_price_summary.sql");
 
     private final JdbcTemplate jdbcTemplate;
 
-    public DbPersister(final JdbcTemplate jdbcTemplate, final boolean deleteDupes) {
+    public DbPersister(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        jdbcTemplate.execute(CREATE);
-
-        if (deleteDupes) {
-            jdbcTemplate.execute(DELETE_DUPES);
-        }
+        this.execute("database/create.sql");
+        this.execute("database/create_index_1.sql");
+        this.execute("database/create_index_2.sql");
     }
 
     @Override
     public void persist(final LiquidityData liquidityData) {
+        final Stopwatch stopwatch = Stopwatch.createStarted();
         final List<Object[]> batchArgs = Lists.newArrayList();
         for (final LiquidityDatum datum : liquidityData.getLiquidityData()) {
             batchArgs.add(new Object[] {
@@ -55,11 +64,12 @@ public class DbPersister implements LiquidityDataPersister {
             });
         }
         jdbcTemplate.batchUpdate(INSERT, batchArgs);
+        LOGGER.info("persist took {}", stopwatch.stop());
     }
 
     @Override
     public Optional<LiquidityData> loadLatest() {
-        final List<LiquidityDatum> datums = jdbcTemplate.query(SELECT_LATEST, LIQUIDITY_DATUM_ROW_MAPPER);
+        final List<LiquidityDatum> datums = jdbcTemplate.query(SELECT_LATEST, LIQUIDITY_DATUM_MAPPER);
         if (!datums.isEmpty()) {
             final LiquidityData liquidityData = new LiquidityData();
             liquidityData.setUpdateTime(datums.get(0).getUpdateTime());
@@ -73,7 +83,7 @@ public class DbPersister implements LiquidityDataPersister {
     @Override
     public List<LiquidityData> loadHistory(final Instant threshold) {
         final List<LiquidityDatum> datums = jdbcTemplate.query(SELECT_SINCE,
-                new Object[] { Timestamp.from(threshold) }, LIQUIDITY_DATUM_ROW_MAPPER);
+                new Object[] { Timestamp.from(threshold) }, LIQUIDITY_DATUM_MAPPER);
 
         final Map<Instant, List<LiquidityDatum>> grouped =
                 new TreeMap<>(datums.stream().collect(Collectors.groupingBy(LiquidityDatum::getUpdateTime)));
@@ -88,8 +98,27 @@ public class DbPersister implements LiquidityDataPersister {
 
     @Override
     public List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold) {
-        return jdbcTemplate.query(SELECT_SUMMARY,
-                new Object[] { baseCcy, Timestamp.from(threshold) }, LIQUIDITY_SUMMARY_ROW_MAPPER);
+        final Stopwatch stopwatch = Stopwatch.createStarted();
+        final Object[] args = new Object[] { baseCcy, Timestamp.from(threshold) };
+
+        final List<LiquiditySummary> liquiditySummaries = jdbcTemplate.query(SELECT_LIQUIDITY_SUMMARY,
+                args, LIQUIDITY_SUMMARY_MAPPER);
+
+        final Map<Instant, LiquiditySummary> map = liquiditySummaries.stream()
+                .collect(Collectors.toMap(LiquiditySummary::getUpdateTime, Function.identity()));
+
+        final List<PriceSummary> prices = jdbcTemplate.query(SELECT_PRICE_SUMMARY,
+                args, PRICE_SUMMARY_MAPPER);
+
+        prices.forEach(price -> {
+            final LiquiditySummary summary = map.get(price.getUpdateTime());
+            if (summary != null) {
+                summary.setPrice(price.getMidBidAsk());
+            }
+        });
+
+        LOGGER.info("loadSummary took {}", stopwatch.stop());
+        return liquiditySummaries;
     }
 
     private static String resource(final String name) {
@@ -98,5 +127,12 @@ public class DbPersister implements LiquidityDataPersister {
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private void execute(final String scriptName) {
+        final Stopwatch stopwatch = Stopwatch.createStarted();
+        LOGGER.info("Executing {}", scriptName);
+        jdbcTemplate.execute(resource(scriptName));
+        LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());
     }
 }
