@@ -126,7 +126,7 @@ public class LiquidityCache {
     }
 
     private BigDecimal scale(final BigDecimal decimal) {
-        return decimal == null ? null : decimal.setScale(2, BigDecimal.ROUND_HALF_UP);
+        return decimal == null ? null : decimal.setScale(4, BigDecimal.ROUND_HALF_UP);
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
