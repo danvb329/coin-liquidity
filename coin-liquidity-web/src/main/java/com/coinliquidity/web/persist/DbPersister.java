@@ -3,7 +3,6 @@ package com.coinliquidity.web.persist;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
-import com.coinliquidity.web.model.PriceSummary;
 import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
@@ -28,7 +28,6 @@ public class DbPersister implements LiquidityDataPersister {
 
     private static final LiquidityDatumRowMapper LIQUIDITY_DATUM_MAPPER = new LiquidityDatumRowMapper();
     private static final LiquiditySummaryRowMapper LIQUIDITY_SUMMARY_MAPPER = new LiquiditySummaryRowMapper();
-    private static final PriceSummaryRowMapper PRICE_SUMMARY_MAPPER = new PriceSummaryRowMapper();
 
     private static final String INSERT = resource("database/insert.sql");
     private static final String SELECT_SINCE = resource("database/select_since.sql");
@@ -107,13 +106,12 @@ public class DbPersister implements LiquidityDataPersister {
         final Map<Instant, LiquiditySummary> map = liquiditySummaries.stream()
                 .collect(Collectors.toMap(LiquiditySummary::getUpdateTime, Function.identity()));
 
-        final List<PriceSummary> prices = jdbcTemplate.query(SELECT_PRICE_SUMMARY,
-                args, PRICE_SUMMARY_MAPPER);
-
-        prices.forEach(price -> {
-            final LiquiditySummary summary = map.get(price.getUpdateTime());
-            if (summary != null) {
-                summary.setPrice(price.getMidBidAsk());
+        jdbcTemplate.query(SELECT_PRICE_SUMMARY, args, rs -> {
+            final Instant runDate = rs.getTimestamp("run_date").toInstant();
+            final BigDecimal avgPrice = rs.getBigDecimal("avg_price");
+            final LiquiditySummary liquiditySummary = map.get(runDate);
+            if (liquiditySummary != null) {
+                liquiditySummary.setPrice(avgPrice);
             }
         });
 
