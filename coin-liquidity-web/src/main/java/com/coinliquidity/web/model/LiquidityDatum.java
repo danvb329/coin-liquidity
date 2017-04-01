@@ -105,7 +105,7 @@ public class LiquidityDatum {
                 ("ALT".equals(testCurrency) && !BTC.equals(currency));
     }
 
-    String getBaseCurrency() {
+    public String getBaseCurrency() {
         return currencyPair.getBaseCurrency();
     }
 

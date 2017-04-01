@@ -18,9 +18,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +28,7 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
 
-    private static final int THREHOLD_DAYS = 10;
+    private static final int THRESHOLD_DAYS = 1;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LiquidityCache.class);
 
@@ -47,7 +45,7 @@ public class LiquidityCache {
         this.downloadStatuses = new ArrayList<>();
 
 
-        final Instant threshold = Instant.now().minus(THREHOLD_DAYS, DAYS);
+        final Instant threshold = Instant.now().minus(THRESHOLD_DAYS, DAYS);
         this.liquidityDataHistory = dataPersister.loadHistory(threshold);
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
@@ -132,7 +130,7 @@ public class LiquidityCache {
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
-        final Instant threshold = Instant.now().minus(THREHOLD_DAYS, DAYS);
+        final Instant threshold = Instant.now().minus(THRESHOLD_DAYS, DAYS);
         liquidityDataHistory.add(liquidityData);
         liquidityDataHistory.removeIf(data -> data.getUpdateTime().isBefore(threshold));
     }
@@ -151,5 +149,11 @@ public class LiquidityCache {
 
     public List<LiquiditySummary> getLiquiditySummary(final String baseCcy, final Instant threshold) {
         return dataPersister.loadSummary(baseCcy, threshold);
+    }
+
+    public Set<String> getBaseCurrencies() {
+        return liquidityData.getLiquidityData().stream()
+                .map(LiquidityDatum::getBaseCurrency)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 }

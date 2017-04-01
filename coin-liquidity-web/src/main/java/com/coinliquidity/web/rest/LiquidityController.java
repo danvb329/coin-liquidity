@@ -78,6 +78,7 @@ public class LiquidityController {
                           final Model model) {
         model.addAttribute("baseCurrency", baseCurrency);
         model.addAttribute("days", days);
+        model.addAttribute("currencies", liquidityCache.getBaseCurrencies());
         return "summary";
     }
 
