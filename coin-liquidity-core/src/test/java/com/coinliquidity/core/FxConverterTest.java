@@ -1,5 +1,6 @@
 package com.coinliquidity.core;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -8,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 public class FxConverterTest {
 
+    @Ignore
     @Test
     public void test() {
         final FxConverter converter = new FxConverter("USD");
