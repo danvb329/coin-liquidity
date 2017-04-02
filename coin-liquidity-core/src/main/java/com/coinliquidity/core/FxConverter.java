@@ -2,6 +2,7 @@ package com.coinliquidity.core;
 
 import com.coinliquidity.core.util.HttpUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +17,7 @@ public class FxConverter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FxConverter.class);
 
-    private static final String URL = "http://api.fixer.io/latest?base=";
+    private static final String URL = "https://api.fixer.io/latest?base=";
     private static final String BTC_URL = "https://api.bitcoinaverage.com/ticker/";
 
     private final String baseCcy;
@@ -28,6 +29,7 @@ public class FxConverter {
     }
 
     private Map<String, BigDecimal> fetchRates() {
+        final Stopwatch stopwatch = Stopwatch.createStarted();
         final Map<String, BigDecimal> rates = new TreeMap<>();
 
         JsonNode tree = HttpUtil.get(URL + baseCcy);
@@ -41,7 +43,7 @@ public class FxConverter {
         tree = HttpUtil.get(BTC_URL + baseCcy);
         rates.put(BTC, inverse(new BigDecimal(tree.get("last").asText())));
 
-        LOGGER.info("FX rates: {}", rates);
+        LOGGER.info("FX rates: {}, took {}", rates, stopwatch);
 
         return rates;
     }
