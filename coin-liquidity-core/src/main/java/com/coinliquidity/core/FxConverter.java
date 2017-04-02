@@ -17,6 +17,7 @@ public class FxConverter {
     private static final Logger LOGGER = LoggerFactory.getLogger(FxConverter.class);
 
     private static final String URL = "http://api.fixer.io/latest?base=";
+    private static final String BTC_URL = "https://api.bitcoinaverage.com/ticker/";
 
     private final String baseCcy;
     private final Map<String, BigDecimal> rates;
@@ -37,7 +38,7 @@ public class FxConverter {
         }
 
         // add BTC rate
-        tree = HttpUtil.get("https://api.bitcoinaverage.com/ticker/USD/");
+        tree = HttpUtil.get(BTC_URL + baseCcy);
         rates.put(BTC, inverse(new BigDecimal(tree.get("last").asText())));
 
         LOGGER.info("FX rates: {}", rates);
@@ -64,6 +65,6 @@ public class FxConverter {
     }
 
     private BigDecimal inverse(final BigDecimal rate) {
-        return BigDecimal.ONE.divide(rate, 5, BigDecimal.ROUND_HALF_UP);
+        return BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_UP);
     }
 }
