@@ -3,9 +3,9 @@
 <head>
     <title>Status</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" href="/themes/blue/style.css" type="text/css" media="all"/>
-    <script type="text/javascript" src="/jquery-latest.js"></script>
-    <script type="text/javascript" src="/jquery.tablesorter.min.js"></script>
+    <link rel="stylesheet" href="https://coinliquidity.com/themes/blue/style.css" type="text/css" media="all"/>
+    <script type="text/javascript" src="https://coinliquidity.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="https://coinliquidity.com/jquery.tablesorter.min.js"></script>
 </head>
 <body>
 <h1>Status</h1>
@@ -18,7 +18,8 @@
         <th>Bids</th>
         <th>Asks</th>
         <th>Time Elapsed</th>
-        <th>Update Time</th>
+        <th>Last OK</th>
+        <th>Last ERROR</th>
     </tr>
     </thead>
     <tbody>
@@ -29,7 +30,8 @@
         <td th:text="${status.totalBids}">642</td>
         <td th:text="${status.totalAsks}">511</td>
         <td th:text="${status.timeElapsed}">1234</td>
-        <td th:text="${status.updateTime}">2:00</td>
+        <td th:text="${status.lastOk}">5 m</td>
+        <td th:text="${status.lastError}">20 h</td>
     </tr>
     </tbody>
 </table>

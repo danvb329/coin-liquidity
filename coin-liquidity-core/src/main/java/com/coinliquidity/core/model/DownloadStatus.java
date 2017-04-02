@@ -1,8 +1,13 @@
 package com.coinliquidity.core.model;
 
+import com.google.common.base.Stopwatch;
+
 import java.time.LocalDateTime;
 
 public class DownloadStatus {
+
+    public static final String OK = "OK";
+    public static final String ERROR = "ERROR";
 
     private String exchange;
     private CurrencyPair currencyPair;
@@ -12,6 +17,8 @@ public class DownloadStatus {
     private int totalBids;
     private long timeElapsed;
     private LocalDateTime updateTime;
+    private Stopwatch lastOk;
+    private Stopwatch lastError;
 
     public String getExchange() {
         return exchange;
@@ -33,7 +40,7 @@ public class DownloadStatus {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -75,5 +82,21 @@ public class DownloadStatus {
 
     public void setUpdateTime(LocalDateTime updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public void setLastOk(Stopwatch lastOk) {
+        this.lastOk = lastOk;
+    }
+
+    public Stopwatch getLastOk() {
+        return lastOk;
+    }
+
+    public void setLastError(Stopwatch lastError) {
+        this.lastError = lastError;
+    }
+
+    public Stopwatch getLastError() {
+        return lastError;
     }
 }

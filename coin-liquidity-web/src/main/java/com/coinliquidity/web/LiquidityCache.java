@@ -12,6 +12,7 @@ import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
+import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,6 +20,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -36,13 +38,13 @@ public class LiquidityCache {
     private final LiquidityDataPersister dataPersister;
 
     private LiquidityData liquidityData;
-    private List<DownloadStatus> downloadStatuses;
+    private Map<String, DownloadStatus> downloadStatuses;
     private List<LiquidityData> liquidityDataHistory;
 
     public LiquidityCache(final ExchangeConfig exchangeConfig, LiquidityDataPersister dataPersister) {
         this.exchangeConfig = exchangeConfig;
         this.dataPersister = dataPersister;
-        this.downloadStatuses = new ArrayList<>();
+        this.downloadStatuses = new ConcurrentSkipListMap<>();
 
 
         final Instant threshold = Instant.now().minus(THRESHOLD_DAYS, DAYS);
@@ -95,7 +97,28 @@ public class LiquidityCache {
 
         final List<DownloadStatus> statuses = new ArrayList<>();
         obds.forEach(obd -> statuses.addAll(obd.getDownloadStatuses()));
-        this.downloadStatuses = statuses;
+
+        final Stopwatch now = Stopwatch.createStarted();
+
+        statuses.forEach(status -> {
+            final String key = status.getExchange() + "_" + status.getCurrencyPair();
+            final DownloadStatus current = downloadStatuses.getOrDefault(key, status);
+
+            current.setSizeBytes(status.getSizeBytes());
+            current.setStatus(status.getStatus());
+            current.setTimeElapsed(status.getTimeElapsed());
+            current.setTotalAsks(status.getTotalAsks());
+            current.setTotalBids(status.getTotalBids());
+            current.setUpdateTime(status.getUpdateTime());
+
+            if (DownloadStatus.OK.equals(status.getStatus())) {
+                current.setLastOk(now);
+            } else if (DownloadStatus.ERROR.equals(status.getStatus())) {
+                current.setLastError(now);
+            }
+
+            downloadStatuses.put(key, current);
+        });
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks, final BigDecimal amount) {
@@ -139,8 +162,8 @@ public class LiquidityCache {
         return liquidityData;
     }
 
-    public List<DownloadStatus> getDownloadStatuses() {
-        return downloadStatuses;
+    public Collection<DownloadStatus> getDownloadStatuses() {
+        return downloadStatuses.values();
     }
 
     public List<LiquidityData> getLiquidityDataHistory() {

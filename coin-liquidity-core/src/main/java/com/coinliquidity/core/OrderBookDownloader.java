@@ -40,7 +40,7 @@ public class OrderBookDownloader implements Runnable {
             }
             final Stopwatch stopwatch = Stopwatch.createStarted();
             final OrderBook orderBook = downloadOrderBook(currencyPair);
-            LOGGER.info("Download for {} {} took {}", exchange, currencyPair, stopwatch.stop());
+            LOGGER.debug("Download for {} {} took {}", exchange, currencyPair, stopwatch.stop());
             final long elapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
 
             final DownloadStatus downloadStatus = new DownloadStatus();
@@ -51,11 +51,11 @@ public class OrderBookDownloader implements Runnable {
 
             if (orderBook != null) {
                 orderBooks.add(orderBook);
-                downloadStatus.setStatus("OK");
+                downloadStatus.setStatus(DownloadStatus.OK);
                 downloadStatus.setTotalAsks(orderBook.getAsks().size());
                 downloadStatus.setTotalBids(orderBook.getBids().size());
             } else {
-                downloadStatus.setStatus("ERROR");
+                downloadStatus.setStatus(DownloadStatus.ERROR);
             }
 
             downloadStatuses.add(downloadStatus);
