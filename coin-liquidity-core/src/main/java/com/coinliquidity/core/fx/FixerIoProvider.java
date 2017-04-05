@@ -35,22 +35,26 @@ public class FixerIoProvider implements FxProvider {
 
     @Override
     public void refresh() {
-        final Map<String, BigDecimal> rates = new TreeMap<>();
+        try {
+            final Map<String, BigDecimal> rates = new TreeMap<>();
 
-        final JsonNode tree = HttpUtil.get(url);
-        final String dateStr = tree.get("date").asText();
-        final LocalDate currentDate = LocalDate.parse(dateStr);
+            final JsonNode tree = HttpUtil.get(url);
+            final String dateStr = tree.get("date").asText();
+            final LocalDate currentDate = LocalDate.parse(dateStr);
 
-        if (!currentDate.equals(dataDate)) {
-            LOGGER.info("Rates updated for {}", currentDate);
-            final Iterator<Map.Entry<String, JsonNode>> it = tree.get("rates").fields();
-            while (it.hasNext()) {
-                final Map.Entry<String, JsonNode> entry = it.next();
-                rates.put(entry.getKey(), new BigDecimal(entry.getValue().asText()));
+            if (!currentDate.equals(dataDate)) {
+                LOGGER.info("Rates updated for {}", currentDate);
+                final Iterator<Map.Entry<String, JsonNode>> it = tree.get("rates").fields();
+                while (it.hasNext()) {
+                    final Map.Entry<String, JsonNode> entry = it.next();
+                    rates.put(entry.getKey(), new BigDecimal(entry.getValue().asText()));
+                }
+
+                fxRates = new FxRates(baseCcy, Instant.now(), rates);
+                dataDate = currentDate;
             }
-
-            fxRates = new FxRates(baseCcy, Instant.now(), rates);
-            dataDate = currentDate;
+        } catch (final Exception e) {
+            LOGGER.warn("Could not refresh, current rates as of {}", dataDate);
         }
     }
 
