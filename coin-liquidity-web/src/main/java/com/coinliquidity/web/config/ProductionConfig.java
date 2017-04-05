@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Profile;
 public class ProductionConfig {
     @Bean
     public ExchangeConfig exchangeConfig() {
-        return new ExchangeConfig("https://raw.githubusercontent.com/coin-liquidity/coin-liquidity-config/master/exchange-local.json");
+        return new ExchangeConfig("https://raw.githubusercontent.com/coin-liquidity/coin-liquidity-config/master/exchange.json");
     }
 }
