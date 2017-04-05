@@ -19,7 +19,8 @@
         <th>Asks</th>
         <th>Time Elapsed</th>
         <th>Last OK</th>
-        <th>Last ERROR</th>
+        <th>Last Error</th>
+        <th>Last Error Msg</th>
     </tr>
     </thead>
     <tbody>
@@ -32,6 +33,7 @@
         <td th:text="${status.timeElapsed}">1234</td>
         <td th:text="${status.lastOk}">5 m</td>
         <td th:text="${status.lastError}">20 h</td>
+        <td th:text="${status.lastErrorMessage}">Read timed out</td>
     </tr>
     </tbody>
 </table>

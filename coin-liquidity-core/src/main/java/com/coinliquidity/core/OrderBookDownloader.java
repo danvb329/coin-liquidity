@@ -38,52 +38,59 @@ public class OrderBookDownloader implements Runnable {
             if (currencyPair.isDisabled()) {
                 continue;
             }
+
             final Stopwatch stopwatch = Stopwatch.createStarted();
-            final OrderBook orderBook = downloadOrderBook(currencyPair);
-            LOGGER.debug("Download for {} {} took {}", exchange, currencyPair, stopwatch.stop());
-            final long elapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+            final DownloadStatus downloadStatus = initDownloadStatus(currencyPair);
 
-            final DownloadStatus downloadStatus = new DownloadStatus();
-            downloadStatus.setCurrencyPair(currencyPair);
-            downloadStatus.setExchange(exchange.getName());
-            downloadStatus.setUpdateTime(LocalDateTime.now());
-            downloadStatus.setTimeElapsed(elapsed);
-
-            if (orderBook != null) {
+            final String ccyUrl = ccyUrl(currencyPair);
+            try {
+                final OrderBook orderBook = downloadOrderBook(ccyUrl, currencyPair);
                 orderBooks.add(orderBook);
+
                 downloadStatus.setStatus(DownloadStatus.OK);
                 downloadStatus.setTotalAsks(orderBook.getAsks().size());
                 downloadStatus.setTotalBids(orderBook.getBids().size());
-            } else {
+            } catch (final Exception e) {
+                LOGGER.error("Error processing {}_{}, URL {}", exchange.getName(), currencyPair, ccyUrl, e);
+
                 downloadStatus.setStatus(DownloadStatus.ERROR);
+                downloadStatus.setLastErrorMessage(e.getMessage());
             }
 
-            downloadStatuses.add(downloadStatus);
+            LOGGER.debug("Download for {} {} took {}", exchange, currencyPair, stopwatch.stop());
+            final long elapsed = stopwatch.elapsed(TimeUnit.MILLISECONDS);
+
+            downloadStatus.setTimeElapsed(elapsed);
 
             if (elapsed < maxRate) {
                 LOGGER.debug("Too fast, sleeping for {} ms", maxRate - elapsed);
                 sleep(maxRate - elapsed);
             }
-
         }
     }
 
-    private OrderBook downloadOrderBook(final CurrencyPair currencyPair) {
+    private DownloadStatus initDownloadStatus(final CurrencyPair currencyPair) {
+        final DownloadStatus downloadStatus = new DownloadStatus();
+        downloadStatus.setCurrencyPair(currencyPair);
+        downloadStatus.setExchange(exchange.getName());
+        downloadStatus.setUpdateTime(LocalDateTime.now());
+        downloadStatuses.add(downloadStatus);
+        return downloadStatus;
+    }
+
+    private OrderBook downloadOrderBook(final String ccyUrl, final CurrencyPair currencyPair) {
+        final JsonNode tree = HttpUtil.get(ccyUrl);
+        return exchange.getParser().parse(exchange.getName(), currencyPair.normalize(), tree);
+    }
+
+    private String ccyUrl(final CurrencyPair currencyPair) {
         final String base = currencyPair.getBaseCurrency();
         final String quote = currencyPair.getQuoteCurrency();
-        final String ccyUrl = exchange.getUrl()
+        return exchange.getUrl()
                 .replaceAll("<BASE>", base.toUpperCase())
                 .replaceAll("<base>", base.toLowerCase())
                 .replaceAll("<QUOTE>", quote.toUpperCase())
                 .replaceAll("<quote>", quote.toLowerCase());
-
-        try {
-            final JsonNode tree = HttpUtil.get(ccyUrl);
-            return exchange.getParser().parse(exchange.getName(), currencyPair.normalize(), tree);
-        } catch (final Exception e) {
-            LOGGER.error("Error processing {}_{}, URL {}", exchange.getName(), currencyPair, ccyUrl, e);
-            return null;
-        }
     }
 
     private void sleep(final long millis) {

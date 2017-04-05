@@ -119,6 +119,7 @@ public class LiquidityCache {
                 current.setLastOk(now);
             } else if (DownloadStatus.ERROR.equals(status.getStatus())) {
                 current.setLastError(now);
+                current.setLastErrorMessage(status.getLastErrorMessage());
             }
 
             downloadStatuses.put(key, current);
