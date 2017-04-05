@@ -2,7 +2,9 @@ package com.coinliquidity.core.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.Maps;
 
+import java.util.Map;
 import java.util.Objects;
 
 @JsonDeserialize(using = CurrencyPairDeserializer.class)
@@ -10,6 +12,16 @@ import java.util.Objects;
 public class CurrencyPair {
 
     public static final String BTC = "BTC";
+
+    private static final Map<String, String> CCY_NORMALIZATION;
+
+    static {
+        CCY_NORMALIZATION = Maps.newHashMap();
+        CCY_NORMALIZATION.put("XBT", BTC);
+        CCY_NORMALIZATION.put("RUR", "RUB");
+        CCY_NORMALIZATION.put("USDT", "USD");
+        CCY_NORMALIZATION.put("DSH", "DASH");
+    }
 
     private final String baseCurrency;
     private final String quoteCurrency;
@@ -36,16 +48,7 @@ public class CurrencyPair {
     }
 
     private String normalize(final String currency) {
-        switch(currency) {
-            case "XBT":
-                return BTC;
-            case "RUR":
-                return "RUB";
-            case "USDT":
-                return "USD";
-            default:
-                return currency;
-        }
+        return CCY_NORMALIZATION.getOrDefault(currency, currency);
     }
 
     public boolean isDisabled() {
