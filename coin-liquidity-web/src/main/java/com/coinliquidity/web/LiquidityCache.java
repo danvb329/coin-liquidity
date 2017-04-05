@@ -63,7 +63,7 @@ public class LiquidityCache {
         }
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     private void refresh() {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
