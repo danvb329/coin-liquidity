@@ -1,6 +1,6 @@
 package com.coinliquidity.core.model;
 
-import com.coinliquidity.core.FxConverter;
+import com.coinliquidity.core.fx.FxRates;
 
 import java.math.BigDecimal;
 import java.util.Objects;
@@ -34,12 +34,12 @@ public class OrderBook {
         return originalCurrencyPair;
     }
 
-    public void convert(final FxConverter fxConverter) {
-        if (!fxConverter.getBaseCcy().equals(currencyPair.getQuoteCurrency())) {
-            final BigDecimal rate = fxConverter.getRate(currencyPair.getQuoteCurrency());
+    public void convert(final FxRates fxRates) {
+        if (!fxRates.getBaseCcy().equals(currencyPair.getQuoteCurrency())) {
+            final BigDecimal rate = fxRates.getRate(currencyPair.getQuoteCurrency());
             bids.convert(rate);
             asks.convert(rate);
-            this.currencyPair = new CurrencyPair(currencyPair.getBaseCurrency(), fxConverter.getBaseCcy());
+            this.currencyPair = new CurrencyPair(currencyPair.getBaseCurrency(), fxRates.getBaseCcy());
         }
     }
 

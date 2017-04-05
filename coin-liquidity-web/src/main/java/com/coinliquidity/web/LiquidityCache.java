@@ -1,10 +1,10 @@
 package com.coinliquidity.web;
 
 import com.coinliquidity.core.ExchangeConfig;
-import com.coinliquidity.core.FxConverter;
 import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.analyzer.TotalAnalyzer;
+import com.coinliquidity.core.fx.FxRates;
 import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
@@ -36,13 +36,17 @@ public class LiquidityCache {
 
     private final ExchangeConfig exchangeConfig;
     private final LiquidityDataPersister dataPersister;
+    private final FxCache fxCache;
 
     private LiquidityData liquidityData;
     private Map<String, DownloadStatus> downloadStatuses;
     private List<LiquidityData> liquidityDataHistory;
 
-    public LiquidityCache(final ExchangeConfig exchangeConfig, LiquidityDataPersister dataPersister) {
+    public LiquidityCache(final ExchangeConfig exchangeConfig,
+                          final FxCache fxCache,
+                          final LiquidityDataPersister dataPersister) {
         this.exchangeConfig = exchangeConfig;
+        this.fxCache = fxCache;
         this.dataPersister = dataPersister;
         this.downloadStatuses = new ConcurrentSkipListMap<>();
 
@@ -59,7 +63,7 @@ public class LiquidityCache {
         }
     }
 
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     private void refresh() {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
@@ -88,8 +92,8 @@ public class LiquidityCache {
         final List<OrderBook> orderBooks = new ArrayList<>();
         obds.forEach(obd -> orderBooks.addAll(obd.getOrderBooks()));
 
-        final FxConverter fxConverter = new FxConverter("USD");
-        orderBooks.forEach(orderBook -> orderBook.convert(fxConverter));
+        final FxRates fxRates = fxCache.getRates();
+        orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
 
         this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
         dataPersister.persist(this.liquidityData);

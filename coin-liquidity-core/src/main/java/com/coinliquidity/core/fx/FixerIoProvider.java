@@ -1,0 +1,60 @@
+package com.coinliquidity.core.fx;
+
+import com.coinliquidity.core.util.HttpUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class FixerIoProvider implements FxProvider {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FixerIoProvider.class);
+
+    private final String baseCcy;
+    private final String url;
+
+    private LocalDate dataDate;
+    private FxRates fxRates;
+
+    public FixerIoProvider(final String baseCcy) {
+        this.baseCcy = baseCcy;
+        this.url = "https://api.fixer.io/latest?base=" + baseCcy;
+        this.refresh();
+    }
+
+    @Override
+    public FxRates getRates() {
+        return fxRates;
+    }
+
+    @Override
+    public void refresh() {
+        final Map<String, BigDecimal> rates = new TreeMap<>();
+
+        final JsonNode tree = HttpUtil.get(url);
+        final String dateStr = tree.get("date").asText();
+        final LocalDate currentDate = LocalDate.parse(dateStr);
+
+        if (!currentDate.equals(dataDate)) {
+            LOGGER.info("Rates updated for {}", currentDate);
+            final Iterator<Map.Entry<String, JsonNode>> it = tree.get("rates").fields();
+            while (it.hasNext()) {
+                final Map.Entry<String, JsonNode> entry = it.next();
+                rates.put(entry.getKey(), new BigDecimal(entry.getValue().asText()));
+            }
+
+            fxRates = new FxRates(baseCcy, Instant.now(), rates);
+            dataDate = currentDate;
+        }
+    }
+
+    LocalDate getDataDate() {
+        return dataDate;
+    }
+}

@@ -1,0 +1,32 @@
+{
+  "exchangeList": [
+    {
+      "name": "gdax.com",
+      "url": "https://api.gdax.com/products/<BASE>-<QUOTE>/book?level=3",
+      "currencies": [
+        "BTC/USD",
+        "BTC/EUR",
+        "BTC/GBP",
+        "ETH/USD",
+        "ETH/BTC",
+        "LTC/USD",
+        "LTC/BTC"
+      ],
+      "parserType": "ARRAY",
+      "rateLimit": 3,
+      "docUrl": "https://docs.gdax.com/#get-product-order-book"
+    },
+    {
+      "name": "gemini.com",
+      "url": "https://api.gemini.com/v1/book/<base><quote>?limit_bids=0&limit_asks=0",
+      "currencies": [
+        "BTC/USD",
+        "ETH/BTC",
+        "ETH/USD"
+      ],
+      "parserType": "LABELED",
+      "rateLimit": 1,
+      "docUrl": "https://docs.gemini.com/rest-api/#current-order-book"
+    }
+  ]
+}

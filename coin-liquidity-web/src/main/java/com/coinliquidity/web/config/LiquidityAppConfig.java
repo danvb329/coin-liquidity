@@ -1,6 +1,10 @@
 package com.coinliquidity.web.config;
 
 import com.coinliquidity.core.ExchangeConfig;
+import com.coinliquidity.core.fx.BitcoinAverageProvider;
+import com.coinliquidity.core.fx.FixerIoProvider;
+import com.coinliquidity.core.fx.FxProvider;
+import com.coinliquidity.web.FxCache;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.persist.DbPersister;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
@@ -9,12 +13,15 @@ import com.coinliquidity.web.rest.LiquidityController;
 import com.coinliquidity.web.rest.StatusController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
-@Profile("production")
 public class LiquidityAppConfig {
+
+    private static final String BASE_CCY = "USD";
 
     @Bean
     public LiquidityController liquidityController(final LiquidityCache liquidityCache) {
@@ -33,17 +40,21 @@ public class LiquidityAppConfig {
 
     @Bean
     public LiquidityCache liquidityCache(final ExchangeConfig exchangeConfig,
+                                         final FxCache fxCache,
                                          final LiquidityDataPersister liquidityDataPersister) {
-        return new LiquidityCache(exchangeConfig, liquidityDataPersister);
+        return new LiquidityCache(exchangeConfig, fxCache, liquidityDataPersister);
+    }
+
+    @Bean
+    public FxCache fxCache() {
+        final List<FxProvider> fxProviders = new ArrayList<>();
+        fxProviders.add(new FixerIoProvider(BASE_CCY));
+        fxProviders.add(new BitcoinAverageProvider(BASE_CCY));
+        return new FxCache(fxProviders);
     }
 
     @Bean
     public LiquidityDataPersister liquidityDataPersister(final JdbcTemplate jdbcTemplate) {
         return new DbPersister(jdbcTemplate);
-    }
-
-    @Bean
-    public ExchangeConfig exchangeConfig() {
-        return new ExchangeConfig("https://raw.githubusercontent.com/coin-liquidity/coin-liquidity-config/master/exchange.json");
     }
 }
