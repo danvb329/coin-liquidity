@@ -1,1 +1,0 @@
-DELETE FROM liquidity_history WHERE base_ccy = 'DASH' AND exchange = 'hitbtc.com' AND run_date < 1491418218037
