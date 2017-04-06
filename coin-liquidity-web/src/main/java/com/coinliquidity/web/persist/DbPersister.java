@@ -7,6 +7,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import com.google.common.io.Resources;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -41,6 +42,7 @@ public class DbPersister implements LiquidityDataPersister {
         this.jdbcTemplate = jdbcTemplate;
         this.execute("database/create.sql");
         this.execute("database/create_index.sql");
+        this.execute("database/execute.sql");
     }
 
     @Override
@@ -127,9 +129,15 @@ public class DbPersister implements LiquidityDataPersister {
     }
 
     private void execute(final String scriptName) {
-        final Stopwatch stopwatch = Stopwatch.createStarted();
-        LOGGER.info("Executing {}", scriptName);
-        jdbcTemplate.execute(resource(scriptName));
-        LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());
+        final String sql = resource(scriptName);
+
+        if (StringUtils.isNotBlank(sql)) {
+            final Stopwatch stopwatch = Stopwatch.createStarted();
+            LOGGER.info("Executing {}", scriptName);
+            jdbcTemplate.execute(sql);
+            LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());
+        } else {
+            LOGGER.info("Nothing to execute in {}", scriptName);
+        }
     }
 }
