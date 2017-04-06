@@ -32,6 +32,8 @@ public class DataController {
     @ResponseBody
     public Map<String, List<Object[]>> summary(@PathVariable("baseCurrency") final String baseCurrency,
                                                @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days) {
+        cache.validateBaseCcy(baseCurrency);
+
         final List<LiquiditySummary> summaries = cache.getLiquiditySummary(
                 baseCurrency,
                 Instant.now().minus(days, DAYS));

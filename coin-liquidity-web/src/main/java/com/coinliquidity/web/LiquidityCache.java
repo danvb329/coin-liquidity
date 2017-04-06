@@ -184,4 +184,10 @@ public class LiquidityCache {
                 .map(LiquidityDatum::getBaseCurrency)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
+
+    public void validateBaseCcy(final String baseCcy) {
+        if (!getBaseCurrencies().contains(baseCcy)) {
+            throw new IllegalFilterException("Invalid base currency");
+        }
+    }
 }

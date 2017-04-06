@@ -17,15 +17,15 @@ import java.util.stream.Collectors;
 @RequestMapping("/liquidity/view")
 public class LiquidityController {
 
-    private final LiquidityCache liquidityCache;
+    private final LiquidityCache cache;
 
-    public LiquidityController(final LiquidityCache liquidityCache) {
-        this.liquidityCache = liquidityCache;
+    public LiquidityController(final LiquidityCache cache) {
+        this.cache = cache;
     }
 
     @RequestMapping("")
     public String viewAll(final Model model) {
-        return liquidity(liquidityCache.getLiquidityData(), "All Pairs", model);
+        return liquidity(cache.getLiquidityData(), "All Pairs", model);
     }
 
     @RequestMapping("/currency/{baseCurrency}/{quoteCurrency}")
@@ -33,14 +33,14 @@ public class LiquidityController {
                                      @PathVariable("quoteCurrency") final String quoteCurrency,
                                      final Model model) {
         final String currencyPair = baseCurrency + "/" + quoteCurrency;
-        return liquidity(liquidityCache.getLiquidityData()
+        return liquidity(cache.getLiquidityData()
                 .filter(baseCurrency, quoteCurrency), "Pair: " + currencyPair, model);
     }
 
     @RequestMapping("/exchange/{exchange:.+}")
     public String viewByExchange(@PathVariable("exchange") final String exchange,
                                  final Model model) {
-        return liquidity(liquidityCache.getLiquidityData()
+        return liquidity(cache.getLiquidityData()
                 .filter(exchange), "Exchange: " + exchange, model);
     }
 
@@ -49,7 +49,7 @@ public class LiquidityController {
                           @PathVariable("baseCurrency") final String baseCurrency,
                           @PathVariable("quoteCurrency") final String quoteCurrency,
                           final Model model) {
-        final List<LiquidityData> history = liquidityCache.getLiquidityDataHistory();
+        final List<LiquidityData> history = cache.getLiquidityDataHistory();
         final List<LiquidityDatum> datums = new ArrayList<>();
         for (final LiquidityData liquidityData : history) {
             final List<LiquidityDatum> temp = liquidityData.getLiquidityData().stream()
@@ -76,9 +76,11 @@ public class LiquidityController {
     public String summary(@PathVariable("baseCurrency") final String baseCurrency,
                           @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
                           final Model model) {
+        cache.validateBaseCcy(baseCurrency);
+
         model.addAttribute("baseCurrency", baseCurrency);
         model.addAttribute("days", days);
-        model.addAttribute("currencies", liquidityCache.getBaseCurrencies());
+        model.addAttribute("currencies", cache.getBaseCurrencies());
         return "summary";
     }
 
