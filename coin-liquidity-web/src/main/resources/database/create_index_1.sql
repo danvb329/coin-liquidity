@@ -1,1 +1,0 @@
-DROP INDEX IF EXISTS run_date_idx;
