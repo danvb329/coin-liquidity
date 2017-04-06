@@ -23,6 +23,8 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.coinliquidity.web.DecimalUtils.avgPrice;
+
 public class DbPersister implements LiquidityDataPersister {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DbPersister.class);
@@ -109,10 +111,12 @@ public class DbPersister implements LiquidityDataPersister {
 
         jdbcTemplate.query(SELECT_PRICE_SUMMARY, args, rs -> {
             final Instant runDate = rs.getTimestamp("run_date").toInstant();
-            final BigDecimal avgPrice = rs.getBigDecimal("avg_price");
+            final BigDecimal avgBid = rs.getBigDecimal("avg_bid");
+            final BigDecimal avgAsk = rs.getBigDecimal("avg_ask");
+
             final LiquiditySummary liquiditySummary = map.get(runDate);
             if (liquiditySummary != null) {
-                liquiditySummary.setPrice(avgPrice);
+                liquiditySummary.setPrice(avgPrice(avgBid, avgAsk));
             }
         });
 

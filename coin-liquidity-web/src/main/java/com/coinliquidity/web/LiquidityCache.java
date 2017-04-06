@@ -26,6 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static com.coinliquidity.web.DecimalUtils.scalePrice;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
@@ -140,8 +141,8 @@ public class LiquidityCache {
             datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
             datum.setBuyCost(slippageAnalyzer.getBuyCost());
             datum.setSellCost(slippageAnalyzer.getSellCost());
-            datum.setBestAsk(scale(slippageAnalyzer.getBestAsk()));
-            datum.setBestBid(scale(slippageAnalyzer.getBestBid()));
+            datum.setBestAsk(scalePrice(slippageAnalyzer.getBestAsk()));
+            datum.setBestBid(scalePrice(slippageAnalyzer.getBestBid()));
             datum.setTotalBids(totalAnalyzer.getTotalBids());
             datum.setTotalAsks(totalAnalyzer.getTotalAsks());
             dataList.add(datum);
@@ -151,10 +152,6 @@ public class LiquidityCache {
         liquidityData.setLiquidityData(dataList);
         liquidityData.setUpdateTime(Instant.now());
         return liquidityData;
-    }
-
-    private BigDecimal scale(final BigDecimal decimal) {
-        return decimal == null ? null : decimal.setScale(4, BigDecimal.ROUND_HALF_UP);
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
