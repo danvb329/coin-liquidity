@@ -4,7 +4,7 @@ import com.coinliquidity.core.Parser;
 import com.coinliquidity.core.parsers.ArrayParser;
 import com.coinliquidity.core.parsers.LabeledParser;
 
-enum ParserType {
+public enum ParserType {
 
     ARRAY(new ArrayParser()),
     LABELED(new LabeledParser())

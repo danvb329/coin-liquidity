@@ -106,7 +106,7 @@ public class LiquidityCache {
         final Stopwatch now = Stopwatch.createStarted();
 
         statuses.forEach(status -> {
-            final String key = status.getExchange() + "_" + status.getCurrencyPair();
+            final String key = status.getExchange().getName() + "_" + status.getCurrencyPair();
             final DownloadStatus current = downloadStatuses.getOrDefault(key, status);
 
             current.setSizeBytes(status.getSizeBytes());

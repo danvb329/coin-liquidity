@@ -2,7 +2,7 @@
   "exchangeList": [
     {
       "name": "poloniex.com",
-      "url": "https://poloniex.com/public?command=returnOrderBook&currencyPair=<QUOTE>_<BASE>&depth=9999",
+      "url": "https://poloniex.com/public?command=returnOrderBook&currencyPair=<QUOTE>_<BASE>&depth=<MAX_DEPTH>",
       "currencies": [
         "XMR/BTC",
         "ETH/BTC",
@@ -18,6 +18,7 @@
       ],
       "parserType": "ARRAY",
       "rateLimit": 6,
+      "maxDepth": 9999,
       "docUrl": "https://poloniex.com/support/api/"
     }
   ]

@@ -14,10 +14,11 @@
     <tr>
         <th>Exchange</th>
         <th>Pair</th>
-        <th>Status</th>
+        <th>Max Depth</th>
         <th>Bids</th>
         <th>Asks</th>
-        <th>Time Elapsed</th>
+        <th>Dl Ms</th>
+        <th>Status</th>
         <th>Last OK</th>
         <th>Last Error</th>
         <th>Last Error Msg</th>
@@ -25,12 +26,16 @@
     </thead>
     <tbody>
     <tr th:each="status : ${statuses}">
-        <td th:text="${status.exchange}">gdax.com</td>
-        <td th:text="${status.currencyPair}">BTC/USD</td>
-        <td th:text="${status.status}">OK</td>
+        <td th:text="${status.exchange.name}">gdax.com</td>
+        <td>
+            <a th:text="${status.currencyPair}" th:href="${status.orderBookUrl}" >BTC/USD</a>
+        </td>
+        <td th:text="${status.exchange.maxDepth}">2000</td>
         <td th:text="${status.totalBids}">642</td>
         <td th:text="${status.totalAsks}">511</td>
         <td th:text="${status.timeElapsed}">1234</td>
+
+        <td th:text="${status.status}">OK</td>
         <td th:text="${status.lastOk}">5 m</td>
         <td th:text="${status.lastError}">20 h</td>
         <td th:text="${status.lastErrorMessage}">Read timed out</td>

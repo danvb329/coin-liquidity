@@ -33,25 +33,25 @@ public class OrderBookDownloader implements Runnable {
     public void run() {
         int maxRate = (1000 / exchange.getRateLimit()) + 1;
 
-        for (final CurrencyPair currencyPair : exchange.getCurrencyPairs()) {
+        for (final CurrencyPair currencyPair : exchange.getCurrencies()) {
             // skip disabled currencies
             if (currencyPair.isDisabled()) {
                 continue;
             }
 
             final Stopwatch stopwatch = Stopwatch.createStarted();
-            final DownloadStatus downloadStatus = initDownloadStatus(currencyPair);
+            final String orderBookUrl = orderBookUrl(currencyPair);
+            final DownloadStatus downloadStatus = initDownloadStatus(currencyPair, orderBookUrl);
 
-            final String ccyUrl = ccyUrl(currencyPair);
             try {
-                final OrderBook orderBook = downloadOrderBook(ccyUrl, currencyPair);
+                final OrderBook orderBook = downloadOrderBook(orderBookUrl, currencyPair);
                 orderBooks.add(orderBook);
 
                 downloadStatus.setStatus(DownloadStatus.OK);
                 downloadStatus.setTotalAsks(orderBook.getAsks().size());
                 downloadStatus.setTotalBids(orderBook.getBids().size());
             } catch (final Exception e) {
-                LOGGER.error("Error processing {}_{}, URL {}", exchange.getName(), currencyPair, ccyUrl, e);
+                LOGGER.error("Error processing {}_{}, URL {}", exchange.getName(), currencyPair, orderBookUrl, e);
 
                 downloadStatus.setStatus(DownloadStatus.ERROR);
                 downloadStatus.setLastErrorMessage(e.getMessage());
@@ -69,28 +69,31 @@ public class OrderBookDownloader implements Runnable {
         }
     }
 
-    private DownloadStatus initDownloadStatus(final CurrencyPair currencyPair) {
+    private DownloadStatus initDownloadStatus(final CurrencyPair currencyPair, final String orderBookUrl) {
         final DownloadStatus downloadStatus = new DownloadStatus();
         downloadStatus.setCurrencyPair(currencyPair);
-        downloadStatus.setExchange(exchange.getName());
+        downloadStatus.setExchange(exchange);
         downloadStatus.setUpdateTime(LocalDateTime.now());
+        downloadStatus.setOrderBookUrl(orderBookUrl);
         downloadStatuses.add(downloadStatus);
         return downloadStatus;
     }
 
     private OrderBook downloadOrderBook(final String ccyUrl, final CurrencyPair currencyPair) {
         final JsonNode tree = HttpUtil.get(ccyUrl);
-        return exchange.getParser().parse(exchange.getName(), currencyPair.normalize(), tree);
+        return exchange.getParserType().getParser()
+                .parse(exchange.getName(), currencyPair.normalize(), tree);
     }
 
-    private String ccyUrl(final CurrencyPair currencyPair) {
+    private String orderBookUrl(final CurrencyPair currencyPair) {
         final String base = currencyPair.getBaseCurrency();
         final String quote = currencyPair.getQuoteCurrency();
         return exchange.getUrl()
                 .replaceAll("<BASE>", base.toUpperCase())
                 .replaceAll("<base>", base.toLowerCase())
                 .replaceAll("<QUOTE>", quote.toUpperCase())
-                .replaceAll("<quote>", quote.toLowerCase());
+                .replaceAll("<quote>", quote.toLowerCase())
+                .replaceAll("<MAX_DEPTH>", String.valueOf(exchange.getMaxDepth()));
     }
 
     private void sleep(final long millis) {

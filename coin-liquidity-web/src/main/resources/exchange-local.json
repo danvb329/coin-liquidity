@@ -18,7 +18,7 @@
     },
     {
       "name": "gemini.com",
-      "url": "https://api.gemini.com/v1/book/<base><quote>?limit_bids=0&limit_asks=0",
+      "url": "https://api.gemini.com/v1/book/<base><quote>?limit_bids=<MAX_DEPTH>&limit_asks=<MAX_DEPTH>",
       "currencies": [
         "BTC/USD",
         "ETH/BTC",
@@ -26,6 +26,7 @@
       ],
       "parserType": "LABELED",
       "rateLimit": 1,
+      "maxDepth": 0,
       "docUrl": "https://docs.gemini.com/rest-api/#current-order-book"
     }
   ]

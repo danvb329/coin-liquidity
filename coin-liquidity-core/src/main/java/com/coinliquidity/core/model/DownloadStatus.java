@@ -11,8 +11,9 @@ public class DownloadStatus {
     public static final String OK = "OK";
     public static final String ERROR = "ERROR";
 
-    private String exchange;
+    private Exchange exchange;
     private CurrencyPair currencyPair;
+    private String orderBookUrl;
     private String status;
     private int sizeBytes;
     private int totalAsks;
