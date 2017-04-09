@@ -1,8 +1,9 @@
 SELECT
 run_date,
-sum(total_bids_usd) as total_bids_usd,
-sum(total_asks) as total_asks
+SUM(total_bids_usd) AS total_bids_usd,
+SUM(total_asks) AS total_asks
 FROM liquidity_history
-WHERE base_ccy = ? and run_date > ?
+WHERE base_ccy = ? AND run_date > ?
+AND (0 = ? OR exchange = ?)
 GROUP BY run_date
 ORDER BY run_date

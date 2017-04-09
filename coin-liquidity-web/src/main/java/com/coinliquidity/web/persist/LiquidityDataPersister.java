@@ -15,5 +15,5 @@ public interface LiquidityDataPersister {
 
     List<LiquidityData> loadHistory(final Instant threshold);
 
-    List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold);
+    List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold, final String exchange);
 }

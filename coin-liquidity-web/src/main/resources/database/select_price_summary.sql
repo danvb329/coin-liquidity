@@ -4,5 +4,8 @@ SELECT
     AVG(best_ask) AS avg_ask
 FROM liquidity_history
 WHERE base_ccy = ? AND run_date > ?
-AND exchange IN ('gdax.com', 'gemini.com', 'poloniex.com', 'bitfinex.com', 'bitstamp.net')
+AND (
+(0 = ? AND exchange IN ('gdax.com', 'gemini.com', 'poloniex.com', 'bitfinex.com', 'bitstamp.net'))
+OR (exchange = ?)
+)
 GROUP BY run_date

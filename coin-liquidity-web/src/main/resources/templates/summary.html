@@ -15,7 +15,7 @@
     <button onclick="showCcyDropdown()" class="dropbtn">Currencies</button>
     <div id="ccyDropdown" class="dropdown-content">
         <a th:each="currency : ${currencies}"
-           th:href="'/liquidity/view/summary/' + ${currency} + '?days=' + ${days}"
+           th:href="@{/liquidity/view/summary/{ccy}(ccy=${currency},days=${days},exchange=${exchange})}"
            th:text="${currency}">BTC</a>
     </div>
 </div>
@@ -25,9 +25,8 @@
 /*<![CDATA[*/
 var baseCurrency = /*[[${baseCurrency}]]*/ 'BTC';
 var days = /*[[${days}]]*/ 10;
+var url = /*[[@{/liquidity/data/summary/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange})}]]*/ 'xyz';
 /*]]>*/
-
-var url = '/liquidity/data/summary/' + baseCurrency + '?days=' + days;
 
 // colors
 var bidColor = 'Green'

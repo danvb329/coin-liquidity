@@ -172,8 +172,10 @@ public class LiquidityCache {
         return liquidityDataHistory;
     }
 
-    public List<LiquiditySummary> getLiquiditySummary(final String baseCcy, final Instant threshold) {
-        return dataPersister.loadSummary(baseCcy, threshold);
+    public List<LiquiditySummary> getLiquiditySummary(final String baseCcy,
+                                                      final Instant threshold,
+                                                      final String exchange) {
+        return dataPersister.loadSummary(baseCcy, threshold, exchange);
     }
 
     public Set<String> getBaseCurrencies() {
@@ -182,9 +184,21 @@ public class LiquidityCache {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
+    public Set<String> getExchanges() {
+        return liquidityData.getLiquidityData().stream()
+                .map(LiquidityDatum::getExchange)
+                .collect(Collectors.toCollection(TreeSet::new));
+    }
+
     public void validateBaseCcy(final String baseCcy) {
         if (!getBaseCurrencies().contains(baseCcy)) {
             throw new IllegalFilterException("Invalid base currency");
+        }
+    }
+
+    public void validateExchange(final String exchange) {
+        if (!"all".equals(exchange) && !getExchanges().contains(exchange)) {
+            throw new IllegalFilterException("Invalid exchange");
         }
     }
 }

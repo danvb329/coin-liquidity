@@ -99,9 +99,11 @@ public class DbPersister implements LiquidityDataPersister {
     }
 
     @Override
-    public List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold) {
+    public List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold, final String exchange) {
         final Stopwatch stopwatch = Stopwatch.createStarted();
-        final Object[] args = new Object[] { baseCcy, Timestamp.from(threshold) };
+
+        final boolean exchangeFilter = exchange != null;
+        final Object[] args = new Object[] { baseCcy, Timestamp.from(threshold), exchangeFilter, exchange };
 
         final List<LiquiditySummary> liquiditySummaries = jdbcTemplate.query(SELECT_LIQUIDITY_SUMMARY,
                 args, LIQUIDITY_SUMMARY_MAPPER);

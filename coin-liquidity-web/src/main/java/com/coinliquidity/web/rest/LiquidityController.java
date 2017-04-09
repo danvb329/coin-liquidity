@@ -75,12 +75,15 @@ public class LiquidityController {
     @RequestMapping("/summary/{baseCurrency}")
     public String summary(@PathVariable("baseCurrency") final String baseCurrency,
                           @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
+                          @RequestParam(value = "exchange", required = false, defaultValue = "all") final String exchange,
                           final Model model) {
         cache.validateBaseCcy(baseCurrency);
+        cache.validateExchange(exchange);
 
         model.addAttribute("baseCurrency", baseCurrency);
         model.addAttribute("days", days);
         model.addAttribute("currencies", cache.getBaseCurrencies());
+        model.addAttribute("exchange", exchange);
         return "summary";
     }
 
