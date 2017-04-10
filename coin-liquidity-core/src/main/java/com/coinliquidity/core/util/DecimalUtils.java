@@ -1,4 +1,4 @@
-package com.coinliquidity.web;
+package com.coinliquidity.core.util;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,12 +14,16 @@ public class DecimalUtils {
         return scalePrice(price1.add(price2).divide(TWO, PRICE_SCALE_SMALL, RoundingMode.HALF_UP));
     }
 
-    static BigDecimal scalePrice(final BigDecimal price) {
+    public static BigDecimal scalePrice(final BigDecimal price) {
         if (price == null) {
             return null;
         }
 
         final int scale = price.compareTo(BigDecimal.ONE) >= 0 ? PRICE_SCALE_LARGE : PRICE_SCALE_SMALL;
         return price.setScale(scale, RoundingMode.HALF_UP);
+    }
+
+    public static BigDecimal inverseRate(final BigDecimal rate) {
+        return BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_UP);
     }
 }

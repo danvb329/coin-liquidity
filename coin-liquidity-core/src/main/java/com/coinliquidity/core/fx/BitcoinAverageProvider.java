@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 
 import static com.coinliquidity.core.model.CurrencyPair.BTC;
+import static com.coinliquidity.core.util.DecimalUtils.inverseRate;
 
 public class BitcoinAverageProvider implements FxProvider {
 
@@ -30,14 +31,13 @@ public class BitcoinAverageProvider implements FxProvider {
     @Override
     public FxRates getRates() {
         final JsonNode tree = HttpUtil.get(url);
-        final BigDecimal rate = new BigDecimal(tree.get("last").asText());
-        final BigDecimal inverseRate = inverse(rate);
+        final BigDecimal price = new BigDecimal(tree.get("last").asText());
+        final BigDecimal rate = inverseRate(price);
         final Instant updateTime = parseUpdateTime(tree);
-        return new FxRates(baseCcy, updateTime, Collections.singletonMap(BTC, inverseRate));
-    }
-
-    private BigDecimal inverse(final BigDecimal rate) {
-        return BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_UP);
+        return new FxRates(baseCcy,
+                updateTime,
+                Collections.singletonMap(BTC, rate),
+                Collections.singletonMap(BTC, price));
     }
 
     private Instant parseUpdateTime(final JsonNode tree) {

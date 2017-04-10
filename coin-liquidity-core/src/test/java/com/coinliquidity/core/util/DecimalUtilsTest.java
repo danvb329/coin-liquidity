@@ -1,10 +1,10 @@
-package com.coinliquidity.web;
+package com.coinliquidity.core.util;
 
 import org.junit.Test;
 
 import java.math.BigDecimal;
 
-import static com.coinliquidity.web.DecimalUtils.scalePrice;
+import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
 import static org.junit.Assert.assertEquals;
 
 public class DecimalUtilsTest {

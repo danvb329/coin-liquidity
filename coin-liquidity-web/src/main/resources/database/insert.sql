@@ -8,6 +8,19 @@ INSERT INTO liquidity_history (
     best_bid,
     best_ask,
     total_bids_usd,
-    total_asks
+    total_asks,
+    price,
+    bids_1_usd,
+    asks_1,
+    bids_2_usd,
+    asks_2,
+    bids_3_usd,
+    asks_3,
+    bids_5_usd,
+    asks_5,
+    bids_10_usd,
+    asks_10,
+    bids_20_usd,
+    asks_20
     )
-values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

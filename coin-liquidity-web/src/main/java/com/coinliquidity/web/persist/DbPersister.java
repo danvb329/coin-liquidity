@@ -16,14 +16,11 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.coinliquidity.web.DecimalUtils.avgPrice;
+import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
 
 public class DbPersister implements LiquidityDataPersister {
 
@@ -62,7 +59,20 @@ public class DbPersister implements LiquidityDataPersister {
                     datum.getBestBid(),
                     datum.getBestAsk(),
                     datum.getTotalBids(),
-                    datum.getTotalAsks()
+                    datum.getTotalAsks(),
+                    datum.getPrice(),
+                    datum.getBids(1),
+                    datum.getAsks(1),
+                    datum.getBids(2),
+                    datum.getAsks(2),
+                    datum.getBids(3),
+                    datum.getAsks(3),
+                    datum.getBids(5),
+                    datum.getAsks(5),
+                    datum.getBids(10),
+                    datum.getAsks(10),
+                    datum.getBids(20),
+                    datum.getAsks(20)
             });
         }
         jdbcTemplate.batchUpdate(INSERT, batchArgs);
@@ -140,7 +150,17 @@ public class DbPersister implements LiquidityDataPersister {
         if (StringUtils.isNotBlank(sql)) {
             final Stopwatch stopwatch = Stopwatch.createStarted();
             LOGGER.info("Executing {}", scriptName);
-            jdbcTemplate.execute(sql);
+
+            final String[] lines = sql.split(";\\n");
+
+            LOGGER.info("{} lines in {}", lines.length, scriptName);
+
+            try {
+                Arrays.stream(lines).forEach(jdbcTemplate::execute);
+            } catch (final Exception e) {
+                LOGGER.error("Could not execute {}", scriptName);
+            }
+
             LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());
         } else {
             LOGGER.info("Nothing to execute in {}", scriptName);

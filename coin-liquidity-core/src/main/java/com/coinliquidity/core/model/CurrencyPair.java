@@ -12,6 +12,7 @@ import java.util.Objects;
 public class CurrencyPair {
 
     public static final String BTC = "BTC";
+    public static final String USD = "USD";
 
     private static final Map<String, String> CCY_NORMALIZATION;
 
@@ -19,7 +20,7 @@ public class CurrencyPair {
         CCY_NORMALIZATION = Maps.newHashMap();
         CCY_NORMALIZATION.put("XBT", BTC);
         CCY_NORMALIZATION.put("RUR", "RUB");
-        CCY_NORMALIZATION.put("USDT", "USD");
+        CCY_NORMALIZATION.put("USDT", USD);
         CCY_NORMALIZATION.put("DSH", "DASH");
     }
 

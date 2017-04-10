@@ -2,6 +2,7 @@ package com.coinliquidity.web;
 
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.core.OrderBookDownloader;
+import com.coinliquidity.core.analyzer.CloseBidAskAnalyzer;
 import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.analyzer.TotalAnalyzer;
 import com.coinliquidity.core.fx.FxRates;
@@ -26,7 +27,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.coinliquidity.web.DecimalUtils.scalePrice;
+import static com.coinliquidity.core.analyzer.CloseBidAskAnalyzer.PERCENTAGES;
+import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
@@ -96,7 +98,7 @@ public class LiquidityCache {
         final FxRates fxRates = fxCache.getRates();
         orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
 
-        this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
+        this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000), fxRates);
         dataPersister.persist(this.liquidityData);
         updateHistory(liquidityData);
 
@@ -127,7 +129,9 @@ public class LiquidityCache {
         });
     }
 
-    private LiquidityData toLiquidityData(final List<OrderBook> orderBooks, final BigDecimal amount) {
+    private LiquidityData toLiquidityData(final List<OrderBook> orderBooks,
+                                          final BigDecimal amount,
+                                          final FxRates fxRates) {
 
         final List<LiquidityDatum> dataList = new ArrayList<>();
         orderBooks.forEach(orderBook -> {
@@ -146,12 +150,31 @@ public class LiquidityCache {
             datum.setTotalBids(totalAnalyzer.getTotalBids());
             datum.setTotalAsks(totalAnalyzer.getTotalAsks());
             dataList.add(datum);
+
+            final String baseCcy = orderBook.getCurrencyPair().getBaseCurrency();
+            final BigDecimal price = fxRates.getInverseRate(baseCcy);
+            if (price != null) {
+                datum.setPrice(price);
+                PERCENTAGES.forEach(percent -> analyzeCloseBidsAsks(orderBook, price, datum, percent));
+            } else {
+                LOGGER.warn("No price for {}, skipping close bids", baseCcy);
+            }
         });
 
         final LiquidityData liquidityData = new LiquidityData();
         liquidityData.setLiquidityData(dataList);
         liquidityData.setUpdateTime(Instant.now());
         return liquidityData;
+    }
+
+    private void analyzeCloseBidsAsks(final OrderBook orderBook,
+                                      final BigDecimal price,
+                                      final LiquidityDatum datum,
+                                      final int percent) {
+        final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(price, percent);
+        analyzer.analyze(orderBook);
+        datum.setBids(percent, analyzer.getTotalBids());
+        datum.setAsks(percent, analyzer.getTotalAsks());
     }
 
     private void updateHistory(final LiquidityData liquidityData) {

@@ -4,6 +4,7 @@ import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.core.fx.BitcoinAverageProvider;
 import com.coinliquidity.core.fx.FixerIoProvider;
 import com.coinliquidity.core.fx.FxProvider;
+import com.coinliquidity.core.fx.PoloniexProvider;
 import com.coinliquidity.web.FxCache;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.persist.DbPersister;
@@ -49,6 +50,7 @@ public class LiquidityAppConfig {
     public FxCache fxCache() {
         final List<FxProvider> fxProviders = new ArrayList<>();
         fxProviders.add(new FixerIoProvider(BASE_CCY));
+        fxProviders.add(new PoloniexProvider());
         fxProviders.add(new BitcoinAverageProvider(BASE_CCY));
         return new FxCache(fxProviders);
     }

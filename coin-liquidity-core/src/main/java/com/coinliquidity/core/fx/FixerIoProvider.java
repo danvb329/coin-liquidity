@@ -2,6 +2,7 @@ package com.coinliquidity.core.fx;
 
 import com.coinliquidity.core.util.HttpUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +51,7 @@ public class FixerIoProvider implements FxProvider {
                     rates.put(entry.getKey(), new BigDecimal(entry.getValue().asText()));
                 }
 
-                fxRates = new FxRates(baseCcy, Instant.now(), rates);
+                fxRates = new FxRates(baseCcy, Instant.now(), rates, Maps.newHashMap());
                 dataDate = currentDate;
             }
         } catch (final Exception e) {

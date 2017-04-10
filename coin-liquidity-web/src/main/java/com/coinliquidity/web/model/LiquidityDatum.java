@@ -1,12 +1,16 @@
 package com.coinliquidity.web.model;
 
 import com.coinliquidity.core.model.CurrencyPair;
+import com.google.common.collect.Maps;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Map;
 
 import static com.coinliquidity.core.model.CurrencyPair.BTC;
 
+@Data
 public class LiquidityDatum {
 
     private String exchange;
@@ -18,77 +22,25 @@ public class LiquidityDatum {
     private BigDecimal totalAsks;
     private BigDecimal totalBids;
     private Instant updateTime;
+    private BigDecimal price;
 
-    public String getExchange() {
-        return exchange;
+    private final Map<Integer, BigDecimal> bids = Maps.newHashMap();
+    private final Map<Integer, BigDecimal> asks = Maps.newHashMap();
+
+    public BigDecimal getBids(final int percent) {
+        return bids.get(percent);
     }
 
-    public void setExchange(final String exchange) {
-        this.exchange = exchange;
+    public BigDecimal getAsks(final int percent) {
+        return asks.get(percent);
     }
 
-    public CurrencyPair getCurrencyPair() {
-        return currencyPair;
+    public void setBids(final int percent, final BigDecimal value) {
+        this.bids.put(percent, value);
     }
 
-    public void setCurrencyPair(final CurrencyPair currencyPair) {
-        this.currencyPair = currencyPair;
-    }
-
-    public BigDecimal getBuyCost() {
-        return buyCost;
-    }
-
-    public void setBuyCost(final BigDecimal buyCost) {
-        this.buyCost = buyCost;
-    }
-
-    public BigDecimal getSellCost() {
-        return sellCost;
-    }
-
-    public void setSellCost(final BigDecimal sellCost) {
-        this.sellCost = sellCost;
-    }
-
-    public BigDecimal getBestAsk() {
-        return bestAsk;
-    }
-
-    public void setBestAsk(final BigDecimal bestAsk) {
-        this.bestAsk = bestAsk;
-    }
-
-    public BigDecimal getBestBid() {
-        return bestBid;
-    }
-
-    public void setBestBid(final BigDecimal bestBid) {
-        this.bestBid = bestBid;
-    }
-
-    public BigDecimal getTotalAsks() {
-        return totalAsks;
-    }
-
-    public void setTotalAsks(BigDecimal totalAsks) {
-        this.totalAsks = totalAsks;
-    }
-
-    public BigDecimal getTotalBids() {
-        return totalBids;
-    }
-
-    public void setTotalBids(BigDecimal totalBids) {
-        this.totalBids = totalBids;
-    }
-
-    public Instant getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(Instant updateTime) {
-        this.updateTime = updateTime;
+    public void setAsks(final int percent, final BigDecimal value) {
+        this.asks.put(percent, value);
     }
 
     public boolean matches(final String baseCurrency, final String quoteCurrency) {

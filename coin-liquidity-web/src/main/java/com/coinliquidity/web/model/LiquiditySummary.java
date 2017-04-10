@@ -1,8 +1,13 @@
 package com.coinliquidity.web.model;
 
+import com.google.common.collect.Maps;
+import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Map;
 
+@Data
 public class LiquiditySummary {
 
     private Instant updateTime;
@@ -10,35 +15,22 @@ public class LiquiditySummary {
     private BigDecimal totalAsks;
     private BigDecimal price;
 
-    public Instant getUpdateTime() {
-        return updateTime;
+    private final Map<Integer, BigDecimal> bids = Maps.newHashMap();
+    private final Map<Integer, BigDecimal> asks = Maps.newHashMap();
+
+    public BigDecimal getBids(final int percent) {
+        return bids.get(percent);
     }
 
-    public void setUpdateTime(Instant updateTime) {
-        this.updateTime = updateTime;
+    public BigDecimal getAsks(final int percent) {
+        return asks.get(percent);
     }
 
-    public BigDecimal getTotalBidsUsd() {
-        return totalBidsUsd;
+    public void setBids(final int percent, final BigDecimal value) {
+        this.bids.put(percent, value);
     }
 
-    public void setTotalBidsUsd(BigDecimal totalBidsUsd) {
-        this.totalBidsUsd = totalBidsUsd;
-    }
-
-    public BigDecimal getTotalAsks() {
-        return totalAsks;
-    }
-
-    public void setTotalAsks(BigDecimal totalAsks) {
-        this.totalAsks = totalAsks;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setAsks(final int percent, final BigDecimal value) {
+        this.asks.put(percent, value);
     }
 }
