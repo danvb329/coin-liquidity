@@ -33,15 +33,18 @@ public class DataController {
     public Map<String, List<Object[]>> summary(
             @PathVariable("baseCurrency") final String baseCurrency,
             @RequestParam(value = "days") final int days,
-            @RequestParam(value = "exchange") final String exchange) {
+            @RequestParam(value = "exchange") final String exchange,
+            @RequestParam(value = "percent") final int bidAskPercent) {
 
         cache.validateBaseCcy(baseCurrency);
         cache.validateExchange(exchange);
+        cache.validateBidAskPercent(bidAskPercent);
 
         final List<LiquiditySummary> summaries = cache.getLiquiditySummary(
                 baseCurrency,
                 Instant.now().minus(days, DAYS),
-                "all".equals(exchange) ? null : exchange);
+                "all".equals(exchange) ? null : exchange,
+                bidAskPercent);
 
         final Map<String, List<Object[]>> data = new HashMap<>();
         data.put("bids", toChartData(summaries, LiquiditySummary::getTotalBidsUsd));

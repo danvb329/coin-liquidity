@@ -98,7 +98,7 @@ public class LiquidityCache {
         final FxRates fxRates = fxCache.getRates();
         orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
 
-        this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000), fxRates);
+        this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
         dataPersister.persist(this.liquidityData);
         updateHistory(liquidityData);
 
@@ -130,8 +130,7 @@ public class LiquidityCache {
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks,
-                                          final BigDecimal amount,
-                                          final FxRates fxRates) {
+                                          final BigDecimal amount) {
 
         final List<LiquidityDatum> dataList = new ArrayList<>();
         orderBooks.forEach(orderBook -> {
@@ -149,16 +148,8 @@ public class LiquidityCache {
             datum.setBestBid(scalePrice(slippageAnalyzer.getBestBid()));
             datum.setTotalBids(totalAnalyzer.getTotalBids());
             datum.setTotalAsks(totalAnalyzer.getTotalAsks());
+            PERCENTAGES.forEach(percent -> analyzeCloseBidsAsks(orderBook, datum, percent));
             dataList.add(datum);
-
-            final String baseCcy = orderBook.getCurrencyPair().getBaseCurrency();
-            final BigDecimal price = fxRates.getInverseRate(baseCcy);
-            if (price != null) {
-                datum.setPrice(price);
-                PERCENTAGES.forEach(percent -> analyzeCloseBidsAsks(orderBook, price, datum, percent));
-            } else {
-                LOGGER.warn("No price for {}, skipping close bids", baseCcy);
-            }
         });
 
         final LiquidityData liquidityData = new LiquidityData();
@@ -168,13 +159,13 @@ public class LiquidityCache {
     }
 
     private void analyzeCloseBidsAsks(final OrderBook orderBook,
-                                      final BigDecimal price,
                                       final LiquidityDatum datum,
                                       final int percent) {
-        final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(price, percent);
+        final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(percent);
         analyzer.analyze(orderBook);
         datum.setBids(percent, analyzer.getTotalBids());
         datum.setAsks(percent, analyzer.getTotalAsks());
+        datum.setPrice(analyzer.getPrice());
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
@@ -197,8 +188,9 @@ public class LiquidityCache {
 
     public List<LiquiditySummary> getLiquiditySummary(final String baseCcy,
                                                       final Instant threshold,
-                                                      final String exchange) {
-        return dataPersister.loadSummary(baseCcy, threshold, exchange);
+                                                      final String exchange,
+                                                      final int bidAskPercent) {
+        return dataPersister.loadSummary(baseCcy, threshold, exchange, bidAskPercent);
     }
 
     public Set<String> getBaseCurrencies() {
@@ -222,6 +214,12 @@ public class LiquidityCache {
     public void validateExchange(final String exchange) {
         if (!"all".equals(exchange) && !getExchanges().contains(exchange)) {
             throw new IllegalFilterException("Invalid exchange");
+        }
+    }
+
+    public void validateBidAskPercent(final int bidAskPercent) {
+        if (!(bidAskPercent == 0 || PERCENTAGES.contains(bidAskPercent))) {
+            throw new IllegalFilterException("Invalid bidAskPercent");
         }
     }
 }

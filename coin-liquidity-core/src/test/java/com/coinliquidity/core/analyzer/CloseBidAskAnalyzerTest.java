@@ -14,8 +14,7 @@ public class CloseBidAskAnalyzerTest {
 
     @Test
     public void test() {
-        final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(
-                new BigDecimal(100),10);
+        final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(10);
 
         final Orders bids = new Orders();
         final Orders asks = new Orders();
@@ -27,18 +26,18 @@ public class CloseBidAskAnalyzerTest {
         asks.put(new BigDecimal(110), new BigDecimal(3));
         asks.put(new BigDecimal(111), new BigDecimal(5));
 
-        bids.put(new BigDecimal(98), new BigDecimal(5));
+        bids.put(new BigDecimal(99), new BigDecimal(5));
         bids.put(new BigDecimal(90), new BigDecimal(7));
         bids.put(new BigDecimal(89), new BigDecimal(12));
 
         analyzer.analyze(orderBook);
 
+        assertThat(analyzer.getPrice(), equalTo(new BigDecimal("100.00")));
         assertThat(analyzer.getTotalAsks(), equalTo(new BigDecimal(5)));
 
-        // (98 * 5) + (90 * 7)
-        // 490 + 630 = 1120
-        assertThat(analyzer.getTotalBids(), equalTo(new BigDecimal("1120.00")));
-
+        // (99 * 5) + (90 * 7)
+        // 495 + 630 = 1125
+        assertThat(analyzer.getTotalBids(), equalTo(new BigDecimal("1125.00")));
     }
 
 }

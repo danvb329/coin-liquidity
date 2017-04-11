@@ -76,6 +76,7 @@ public class LiquidityController {
     public String summary(@PathVariable("baseCurrency") final String baseCurrency,
                           @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
                           @RequestParam(value = "exchange", required = false, defaultValue = "all") final String exchange,
+                          @RequestParam(value = "percent", required = false, defaultValue = "0") final int bidAskPercent,
                           final Model model) {
         cache.validateBaseCcy(baseCurrency);
         cache.validateExchange(exchange);
@@ -84,6 +85,7 @@ public class LiquidityController {
         model.addAttribute("days", days);
         model.addAttribute("currencies", cache.getBaseCurrencies());
         model.addAttribute("exchange", exchange);
+        model.addAttribute("percent", bidAskPercent);
         return "summary";
     }
 

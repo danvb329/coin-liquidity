@@ -1,0 +1,14 @@
+UPDATE liquidity_history SET
+price = null,
+bids_1_usd = null,
+asks_1 = null,
+bids_2_usd = null,
+asks_2 = null,
+bids_3_usd = null,
+asks_3 = null,
+bids_5_usd = null,
+asks_5 = null,
+bids_10_usd = null,
+asks_10 = null,
+bids_20_usd = null,
+asks_20 = null;

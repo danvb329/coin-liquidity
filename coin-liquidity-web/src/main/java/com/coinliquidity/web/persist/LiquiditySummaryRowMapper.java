@@ -12,8 +12,8 @@ public class LiquiditySummaryRowMapper implements RowMapper<LiquiditySummary> {
     public LiquiditySummary mapRow(final ResultSet rs, final int i) throws SQLException {
         final LiquiditySummary summary = new LiquiditySummary();
         summary.setUpdateTime(rs.getTimestamp("run_date").toInstant());
-        summary.setTotalAsks(rs.getBigDecimal("total_asks"));
         summary.setTotalBidsUsd(rs.getBigDecimal("total_bids_usd"));
+        summary.setTotalAsks(rs.getBigDecimal("total_asks"));
         return summary;
     }
 }

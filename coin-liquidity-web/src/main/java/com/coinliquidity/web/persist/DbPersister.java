@@ -109,14 +109,32 @@ public class DbPersister implements LiquidityDataPersister {
     }
 
     @Override
-    public List<LiquiditySummary> loadSummary(final String baseCcy, final Instant threshold, final String exchange) {
+    public List<LiquiditySummary> loadSummary(final String baseCcy,
+                                              final Instant threshold,
+                                              final String exchange,
+                                              final int bidAskPercent) {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         final boolean exchangeFilter = exchange != null;
         final Object[] args = new Object[] { baseCcy, Timestamp.from(threshold), exchangeFilter, exchange };
 
-        final List<LiquiditySummary> liquiditySummaries = jdbcTemplate.query(SELECT_LIQUIDITY_SUMMARY,
-                args, LIQUIDITY_SUMMARY_MAPPER);
+        final String bidsColumn;
+        final String asksColumn;
+
+
+        if (bidAskPercent == 0) {
+            bidsColumn = "total_bids_usd";
+            asksColumn = "total_asks";
+        } else {
+            bidsColumn = "bids_" + bidAskPercent + "_usd";
+            asksColumn = "asks_" + bidAskPercent;
+        }
+
+        final String sql = SELECT_LIQUIDITY_SUMMARY
+                .replaceAll("<bids_column>", bidsColumn)
+                .replaceAll("<asks_column>", asksColumn);
+
+        final List<LiquiditySummary> liquiditySummaries = jdbcTemplate.query(sql, args, LIQUIDITY_SUMMARY_MAPPER);
 
         final Map<Instant, LiquiditySummary> map = liquiditySummaries.stream()
                 .collect(Collectors.toMap(LiquiditySummary::getUpdateTime, Function.identity()));
@@ -127,7 +145,7 @@ public class DbPersister implements LiquidityDataPersister {
             final BigDecimal avgAsk = rs.getBigDecimal("avg_ask");
 
             final LiquiditySummary liquiditySummary = map.get(runDate);
-            if (liquiditySummary != null) {
+            if (liquiditySummary != null && liquiditySummary.getPrice() == null) {
                 liquiditySummary.setPrice(avgPrice(avgBid, avgAsk));
             }
         });

@@ -26,4 +26,8 @@ public class DecimalUtils {
     public static BigDecimal inverseRate(final BigDecimal rate) {
         return BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_UP);
     }
+
+    public static BigDecimal toFraction(final int percent) {
+        return new BigDecimal(percent).divide(new BigDecimal(100), 2, BigDecimal.ROUND_UNNECESSARY);
+    }
 }
