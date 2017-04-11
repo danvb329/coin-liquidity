@@ -6,7 +6,7 @@ import java.util.Objects;
 public class Order {
 
     private BigDecimal price;
-    private final BigDecimal units;
+    private BigDecimal units;
 
     public Order(final BigDecimal price, final BigDecimal units) {
         this.price = price;
@@ -27,6 +27,10 @@ public class Order {
 
     public void convert(final BigDecimal rate) {
         this.price = price.divide(rate, 5, BigDecimal.ROUND_HALF_UP);
+    }
+
+    public void addUnits(final BigDecimal units) {
+        this.units = this.units.add(units);
     }
 
     @Override

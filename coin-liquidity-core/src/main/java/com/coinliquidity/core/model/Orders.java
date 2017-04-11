@@ -13,7 +13,7 @@ public class Orders implements Iterable<Order> {
         if (existingOrder == null) {
             orderMap.put(price, new Order(price, units));
         } else {
-            orderMap.put(price, new Order(price, units.add(existingOrder.getUnits())));
+            existingOrder.addUnits(units);
         }
     }
 
