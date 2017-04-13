@@ -3,16 +3,19 @@ package com.coinliquidity.core.model;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.Maps;
+import lombok.Data;
 
 import java.util.Map;
-import java.util.Objects;
 
 @JsonDeserialize(using = CurrencyPairDeserializer.class)
 @JsonSerialize(using = CurrencyPairSerializer.class)
+@Data
 public class CurrencyPair {
 
     public static final String BTC = "BTC";
     public static final String USD = "USD";
+
+    public static final CurrencyPair BTC_USD = new CurrencyPair(BTC, USD);
 
     private static final Map<String, String> CCY_NORMALIZATION;
 
@@ -32,14 +35,6 @@ public class CurrencyPair {
         this.quoteCurrency = quoteCurrency;
     }
 
-    public String getBaseCurrency() {
-        return baseCurrency;
-    }
-
-    public String getQuoteCurrency() {
-        return quoteCurrency;
-    }
-
     /**
      * Normalize weird currencies to common codes
      * @return the normalized currency pair
@@ -54,20 +49,6 @@ public class CurrencyPair {
 
     public boolean isDisabled() {
         return baseCurrency.startsWith("--");
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final CurrencyPair that = (CurrencyPair) o;
-        return Objects.equals(baseCurrency, that.baseCurrency) &&
-                Objects.equals(quoteCurrency, that.quoteCurrency);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(baseCurrency, quoteCurrency);
     }
 
     @Override

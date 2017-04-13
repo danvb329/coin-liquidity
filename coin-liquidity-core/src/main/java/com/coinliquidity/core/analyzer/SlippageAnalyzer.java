@@ -4,7 +4,8 @@ import com.coinliquidity.core.model.Order;
 import com.coinliquidity.core.model.OrderBook;
 
 import java.math.BigDecimal;
-import java.util.List;
+
+import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
 
 public class SlippageAnalyzer implements Analyzer {
 
@@ -20,21 +21,19 @@ public class SlippageAnalyzer implements Analyzer {
 
     @Override
     public void analyze(final OrderBook orderBook) {
-        final List<Order> asks = orderBook.getAsks().ascending();
-        final List<Order> bids = orderBook.getBids().descending();
+        bestAsk = orderBook.getAsks().getBestPrice();
+        bestBid = orderBook.getBids().getBestPrice();
 
-        bestAsk = asks.isEmpty() ? null : asks.get(0).getPrice();
-        bestBid = bids.isEmpty() ? null : bids.get(0).getPrice();
-
-        buyCost = calculateCost(asks, bestAsk);
-        sellCost = calculateCost(bids, bestBid);
-    }
-
-    private BigDecimal calculateCost(final List<Order> orders, final BigDecimal bestPrice) {
-        if (orders.isEmpty()) {
-            return null;
+        if (bestAsk == null || bestBid == null) {
+            return;
         }
 
+        final BigDecimal price = avgPrice(bestAsk, bestBid);
+        buyCost = calculateCost(orderBook.getAsks(), price);
+        sellCost = calculateCost(orderBook.getBids(), price);
+    }
+
+    private BigDecimal calculateCost(final Iterable<Order> orders, final BigDecimal bestPrice) {
         BigDecimal totalUnits = BigDecimal.ZERO;
         BigDecimal remaining = amount;
         for (final Order order : orders) {

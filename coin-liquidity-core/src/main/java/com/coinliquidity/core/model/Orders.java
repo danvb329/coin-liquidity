@@ -1,11 +1,42 @@
 package com.coinliquidity.core.model;
 
-import java.math.BigDecimal;
-import java.util.*;
+import com.coinliquidity.core.util.DecimalUtils;
+import com.google.common.collect.Maps;
+import lombok.Data;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.TreeMap;
+
+import static com.google.common.base.Preconditions.checkArgument;
+
+@Data
 public class Orders implements Iterable<Order> {
 
-    private Map<BigDecimal, Order> orderMap = new TreeMap<>();
+    private static final Comparator<BigDecimal> ASCENDING = Comparator.naturalOrder();
+    private static final Comparator<BigDecimal> DESCENDING = Comparator.reverseOrder();
+
+    private final TreeMap<BigDecimal, Order> orderMap;
+    private final OrderType orderType;
+
+    private Orders(final Comparator<BigDecimal> comparator, final OrderType orderType) {
+        this.orderMap = new TreeMap<>(comparator);
+        this.orderType = orderType;
+    }
+
+    public static Orders bids() {
+        return new Orders(DESCENDING, OrderType.BID);
+    }
+
+    public static Orders asks() {
+        return new Orders(ASCENDING, OrderType.ASK);
+    }
+
+    // for testing
+    public void put(final int price, final int units) {
+        this.put(BigDecimal.valueOf(price), BigDecimal.valueOf(units));
+    }
 
     public void put(final BigDecimal price, final BigDecimal units) {
         final Order existingOrder = orderMap.get(price);
@@ -17,35 +48,30 @@ public class Orders implements Iterable<Order> {
         }
     }
 
+    public BigDecimal getBestPrice() {
+        return orderMap.isEmpty() ? null : orderMap.firstKey();
+    }
+
     Orders merge(final Orders other, final BigDecimal rate) {
-        final Orders retVal = new Orders();
-        for (final Order order : orderMap.values()) {
-            retVal.put(order.getPrice(), order.getUnits());
-        }
+        checkArgument(this.orderType.equals(other.orderType), "Order types must equal");
         for (final Order order : other) {
             final BigDecimal price = order.getPrice();
             final BigDecimal units = order.getUnits();
-            retVal.put(price.divide(rate, 2, BigDecimal.ROUND_HALF_UP), units);
+            final BigDecimal newPrice = DecimalUtils.convert(price, rate);
+            this.put(newPrice, units);
         }
-        return retVal;
-    }
-
-    public List<Order> ascending() {
-        final List<Order> retVal = new ArrayList<>();
-        retVal.addAll(orderMap.values());
-        retVal.sort((o1, o2) -> o1.getPrice().compareTo(o2.getPrice()));
-        return retVal;
-    }
-
-    public List<Order> descending() {
-        final List<Order> retVal = new ArrayList<>();
-        retVal.addAll(orderMap.values());
-        retVal.sort((o1, o2) -> o2.getPrice().compareTo(o1.getPrice()));
-        return retVal;
+        return this;
     }
 
     public void convert(final BigDecimal rate) {
-        orderMap.values().forEach(order -> order.convert(rate));
+        final TreeMap<BigDecimal, Order> newMap = Maps.newTreeMap();
+        orderMap.values().forEach(order -> {
+            order.convert(rate);
+            newMap.put(order.getPrice(), order);
+        });
+
+        orderMap.clear();
+        orderMap.putAll(newMap);
     }
 
     public int size() {
@@ -55,25 +81,5 @@ public class Orders implements Iterable<Order> {
     @Override
     public Iterator<Order> iterator() {
         return orderMap.values().iterator();
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Orders orders = (Orders) o;
-        return Objects.equals(orderMap, orders.orderMap);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(orderMap);
-    }
-
-    @Override
-    public String toString() {
-        return "Orders{" +
-                "orderMap=" + orderMap +
-                '}';
     }
 }

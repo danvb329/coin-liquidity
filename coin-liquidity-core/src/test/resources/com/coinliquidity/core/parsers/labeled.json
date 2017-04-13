@@ -1,0 +1,36 @@
+{
+  "bids": [
+    {
+      "price": "100",
+      "amount": "1.1",
+      "timestamp": "1491993686"
+    },
+    {
+      "price": "200",
+      "amount": "2.2",
+      "timestamp": "1491993686"
+    },
+    {
+      "price": "300",
+      "amount": "3.3",
+      "timestamp": "1491993686"
+    }
+  ],
+  "asks": [
+    {
+      "price": "400",
+      "amount": "4.4",
+      "timestamp": "1491993686"
+    },
+    {
+      "price": "500",
+      "amount": "5.5",
+      "timestamp": "1491993686"
+    },
+    {
+      "price": "600",
+      "amount": "6.6",
+      "timestamp": "1491993686"
+    }
+  ]
+}

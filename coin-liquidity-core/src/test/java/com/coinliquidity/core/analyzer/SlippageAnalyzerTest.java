@@ -17,32 +17,24 @@ public class SlippageAnalyzerTest {
 
     @Before
     public void setUp() {
-        final Orders bids = new Orders();
-        bids.put(new BigDecimal("80"), new BigDecimal("10"));
-        bids.put(new BigDecimal("90"), new BigDecimal("10"));
-        bids.put(new BigDecimal("100"), new BigDecimal("10"));
-        final Orders asks = new Orders();
-        asks.put(new BigDecimal("100"), new BigDecimal("10"));
-        asks.put(new BigDecimal("110"), new BigDecimal("10"));
-        asks.put(new BigDecimal("120"), new BigDecimal("10"));
-
-        orderBook = new OrderBook("exchange", new CurrencyPair("BTC", "USD"), bids, asks);
+        orderBook = new OrderBook("exchange", CurrencyPair.BTC_USD);
+        final Orders bids = orderBook.getBids();
+        bids.put(80, 10);
+        bids.put(90, 10);
+        bids.put(100, 10);
+        final Orders asks = orderBook.getAsks();
+        asks.put(100, 10);
+        asks.put(110, 10);
+        asks.put(120, 10);
     }
 
     @Test
     public void test_bestBidAsk() {
-        final Orders bids = new Orders();
-        bids.put(new BigDecimal("99"), new BigDecimal("10"));
-        bids.put(new BigDecimal("100"), new BigDecimal("10"));
-        final Orders asks = new Orders();
-        asks.put(new BigDecimal("101"), new BigDecimal("10"));
-        asks.put(new BigDecimal("102"), new BigDecimal("10"));
-        final OrderBook orderBook = new OrderBook("exchange", new CurrencyPair("BTC", "USD"), bids, asks);
         final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(BigDecimal.ONE);
         slippageAnalyzer.analyze(orderBook);
 
         assertEquals(new BigDecimal("100"), slippageAnalyzer.getBestBid());
-        assertEquals(new BigDecimal("101"), slippageAnalyzer.getBestAsk());
+        assertEquals(new BigDecimal("100"), slippageAnalyzer.getBestAsk());
     }
 
     @Test

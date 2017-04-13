@@ -16,11 +16,10 @@ public class CloseBidAskAnalyzerTest {
     public void test() {
         final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(10);
 
-        final Orders bids = new Orders();
-        final Orders asks = new Orders();
+        final OrderBook orderBook = new OrderBook("exchange", CurrencyPair.BTC_USD);
 
-        final OrderBook orderBook = new OrderBook("",
-                new CurrencyPair("BTC", "USD"), bids, asks);
+        final Orders asks = orderBook.getAsks();
+        final Orders bids = orderBook.getBids();
 
         asks.put(new BigDecimal(101), new BigDecimal(2));
         asks.put(new BigDecimal(110), new BigDecimal(3));

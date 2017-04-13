@@ -3,16 +3,13 @@ package com.coinliquidity.web.persist;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
-import com.google.common.base.Charsets;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
-import com.google.common.io.Resources;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -21,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
+import static com.coinliquidity.core.util.ResourceUtils.resource;
 
 public class DbPersister implements LiquidityDataPersister {
 
@@ -152,14 +150,6 @@ public class DbPersister implements LiquidityDataPersister {
 
         LOGGER.info("loadSummary took {}", stopwatch.stop());
         return liquiditySummaries;
-    }
-
-    private static String resource(final String name) {
-        try {
-            return Resources.toString(Resources.getResource(name), Charsets.UTF_8);
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private void execute(final String scriptName) {

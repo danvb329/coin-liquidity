@@ -13,18 +13,18 @@ import static com.coinliquidity.core.util.ResourceUtils.json;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
-public class ArrayParserTest {
+public class LabeledParserTest {
 
-    private ArrayParser parser;
+    private LabeledParser parser;
 
     @Before
     public void setUp() {
-        parser = new ArrayParser();
+        parser = new LabeledParser();
     }
 
     @Test
     public void test() {
-        final JsonNode node = json("com/coinliquidity/core/parsers/array.json");
+        final JsonNode node = json("com/coinliquidity/core/parsers/labeled.json");
 
         final OrderBook orderBook = parser.parse("exchange", CurrencyPair.BTC_USD, node);
 
@@ -42,8 +42,20 @@ public class ArrayParserTest {
     }
 
     @Test
+    public void noPrice() {
+        final JsonNode json = json("com/coinliquidity/core/parsers/labeled_no_price.json");
+
+        try {
+            parser.parse("exchange", CurrencyPair.BTC_USD, json);
+            fail("expected OrderBookParseException");
+        } catch (final OrderBookParseException e) {
+            assertEquals("could not determine price", e.getMessage());
+        }
+    }
+
+    @Test
     public void noUnits() {
-        final JsonNode json = json("com/coinliquidity/core/parsers/array_no_units.json");
+        final JsonNode json = json("com/coinliquidity/core/parsers/labeled_no_units.json");
 
         try {
             parser.parse("exchange", CurrencyPair.BTC_USD, json);

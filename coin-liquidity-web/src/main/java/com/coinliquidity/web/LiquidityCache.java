@@ -28,7 +28,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.coinliquidity.core.analyzer.CloseBidAskAnalyzer.PERCENTAGES;
-import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
@@ -144,8 +143,8 @@ public class LiquidityCache {
             datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
             datum.setBuyCost(slippageAnalyzer.getBuyCost());
             datum.setSellCost(slippageAnalyzer.getSellCost());
-            datum.setBestAsk(scalePrice(slippageAnalyzer.getBestAsk()));
-            datum.setBestBid(scalePrice(slippageAnalyzer.getBestBid()));
+            datum.setBestAsk(orderBook.getAsks().getBestPrice());
+            datum.setBestBid(orderBook.getBids().getBestPrice());
             datum.setTotalBids(totalAnalyzer.getTotalBids());
             datum.setTotalAsks(totalAnalyzer.getTotalAsks());
             PERCENTAGES.forEach(percent -> analyzeCloseBidsAsks(orderBook, datum, percent));
