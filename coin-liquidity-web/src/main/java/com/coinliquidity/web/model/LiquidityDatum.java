@@ -19,13 +19,13 @@ public class LiquidityDatum {
     private BigDecimal sellCost;
     private BigDecimal bestAsk;
     private BigDecimal bestBid;
-    private BigDecimal totalAsks;
-    private BigDecimal totalBids;
     private Instant updateTime;
     private BigDecimal price;
 
     private final Map<Integer, BigDecimal> bids = Maps.newHashMap();
     private final Map<Integer, BigDecimal> asks = Maps.newHashMap();
+    private final Map<Integer, BigDecimal> bidsUsd = Maps.newHashMap();
+    private final Map<Integer, BigDecimal> asksUsd = Maps.newHashMap();
 
     public BigDecimal getBids(final int percent) {
         return bids.get(percent);
@@ -41,6 +41,37 @@ public class LiquidityDatum {
 
     public void setAsks(final int percent, final BigDecimal value) {
         this.asks.put(percent, value);
+    }
+
+    public BigDecimal getBidsUsd(final int percent) {
+        return bidsUsd.get(percent);
+    }
+
+    public BigDecimal getAsksUsd(final int percent) {
+        return asksUsd.get(percent);
+    }
+
+    public void setBidsUsd(final int percent, final BigDecimal value) {
+        this.bidsUsd.put(percent, value);
+    }
+
+    public void setAsksUsd(final int percent, final BigDecimal value) {
+        this.asksUsd.put(percent, value);
+    }
+
+    public BigDecimal getTotalAsks() {
+        return getAsks(0);
+    }
+
+    public BigDecimal getTotalBids() {
+        return getBids(0);
+    }
+
+    public BigDecimal getTotalAsksUsd() {
+        return getAsksUsd(0);
+    }
+    public BigDecimal getTotalBidsUsd() {
+        return getBidsUsd(0);
     }
 
     public boolean matches(final String baseCurrency, final String quoteCurrency) {

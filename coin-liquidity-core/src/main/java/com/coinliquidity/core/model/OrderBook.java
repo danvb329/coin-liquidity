@@ -5,6 +5,8 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 
+import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
+
 @Data
 public class OrderBook {
 
@@ -33,5 +35,16 @@ public class OrderBook {
 
     public String getName() {
         return exchange;
+    }
+
+    public BigDecimal getMidPrice() {
+        final BigDecimal bestBid = bids.getBestPrice();
+        final BigDecimal bestAsk = asks.getBestPrice();
+
+        if (bestBid != null && bestAsk != null) {
+            return avgPrice(bestBid, bestAsk);
+        } else {
+            return null;
+        }
     }
 }

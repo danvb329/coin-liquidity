@@ -1,25 +1,14 @@
 {
   "exchangeList": [
     {
-      "name": "poloniex.com",
-      "url": "https://poloniex.com/public?command=returnOrderBook&currencyPair=<QUOTE>_<BASE>&depth=<MAX_DEPTH>",
+      "name": "gemini.com",
+      "url": "https://api.gemini.com/v1/book/<base><quote>?limit_bids=0&limit_asks=0",
       "currencies": [
-        "XMR/BTC",
-        "ETH/BTC",
-        "ETC/BTC",
-        "DOGE/BTC",
-        "MAID/BTC",
-        "FCT/BTC",
-        "XRP/BTC",
-        "LTC/BTC",
-        "STEEM/BTC",
-        "DASH/BTC",
-        "XEM/BTC"
+        "BTC/USD"
       ],
-      "parserType": "ARRAY",
-      "rateLimit": 6,
-      "maxDepth": 9999,
-      "docUrl": "https://poloniex.com/support/api/"
+      "parserType": "LABELED",
+      "rateLimit": 1,
+      "docUrl": "https://docs.gemini.com/rest-api/#current-order-book"
     }
   ]
 }

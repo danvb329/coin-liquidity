@@ -1,0 +1,14 @@
+ALTER TABLE liquidity_history ADD COLUMN bids_1 DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN asks_1_usd DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN bids_2 DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN asks_2_usd DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN bids_3 DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN asks_3_usd DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN bids_5 DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN asks_5_usd DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN bids_10 DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN asks_10_usd DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN bids_20 DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN asks_20_usd DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN total_bids DECIMAL;
+ALTER TABLE liquidity_history ADD COLUMN total_asks_usd DECIMAL;

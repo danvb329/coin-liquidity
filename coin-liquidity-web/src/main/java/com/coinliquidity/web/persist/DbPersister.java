@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
 import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
 import static com.coinliquidity.core.util.ResourceUtils.resource;
 
@@ -47,34 +48,32 @@ public class DbPersister implements LiquidityDataPersister {
         final Stopwatch stopwatch = Stopwatch.createStarted();
         final List<Object[]> batchArgs = Lists.newArrayList();
         for (final LiquidityDatum datum : liquidityData.getLiquidityData()) {
-            batchArgs.add(new Object[] {
-                    Timestamp.from(liquidityData.getUpdateTime()),
-                    datum.getExchange(),
-                    datum.getCurrencyPair().getBaseCurrency(),
-                    datum.getCurrencyPair().getQuoteCurrency(),
-                    datum.getSellCost(),
-                    datum.getBuyCost(),
-                    datum.getBestBid(),
-                    datum.getBestAsk(),
-                    datum.getTotalBids(),
-                    datum.getTotalAsks(),
-                    datum.getPrice(),
-                    datum.getBids(1),
-                    datum.getAsks(1),
-                    datum.getBids(2),
-                    datum.getAsks(2),
-                    datum.getBids(3),
-                    datum.getAsks(3),
-                    datum.getBids(5),
-                    datum.getAsks(5),
-                    datum.getBids(10),
-                    datum.getAsks(10),
-                    datum.getBids(20),
-                    datum.getAsks(20)
-            });
+            batchArgs.add(toArgs(liquidityData, datum));
         }
         jdbcTemplate.batchUpdate(INSERT, batchArgs);
         LOGGER.info("persist took {}", stopwatch.stop());
+    }
+
+    private Object[] toArgs(final LiquidityData liquidityData, final LiquidityDatum datum) {
+        final List<Object> args = new ArrayList<>();
+        args.add(Timestamp.from(liquidityData.getUpdateTime()));
+        args.add(datum.getExchange());
+        args.add(datum.getCurrencyPair().getBaseCurrency());
+        args.add(datum.getCurrencyPair().getQuoteCurrency());
+        args.add(datum.getSellCost());
+        args.add(datum.getBuyCost());
+        args.add(datum.getBestBid());
+        args.add(datum.getBestAsk());
+        args.add(datum.getPrice());
+
+        PERCENTAGES.forEach(percent -> {
+            args.add(datum.getBids(percent));
+            args.add(datum.getBidsUsd(percent));
+            args.add(datum.getAsks(percent));
+            args.add(datum.getAsksUsd(percent));
+        });
+
+        return args.toArray();
     }
 
     @Override
@@ -166,7 +165,7 @@ public class DbPersister implements LiquidityDataPersister {
             try {
                 Arrays.stream(lines).forEach(jdbcTemplate::execute);
             } catch (final Exception e) {
-                LOGGER.error("Could not execute {}", scriptName);
+                LOGGER.error("Could not execute {}", scriptName, e);
             }
 
             LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());

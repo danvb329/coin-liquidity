@@ -21,8 +21,11 @@ public class LiquidityDatumRowMapper implements RowMapper<LiquidityDatum> {
         datum.setBestBid(rs.getBigDecimal("best_bid"));
         datum.setBuyCost(rs.getBigDecimal("buy_cost"));
         datum.setSellCost(rs.getBigDecimal("sell_cost"));
-        datum.setTotalAsks(rs.getBigDecimal("total_asks"));
-        datum.setTotalBids(rs.getBigDecimal("total_bids_usd"));
+        
+        datum.setAsks(0, rs.getBigDecimal("total_asks"));
+        datum.setBids(0, rs.getBigDecimal("total_bids"));
+        datum.setAsksUsd(0, rs.getBigDecimal("total_asks_usd"));
+        datum.setBidsUsd(0, rs.getBigDecimal("total_bids_usd"));
         return datum;
     }
 }

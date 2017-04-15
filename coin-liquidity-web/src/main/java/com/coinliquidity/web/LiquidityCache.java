@@ -2,9 +2,8 @@ package com.coinliquidity.web;
 
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.core.OrderBookDownloader;
-import com.coinliquidity.core.analyzer.CloseBidAskAnalyzer;
+import com.coinliquidity.core.analyzer.BidAskAnalyzer;
 import com.coinliquidity.core.analyzer.SlippageAnalyzer;
-import com.coinliquidity.core.analyzer.TotalAnalyzer;
 import com.coinliquidity.core.fx.FxRates;
 import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchanges;
@@ -27,7 +26,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.coinliquidity.core.analyzer.CloseBidAskAnalyzer.PERCENTAGES;
+import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
@@ -134,9 +133,7 @@ public class LiquidityCache {
         final List<LiquidityDatum> dataList = new ArrayList<>();
         orderBooks.forEach(orderBook -> {
             final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(amount);
-            final TotalAnalyzer totalAnalyzer = new TotalAnalyzer();
             slippageAnalyzer.analyze(orderBook);
-            totalAnalyzer.analyze(orderBook);
 
             final LiquidityDatum datum = new LiquidityDatum();
             datum.setExchange(orderBook.getName());
@@ -145,9 +142,8 @@ public class LiquidityCache {
             datum.setSellCost(slippageAnalyzer.getSellCost());
             datum.setBestAsk(orderBook.getAsks().getBestPrice());
             datum.setBestBid(orderBook.getBids().getBestPrice());
-            datum.setTotalBids(totalAnalyzer.getTotalBids());
-            datum.setTotalAsks(totalAnalyzer.getTotalAsks());
-            PERCENTAGES.forEach(percent -> analyzeCloseBidsAsks(orderBook, datum, percent));
+            datum.setPrice(orderBook.getMidPrice());
+            PERCENTAGES.forEach(percent -> analyzeBidsAsks(orderBook, datum, percent));
             dataList.add(datum);
         });
 
@@ -157,14 +153,15 @@ public class LiquidityCache {
         return liquidityData;
     }
 
-    private void analyzeCloseBidsAsks(final OrderBook orderBook,
-                                      final LiquidityDatum datum,
-                                      final int percent) {
-        final CloseBidAskAnalyzer analyzer = new CloseBidAskAnalyzer(percent);
+    private void analyzeBidsAsks(final OrderBook orderBook,
+                                 final LiquidityDatum datum,
+                                 final int percent) {
+        final BidAskAnalyzer analyzer = new BidAskAnalyzer(percent);
         analyzer.analyze(orderBook);
         datum.setBids(percent, analyzer.getTotalBids());
         datum.setAsks(percent, analyzer.getTotalAsks());
-        datum.setPrice(analyzer.getPrice());
+        datum.setBidsUsd(percent, analyzer.getTotalBidsUsd());
+        datum.setAsksUsd(percent, analyzer.getTotalAsksUsd());
     }
 
     private void updateHistory(final LiquidityData liquidityData) {
