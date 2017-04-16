@@ -2,6 +2,7 @@ package com.coinliquidity.web.rest;
 
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.model.LiquiditySummary;
+import com.coinliquidity.web.model.ViewType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +35,8 @@ public class DataController {
             @PathVariable("baseCurrency") final String baseCurrency,
             @RequestParam(value = "days") final int days,
             @RequestParam(value = "exchange") final String exchange,
-            @RequestParam(value = "percent") final int bidAskPercent) {
+            @RequestParam(value = "percent") final int bidAskPercent,
+            @RequestParam(value = "view") final ViewType viewType) {
 
         cache.validateBaseCcy(baseCurrency);
         cache.validateExchange(exchange);
@@ -44,10 +46,11 @@ public class DataController {
                 baseCurrency,
                 Instant.now().minus(days, DAYS),
                 "all".equals(exchange) ? null : exchange,
-                bidAskPercent);
+                bidAskPercent,
+                viewType);
 
         final Map<String, List<Object[]>> data = new HashMap<>();
-        data.put("bids", toChartData(summaries, LiquiditySummary::getTotalBidsUsd));
+        data.put("bids", toChartData(summaries, LiquiditySummary::getTotalBids));
         data.put("asks", toChartData(summaries, LiquiditySummary::getTotalAsks));
         data.put("price", toChartData(summaries, LiquiditySummary::getPrice));
         return data;

@@ -1,7 +1,6 @@
 SELECT
 run_date,
-price,
-SUM(<bids_column>) AS total_bids_usd,
+SUM(<bids_column>) AS total_bids,
 SUM(<asks_column>) AS total_asks
 FROM liquidity_history
 WHERE base_ccy = ? AND run_date > ?

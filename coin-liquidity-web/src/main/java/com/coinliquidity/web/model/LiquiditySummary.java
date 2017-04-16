@@ -9,7 +9,7 @@ import java.time.Instant;
 public class LiquiditySummary {
 
     private Instant updateTime;
-    private BigDecimal totalBidsUsd;
+    private BigDecimal totalBids;
     private BigDecimal totalAsks;
     private BigDecimal price;
 }

@@ -11,6 +11,9 @@ public class DecimalUtils {
     private static final BigDecimal TWO = new BigDecimal(2);
 
     public static BigDecimal avgPrice(final BigDecimal price1, final BigDecimal price2) {
+        if (price1 == null || price2 == null) {
+            return null;
+        }
         return stripZeros(price1.add(price2).divide(TWO, PRICE_MAX_SCALE, RoundingMode.HALF_UP));
     }
 

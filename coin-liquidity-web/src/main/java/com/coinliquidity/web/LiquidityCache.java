@@ -3,7 +3,6 @@ package com.coinliquidity.web;
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.analyzer.BidAskAnalyzer;
-import com.coinliquidity.core.analyzer.SlippageAnalyzer;
 import com.coinliquidity.core.fx.FxRates;
 import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchanges;
@@ -11,13 +10,13 @@ import com.coinliquidity.core.model.OrderBook;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
+import com.coinliquidity.web.model.ViewType;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -96,7 +95,7 @@ public class LiquidityCache {
         final FxRates fxRates = fxCache.getRates();
         orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
 
-        this.liquidityData = toLiquidityData(orderBooks, new BigDecimal(100000));
+        this.liquidityData = toLiquidityData(orderBooks);
         dataPersister.persist(this.liquidityData);
         updateHistory(liquidityData);
 
@@ -127,19 +126,12 @@ public class LiquidityCache {
         });
     }
 
-    private LiquidityData toLiquidityData(final List<OrderBook> orderBooks,
-                                          final BigDecimal amount) {
-
+    private LiquidityData toLiquidityData(final List<OrderBook> orderBooks) {
         final List<LiquidityDatum> dataList = new ArrayList<>();
         orderBooks.forEach(orderBook -> {
-            final SlippageAnalyzer slippageAnalyzer = new SlippageAnalyzer(amount);
-            slippageAnalyzer.analyze(orderBook);
-
             final LiquidityDatum datum = new LiquidityDatum();
             datum.setExchange(orderBook.getName());
             datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
-            datum.setBuyCost(slippageAnalyzer.getBuyCost());
-            datum.setSellCost(slippageAnalyzer.getSellCost());
             datum.setBestAsk(orderBook.getAsks().getBestPrice());
             datum.setBestBid(orderBook.getBids().getBestPrice());
             datum.setPrice(orderBook.getMidPrice());
@@ -185,8 +177,9 @@ public class LiquidityCache {
     public List<LiquiditySummary> getLiquiditySummary(final String baseCcy,
                                                       final Instant threshold,
                                                       final String exchange,
-                                                      final int bidAskPercent) {
-        return dataPersister.loadSummary(baseCcy, threshold, exchange, bidAskPercent);
+                                                      final int bidAskPercent,
+                                                      final ViewType viewType) {
+        return dataPersister.loadSummary(baseCcy, threshold, exchange, bidAskPercent, viewType);
     }
 
     public Set<String> getBaseCurrencies() {

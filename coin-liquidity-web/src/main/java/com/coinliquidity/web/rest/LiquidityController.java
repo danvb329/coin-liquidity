@@ -3,6 +3,7 @@ package com.coinliquidity.web.rest;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
+import com.coinliquidity.web.model.ViewType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,6 +78,7 @@ public class LiquidityController {
                           @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
                           @RequestParam(value = "exchange", required = false, defaultValue = "all") final String exchange,
                           @RequestParam(value = "percent", required = false, defaultValue = "0") final int bidAskPercent,
+                          @RequestParam(value = "view", required = false, defaultValue = "USD") final ViewType viewType,
                           final Model model) {
         cache.validateBaseCcy(baseCurrency);
         cache.validateExchange(exchange);
@@ -86,6 +88,7 @@ public class LiquidityController {
         model.addAttribute("currencies", cache.getBaseCurrencies());
         model.addAttribute("exchange", exchange);
         model.addAttribute("percent", bidAskPercent);
+        model.addAttribute("view", viewType.name());
         return "summary";
     }
 

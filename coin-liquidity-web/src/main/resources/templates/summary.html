@@ -15,7 +15,7 @@
     <button onclick="showCcyDropdown()" class="dropbtn">Currencies</button>
     <div id="ccyDropdown" class="dropdown-content">
         <a th:each="currency : ${currencies}"
-           th:href="@{/liquidity/view/summary/{ccy}(ccy=${currency},days=${days},exchange=${exchange})}"
+           th:href="@{/liquidity/view/summary/{ccy}(ccy=${currency},days=${days},exchange=${exchange},percent=${percent},view=${view})}"
            th:text="${currency}">BTC</a>
     </div>
 </div>
@@ -25,7 +25,8 @@
 /*<![CDATA[*/
 var baseCurrency = /*[[${baseCurrency}]]*/ 'BTC';
 var days = /*[[${days}]]*/ 10;
-var url = /*[[@{/liquidity/data/summary/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange},percent=${percent})}]]*/ 'xyz';
+var view = /*[[${view}]]*/ 'BASE';
+var url = /*[[@{/liquidity/data/summary/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange},percent=${percent},view=${view})}]]*/ 'xyz';
 /*]]>*/
 
 // colors
@@ -46,7 +47,7 @@ $(document).ready(function () {
             {
                 opposite: false,
                 title: {
-                    text: 'Total Bids (USD)',
+                    text: 'Total Bids (' + view + ')',
                     style: {
                         color: bidColor
                     }
@@ -55,7 +56,7 @@ $(document).ready(function () {
             {
                 opposite: true,
                 title: {
-                    text: 'Total Asks',
+                    text: 'Total Asks (' + view + ')',
                     style: {
                         color: askColor
                     }
@@ -74,12 +75,12 @@ $(document).ready(function () {
         series: [
             {
                 yAxis: 0,
-                name: 'Total Bids (USD)',
+                name: 'Total Bids (' + view + ')',
                 color: bidColor
             },
             {
                 yAxis: 1,
-                name: 'Total Asks',
+                name: 'Total Asks (' + view + ')',
                 color: askColor
             },
             {

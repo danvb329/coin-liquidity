@@ -3,6 +3,7 @@ package com.coinliquidity.web.persist;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
+import com.coinliquidity.web.model.ViewType;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
 import org.apache.commons.lang3.StringUtils;
@@ -109,22 +110,28 @@ public class DbPersister implements LiquidityDataPersister {
     public List<LiquiditySummary> loadSummary(final String baseCcy,
                                               final Instant threshold,
                                               final String exchange,
-                                              final int bidAskPercent) {
+                                              final int bidAskPercent,
+                                              final ViewType viewType) {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         final boolean exchangeFilter = exchange != null;
         final Object[] args = new Object[] { baseCcy, Timestamp.from(threshold), exchangeFilter, exchange };
 
-        final String bidsColumn;
-        final String asksColumn;
+        String bidsColumn;
+        String asksColumn;
 
 
         if (bidAskPercent == 0) {
-            bidsColumn = "total_bids_usd";
+            bidsColumn = "total_bids";
             asksColumn = "total_asks";
         } else {
-            bidsColumn = "bids_" + bidAskPercent + "_usd";
+            bidsColumn = "bids_" + bidAskPercent;
             asksColumn = "asks_" + bidAskPercent;
+        }
+
+        if (ViewType.USD.equals(viewType)) {
+            bidsColumn += "_usd";
+            asksColumn += "_usd";
         }
 
         final String sql = SELECT_LIQUIDITY_SUMMARY

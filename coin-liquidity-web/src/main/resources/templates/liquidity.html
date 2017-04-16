@@ -29,7 +29,7 @@ $(function() {
             6: { sorter:'thousands' },
             7: { sorter:'thousands' }
         },
-        sortList: [[2,0],[3,0]]
+        sortList: [[2,1],[3,1]]
     });
 });
 
@@ -42,8 +42,8 @@ $(function() {
     <tr>
         <th>Exchange</th>
         <th>Pair</th>
-        <th>Cost to Sell (%)</th>
-        <th>Cost to Buy (%)</th>
+        <th>1% Bids (USD)</th>
+        <th>1% Asks (USD)</th>
         <th>Best Bid</th>
         <th>Best Ask</th>
         <th>Total Bids (USD)</th>
@@ -58,8 +58,8 @@ $(function() {
         <td>
             <a th:href="@{'/liquidity/view/currency/' + ${datum.currencyPair}}" th:text="${datum.currencyPair}">BTC/USD</a>
         </td>
-        <td th:text="${datum.sellCost} ?: 'n/a'">1.23</td>
-        <td th:text="${datum.buyCost} ?: 'n/a'">1.55</td>
+        <td th:text="${#numbers.formatDecimal(datum.onePercentBidsUsd, 0, 'COMMA', 0, 'POINT')}">3500</td>
+        <td th:text="${#numbers.formatDecimal(datum.onePercentAsksUsd, 0, 'COMMA', 0, 'POINT')}">1234</td>
         <td th:text="${datum.bestBid} ?: 'n/a'">100.42</td>
         <td th:text="${datum.bestAsk} ?: 'n/a'">100.43</td>
         <td th:text="${#numbers.formatDecimal(datum.totalBidsUsd, 0, 'COMMA', 0, 'POINT')}">3500</td>

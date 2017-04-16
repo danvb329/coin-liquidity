@@ -19,9 +19,10 @@ public class LiquidityDatumRowMapper implements RowMapper<LiquidityDatum> {
                 rs.getString("quote_ccy")));
         datum.setBestAsk(rs.getBigDecimal("best_ask"));
         datum.setBestBid(rs.getBigDecimal("best_bid"));
-        datum.setBuyCost(rs.getBigDecimal("buy_cost"));
-        datum.setSellCost(rs.getBigDecimal("sell_cost"));
-        
+
+        datum.setAsksUsd(1, rs.getBigDecimal("asks_1_usd"));
+        datum.setBidsUsd(1, rs.getBigDecimal("bids_1_usd"));
+
         datum.setAsks(0, rs.getBigDecimal("total_asks"));
         datum.setBids(0, rs.getBigDecimal("total_bids"));
         datum.setAsksUsd(0, rs.getBigDecimal("total_asks_usd"));

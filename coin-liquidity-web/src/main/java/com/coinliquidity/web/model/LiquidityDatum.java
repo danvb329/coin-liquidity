@@ -74,6 +74,13 @@ public class LiquidityDatum {
         return getBidsUsd(0);
     }
 
+    public BigDecimal getOnePercentAsksUsd() {
+        return getAsksUsd(1);
+    }
+    public BigDecimal getOnePercentBidsUsd() {
+        return getBidsUsd(1);
+    }
+
     public boolean matches(final String baseCurrency, final String quoteCurrency) {
         return isMatch(baseCurrency, currencyPair.getBaseCurrency())
                 && isMatch(quoteCurrency, currencyPair.getQuoteCurrency());
