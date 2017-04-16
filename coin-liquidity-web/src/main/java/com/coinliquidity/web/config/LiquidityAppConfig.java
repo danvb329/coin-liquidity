@@ -9,7 +9,7 @@ import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.persist.DbPersister;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.coinliquidity.web.rest.DataController;
-import com.coinliquidity.web.rest.LiquidityController;
+import com.coinliquidity.web.rest.ViewController;
 import com.coinliquidity.web.rest.StatusController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,8 +24,8 @@ public class LiquidityAppConfig {
     private static final String BASE_CCY = "USD";
 
     @Bean
-    public LiquidityController liquidityController(final LiquidityCache liquidityCache) {
-        return new LiquidityController(liquidityCache);
+    public ViewController viewController(final LiquidityCache liquidityCache) {
+        return new ViewController(liquidityCache);
     }
 
     @Bean

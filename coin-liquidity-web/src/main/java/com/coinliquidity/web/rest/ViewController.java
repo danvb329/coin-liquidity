@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/liquidity/view")
-public class LiquidityController {
+public class ViewController {
 
     private final LiquidityCache cache;
 
-    public LiquidityController(final LiquidityCache cache) {
+    public ViewController(final LiquidityCache cache) {
         this.cache = cache;
     }
 
