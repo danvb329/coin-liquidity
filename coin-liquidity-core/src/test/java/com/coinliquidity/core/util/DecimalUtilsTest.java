@@ -6,6 +6,8 @@ import java.math.BigDecimal;
 
 import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class DecimalUtilsTest {
 
@@ -21,12 +23,14 @@ public class DecimalUtilsTest {
 
     @Test
     public void scalePrice_trim() {
-        assertEquals(new BigDecimal("0.12345"), scalePrice(new BigDecimal("0.12345000")));
+        assertEquals(new BigDecimal("0.12345"),
+                scalePrice(new BigDecimal("0.12345000")));
     }
 
     @Test
     public void scalePrice_trimMin() {
-        assertEquals(new BigDecimal("500.00"), scalePrice(new BigDecimal("500")));
+        assertEquals(new BigDecimal("500.00"),
+                scalePrice(new BigDecimal("500")));
     }
 
     @Test
@@ -58,6 +62,21 @@ public class DecimalUtilsTest {
         final BigDecimal price = new BigDecimal("100.000");
         final BigDecimal rate = new BigDecimal("32");
         assertEquals(new BigDecimal("3.13"), DecimalUtils.convert(price, rate));
+    }
+
+    @Test
+    public void percentDiff() {
+        assertEquals(new BigDecimal(5),
+                DecimalUtils.percentDiff(new BigDecimal(100), new BigDecimal(105)));
+
+        assertEquals(new BigDecimal(100),
+                DecimalUtils.percentDiff(new BigDecimal(100), new BigDecimal(200)));
+    }
+
+    @Test
+    public void anyNull() {
+        assertTrue(DecimalUtils.anyNull(BigDecimal.ONE, null));
+        assertFalse(DecimalUtils.anyNull(BigDecimal.ONE, BigDecimal.ONE));
     }
 
 }

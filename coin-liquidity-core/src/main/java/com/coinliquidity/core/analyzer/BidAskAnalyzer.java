@@ -1,6 +1,7 @@
 package com.coinliquidity.core.analyzer;
 
 import com.coinliquidity.core.model.OrderBook;
+import com.coinliquidity.core.util.DecimalUtils;
 import com.google.common.collect.Lists;
 
 import java.math.BigDecimal;
@@ -41,7 +42,7 @@ public class BidAskAnalyzer implements Analyzer {
             minBid = price.multiply(BigDecimal.ONE.subtract(fraction));
         } else {
             // add up all bids and asks
-            maxAsk = new BigDecimal(Long.MAX_VALUE);
+            maxAsk = DecimalUtils.MAX;
             minBid = BigDecimal.ZERO;
         }
 

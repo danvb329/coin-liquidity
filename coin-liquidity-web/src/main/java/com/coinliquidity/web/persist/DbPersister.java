@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
 import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
+import static com.coinliquidity.core.util.DecimalUtils.percentDiff;
 import static com.coinliquidity.core.util.ResourceUtils.resource;
 
 public class DbPersister implements LiquidityDataPersister {
@@ -149,8 +150,10 @@ public class DbPersister implements LiquidityDataPersister {
             final BigDecimal avgAsk = rs.getBigDecimal("avg_ask");
 
             final LiquiditySummary liquiditySummary = map.get(runDate);
-            if (liquiditySummary != null && liquiditySummary.getPrice() == null) {
-                liquiditySummary.setPrice(avgPrice(avgBid, avgAsk));
+            if (liquiditySummary != null) {
+                if (BigDecimal.TEN.compareTo(percentDiff(avgBid, avgAsk)) > 0) {
+                    liquiditySummary.setPrice(avgPrice(avgBid, avgAsk));
+                }
             }
         });
 
