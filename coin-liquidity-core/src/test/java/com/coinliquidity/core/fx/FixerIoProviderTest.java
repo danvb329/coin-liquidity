@@ -17,7 +17,7 @@ public class FixerIoProviderTest {
 
         final FxRates rates = fixerIoProvider.getRates();
 
-        assertThat(fixerIoProvider.getDataDate(), greaterThan(LocalDate.now().minusDays(4)));
+        assertThat(fixerIoProvider.getDataDate(), greaterThan(LocalDate.now().minusDays(5)));
         assertThat(rates.getRate("USD"), equalTo(BigDecimal.ONE));
         assertThat(rates.getRate("EUR"), greaterThan(BigDecimal.ZERO));
     }
