@@ -133,6 +133,8 @@ public class DbPersister implements LiquidityDataPersister {
         if (ViewType.USD.equals(viewType)) {
             bidsColumn += "_usd";
             asksColumn += "_usd";
+        }  else if (ViewType.DEFAULT.equals(viewType)) {
+            bidsColumn += "_usd";
         }
 
         final String sql = SELECT_LIQUIDITY_SUMMARY

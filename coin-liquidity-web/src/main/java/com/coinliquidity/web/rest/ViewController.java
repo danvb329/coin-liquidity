@@ -78,7 +78,7 @@ public class ViewController {
                           @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
                           @RequestParam(value = "exchange", required = false, defaultValue = "all") final String exchange,
                           @RequestParam(value = "percent", required = false, defaultValue = "0") final int bidAskPercent,
-                          @RequestParam(value = "view", required = false, defaultValue = "USD") final ViewType viewType,
+                          @RequestParam(value = "view", required = false, defaultValue = "DEFAULT") final ViewType viewType,
                           final Model model) {
         cache.validateBaseCcy(baseCurrency);
         cache.validateExchange(exchange);
