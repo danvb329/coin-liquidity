@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <title th:text="'Liquidity Summary - ' + ${baseCurrency} + ' (last ' + ${days} + ' days)'">Liquidity</title>
+    <title th:text="'Bids/Asks - ' + ${baseCurrency} + ' (last ' + ${days} + ' days)'">Liquidity</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script type="text/javascript" src="https://code.highcharts.com/stock/highstock.js"></script>
@@ -34,6 +34,20 @@ var bidColor = 'Green'
 var askColor = 'Red'
 var priceColor = 'LightGray'
 
+// labels
+var bidsLabel = 'USD'
+var asksLabel = 'USD'
+if (view == 'DEFAULT') {
+    bidsLabel = 'USD'
+    asksLabel = baseCurrency
+} else if (view == 'BASE') {
+    bidsLabel = baseCurrency
+    asksLabel = baseCurrency
+}
+bidsLabel = 'Bids (' + bidsLabel + ')'
+asksLabel = 'Asks (' + asksLabel + ')'
+
+
 $(document).ready(function () {
     var options = {
         chart: {
@@ -41,13 +55,13 @@ $(document).ready(function () {
             type: 'line'
         },
         title: {
-            text: 'Liquidity Summary - ' + baseCurrency + ' (last ' + days + ' days)'
+            text: 'Bids/Asks - ' + baseCurrency + ' (last ' + days + ' days)'
         },
         yAxis: [
             {
                 opposite: false,
                 title: {
-                    text: 'Total Bids (' + view + ')',
+                    text: bidsLabel,
                     style: {
                         color: bidColor
                     }
@@ -56,7 +70,7 @@ $(document).ready(function () {
             {
                 opposite: true,
                 title: {
-                    text: 'Total Asks (' + view + ')',
+                    text: asksLabel,
                     style: {
                         color: askColor
                     }
@@ -75,12 +89,12 @@ $(document).ready(function () {
         series: [
             {
                 yAxis: 0,
-                name: 'Total Bids (' + view + ')',
+                name: bidsLabel,
                 color: bidColor
             },
             {
                 yAxis: 1,
-                name: 'Total Asks (' + view + ')',
+                name: asksLabel,
                 color: askColor
             },
             {
