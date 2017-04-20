@@ -17,22 +17,23 @@ public class OrderBookDownloaderMain {
         final HttpDownloader httpDownloader = new HttpDownloader(new HttpClient());
 
         config.loadExchanges().getExchangeList().forEach(exchange -> {
-                    OrderBookDownloader obd = new OrderBookDownloader(exchange, httpDownloader);
-                    obd.run();
+            final OrderBookDownloader obd = new OrderBookDownloader(exchange, httpDownloader);
+            obd.run();
+            obd.getOrderBooks().forEach(OrderBookDownloaderMain::processOrderBook);
+        });
 
-                    final OrderBook orderBook = obd.getOrderBooks().get(0);
+    }
 
-                    PERCENTAGES.forEach(percent -> {
-                        final BidAskAnalyzer analyzer = new BidAskAnalyzer(percent);
-                        analyzer.analyze(orderBook);
-                        System.out.println(percent +
-                                "\tBids:\t" + analyzer.getTotalBids() +
-                                "\tAsks:\t" + analyzer.getTotalAsks() +
-                                "\tBids USD:\t" + analyzer.getTotalBidsUsd() +
-                                "\tAsks USD:\t" + analyzer.getTotalAsksUsd());
-                    });
-
-                });
-
+    private static void processOrderBook(final OrderBook orderBook) {
+        System.out.println(orderBook.getExchange() + " - " + orderBook.getCurrencyPair());
+        PERCENTAGES.forEach(percent -> {
+            final BidAskAnalyzer analyzer = new BidAskAnalyzer(percent);
+            analyzer.analyze(orderBook);
+            System.out.println(percent +
+                    "\tBids:\t" + analyzer.getTotalBids() +
+                    "\tAsks:\t" + analyzer.getTotalAsks() +
+                    "\tBids USD:\t" + analyzer.getTotalBidsUsd() +
+                    "\tAsks USD:\t" + analyzer.getTotalAsksUsd());
+        });
     }
 }

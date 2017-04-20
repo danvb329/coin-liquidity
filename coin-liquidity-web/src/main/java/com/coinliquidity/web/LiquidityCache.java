@@ -75,13 +75,11 @@ public class LiquidityCache {
                 .map(exchange -> new OrderBookDownloader(exchange, httpDownloader))
                 .collect(Collectors.toList());
 
-        LOGGER.info("Creating pool of {} threads", obds.size());
+        final int threads = Math.min(obds.size(), 20);
+        LOGGER.info("Creating pool of {} threads", threads);
 
-        final ExecutorService executorService = Executors.newFixedThreadPool(obds.size());
-
-        for (final OrderBookDownloader obd : obds) {
-            executorService.execute(obd);
-        }
+        final ExecutorService executorService = Executors.newFixedThreadPool(threads);
+        obds.forEach(executorService::execute);
 
         executorService.shutdown();
 
