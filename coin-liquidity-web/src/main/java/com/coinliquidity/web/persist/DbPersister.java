@@ -159,8 +159,6 @@ public class DbPersister implements LiquidityDataPersister {
         args.add(datum.getExchange());
         args.add(datum.getCurrencyPair().getBaseCurrency());
         args.add(datum.getCurrencyPair().getQuoteCurrency());
-        args.add(datum.getSellCost());
-        args.add(datum.getBuyCost());
         args.add(datum.getBestBid());
         args.add(datum.getBestAsk());
         args.add(datum.getPrice());

@@ -3,8 +3,6 @@ INSERT INTO liquidity_history (
     exchange,
     base_ccy,
     quote_ccy,
-    sell_cost,
-    buy_cost,
     best_bid,
     best_ask,
     price,
@@ -45,7 +43,7 @@ INSERT INTO liquidity_history (
     total_asks_usd
 
 ) values (
-?, ?, ?, ?, ?, ?, ?, ?, ?,
+?, ?, ?, ?, ?, ?, ?,
 ?, ?, ?, ?,
 ?, ?, ?, ?,
 ?, ?, ?, ?,

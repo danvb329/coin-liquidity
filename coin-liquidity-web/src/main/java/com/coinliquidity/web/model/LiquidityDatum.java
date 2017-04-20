@@ -15,8 +15,6 @@ public class LiquidityDatum {
 
     private String exchange;
     private CurrencyPair currencyPair;
-    private BigDecimal buyCost;
-    private BigDecimal sellCost;
     private BigDecimal bestAsk;
     private BigDecimal bestBid;
     private Instant updateTime;
