@@ -40,7 +40,7 @@ public class DbPersister implements LiquidityDataPersister {
     public DbPersister(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.execute("database/create.sql");
-        this.execute("database/create_index.sql");
+        this.execute("database/indexes.sql");
         this.execute("database/execute.sql");
     }
 
