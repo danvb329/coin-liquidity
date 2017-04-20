@@ -12,11 +12,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
-public class HttpUtil {
+public class HttpClient {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static JsonNode get(final String url) {
+    public JsonNode get(final String url) {
         final Client client = ClientBuilder.newClient();
         client.property(ClientProperties.CONNECT_TIMEOUT, 10000);
         client.property(ClientProperties.READ_TIMEOUT,    20000);

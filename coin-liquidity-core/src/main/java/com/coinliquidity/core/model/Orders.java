@@ -1,6 +1,5 @@
 package com.coinliquidity.core.model;
 
-import com.coinliquidity.core.util.DecimalUtils;
 import com.google.common.collect.Maps;
 import lombok.Data;
 
@@ -52,13 +51,16 @@ public class Orders implements Iterable<Order> {
         return orderMap.isEmpty() ? null : orderMap.firstKey();
     }
 
-    Orders merge(final Orders other, final BigDecimal rate) {
+    public Orders merge(final Orders other) {
         checkArgument(this.orderType.equals(other.orderType), "Order types must equal");
         for (final Order order : other) {
             final BigDecimal price = order.getPrice();
             final BigDecimal units = order.getUnits();
-            final BigDecimal newPrice = DecimalUtils.convert(price, rate);
-            this.put(newPrice, units);
+            if (BigDecimal.ZERO.compareTo(units) == 0) {
+                orderMap.remove(price);
+            } else {
+                this.put(price, units);
+            }
         }
         return this;
     }

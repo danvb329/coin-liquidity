@@ -1,7 +1,6 @@
 package com.coinliquidity.core;
 
 import com.coinliquidity.core.model.Exchanges;
-import com.coinliquidity.core.util.HttpUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
 import org.slf4j.Logger;

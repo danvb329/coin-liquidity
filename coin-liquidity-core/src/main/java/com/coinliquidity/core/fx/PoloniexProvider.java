@@ -1,6 +1,6 @@
 package com.coinliquidity.core.fx;
 
-import com.coinliquidity.core.util.HttpUtil;
+import com.coinliquidity.core.util.HttpClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 
@@ -17,9 +17,15 @@ public class PoloniexProvider implements FxProvider {
     private static final String URL = "https://poloniex.com/public?command=returnTicker";
     private static final String USDT = "USDT_";
 
+    private final HttpClient httpClient;
+
+    public PoloniexProvider(final HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
     @Override
     public FxRates getRates() {
-        final JsonNode tree = HttpUtil.get(URL);
+        final JsonNode tree = httpClient.get(URL);
 
         final Map<String, BigDecimal> rates = Maps.newHashMap();
         final Map<String, BigDecimal> inverseRates = Maps.newHashMap();

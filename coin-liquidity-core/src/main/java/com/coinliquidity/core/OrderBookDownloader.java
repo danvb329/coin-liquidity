@@ -1,11 +1,10 @@
 package com.coinliquidity.core;
 
+import com.coinliquidity.core.download.HttpDownloader;
 import com.coinliquidity.core.model.CurrencyPair;
 import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchange;
 import com.coinliquidity.core.model.OrderBook;
-import com.coinliquidity.core.util.HttpUtil;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,12 +19,14 @@ public class OrderBookDownloader implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(OrderBookDownloader.class);
 
     private final Exchange exchange;
+    private final HttpDownloader httpDownloader;
 
     private final List<OrderBook> orderBooks;
     private final List<DownloadStatus> downloadStatuses;
 
-    public OrderBookDownloader(final Exchange exchange) {
+    public OrderBookDownloader(final Exchange exchange, final HttpDownloader httpDownloader) {
         this.exchange = exchange;
+        this.httpDownloader = httpDownloader;
         this.orderBooks = new ArrayList<>();
         this.downloadStatuses = new ArrayList<>();
     }
@@ -40,11 +41,11 @@ public class OrderBookDownloader implements Runnable {
             }
 
             final Stopwatch stopwatch = Stopwatch.createStarted();
-            final String orderBookUrl = orderBookUrl(currencyPair);
+            final String orderBookUrl = httpDownloader.getUrl(exchange, currencyPair);
             final DownloadStatus downloadStatus = initDownloadStatus(currencyPair, orderBookUrl);
 
             try {
-                final OrderBook orderBook = downloadOrderBook(orderBookUrl, currencyPair);
+                final OrderBook orderBook = httpDownloader.download(exchange, currencyPair);
                 orderBooks.add(orderBook);
 
                 downloadStatus.setStatus(DownloadStatus.OK);
@@ -77,23 +78,6 @@ public class OrderBookDownloader implements Runnable {
         downloadStatus.setOrderBookUrl(orderBookUrl);
         downloadStatuses.add(downloadStatus);
         return downloadStatus;
-    }
-
-    private OrderBook downloadOrderBook(final String ccyUrl, final CurrencyPair currencyPair) {
-        final JsonNode tree = HttpUtil.get(ccyUrl);
-        return exchange.getParserType().getParser()
-                .parse(exchange.getName(), currencyPair.normalize(), tree);
-    }
-
-    private String orderBookUrl(final CurrencyPair currencyPair) {
-        final String base = currencyPair.getBaseCurrency();
-        final String quote = currencyPair.getQuoteCurrency();
-        return exchange.getUrl()
-                .replaceAll("<BASE>", base.toUpperCase())
-                .replaceAll("<base>", base.toLowerCase())
-                .replaceAll("<QUOTE>", quote.toUpperCase())
-                .replaceAll("<quote>", quote.toLowerCase())
-                .replaceAll("<MAX_DEPTH>", String.valueOf(exchange.getMaxDepth()));
     }
 
     private void sleep(final long millis) {

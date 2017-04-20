@@ -3,6 +3,7 @@ package com.coinliquidity.web;
 import com.coinliquidity.core.ExchangeConfig;
 import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.analyzer.BidAskAnalyzer;
+import com.coinliquidity.core.download.HttpDownloader;
 import com.coinliquidity.core.fx.FxRates;
 import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchanges;
@@ -37,6 +38,7 @@ public class LiquidityCache {
     private final ExchangeConfig exchangeConfig;
     private final LiquidityDataPersister dataPersister;
     private final FxCache fxCache;
+    private final HttpDownloader httpDownloader;
 
     private LiquidityData liquidityData;
     private Map<String, DownloadStatus> downloadStatuses;
@@ -44,10 +46,12 @@ public class LiquidityCache {
 
     public LiquidityCache(final ExchangeConfig exchangeConfig,
                           final FxCache fxCache,
-                          final LiquidityDataPersister dataPersister) {
+                          final LiquidityDataPersister dataPersister,
+                          final HttpDownloader httpDownloader) {
         this.exchangeConfig = exchangeConfig;
         this.fxCache = fxCache;
         this.dataPersister = dataPersister;
+        this.httpDownloader = httpDownloader;
         this.downloadStatuses = new ConcurrentSkipListMap<>();
 
 
@@ -68,7 +72,8 @@ public class LiquidityCache {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
         final List<OrderBookDownloader> obds = exchanges.getExchangeList().stream()
-                .map(OrderBookDownloader::new).collect(Collectors.toList());
+                .map(exchange -> new OrderBookDownloader(exchange, httpDownloader))
+                .collect(Collectors.toList());
 
         LOGGER.info("Creating pool of {} threads", obds.size());
 

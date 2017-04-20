@@ -1,5 +1,7 @@
 package com.coinliquidity.core.fx;
 
+import com.coinliquidity.core.model.CurrencyPair;
+import com.coinliquidity.core.util.HttpClient;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -16,7 +18,8 @@ public class BitcoinAverageProviderTest {
 
     @Test
     public void test() {
-        final BitcoinAverageProvider bitcoinAverageProvider = new BitcoinAverageProvider("USD");
+        final BitcoinAverageProvider bitcoinAverageProvider =
+                new BitcoinAverageProvider(new HttpClient(), CurrencyPair.USD);
 
         final FxRates rates = bitcoinAverageProvider.getRates();
 

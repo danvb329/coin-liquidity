@@ -18,12 +18,11 @@ public class OrdersTest {
         final Orders orders2 = Orders.bids();
         orders2.put(100, 6);
 
-        final BigDecimal rate = new BigDecimal("3");
-        final Orders merged = orders1.merge(orders2, rate);
+        final Orders merged = orders1.merge(orders2);
 
         final Orders expected = Orders.bids();
         expected.put(new BigDecimal("100"), new BigDecimal("5"));
-        expected.put(new BigDecimal("33.33"), new BigDecimal("6"));
+        expected.put(new BigDecimal("100"), new BigDecimal("6"));
 
         assertEquals(expected, merged);
     }

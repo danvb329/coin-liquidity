@@ -1,6 +1,6 @@
 package com.coinliquidity.core.fx;
 
-import com.coinliquidity.core.util.HttpUtil;
+import com.coinliquidity.core.util.HttpClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
@@ -17,13 +17,16 @@ public class FixerIoProvider implements FxProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FixerIoProvider.class);
 
+    private final HttpClient httpClient;
+
     private final String baseCcy;
     private final String url;
 
     private LocalDate dataDate;
     private FxRates fxRates;
 
-    public FixerIoProvider(final String baseCcy) {
+    public FixerIoProvider(final HttpClient httpClient, final String baseCcy) {
+        this.httpClient = httpClient;
         this.baseCcy = baseCcy;
         this.url = "https://api.fixer.io/latest?base=" + baseCcy;
         this.refresh();
@@ -39,7 +42,7 @@ public class FixerIoProvider implements FxProvider {
         try {
             final Map<String, BigDecimal> rates = new TreeMap<>();
 
-            final JsonNode tree = HttpUtil.get(url);
+            final JsonNode tree = httpClient.get(url);
             final String dateStr = tree.get("date").asText();
             final LocalDate currentDate = LocalDate.parse(dateStr);
 

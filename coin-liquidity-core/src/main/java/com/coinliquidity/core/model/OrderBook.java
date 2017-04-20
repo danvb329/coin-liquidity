@@ -6,6 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 import static com.coinliquidity.core.util.DecimalUtils.avgPrice;
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Data
 public class OrderBook {
@@ -46,5 +47,11 @@ public class OrderBook {
         } else {
             return null;
         }
+    }
+
+    public void merge(final OrderBook other) {
+        checkArgument(other.currencyPair.equals(this.currencyPair), "must have same currency pair");
+        this.bids.merge(other.bids);
+        this.asks.merge(other.asks);
     }
 }

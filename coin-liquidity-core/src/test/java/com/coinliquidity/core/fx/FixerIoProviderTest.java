@@ -1,5 +1,7 @@
 package com.coinliquidity.core.fx;
 
+import com.coinliquidity.core.model.CurrencyPair;
+import com.coinliquidity.core.util.HttpClient;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -13,7 +15,7 @@ public class FixerIoProviderTest {
 
     @Test
     public void test() {
-        final FixerIoProvider fixerIoProvider = new FixerIoProvider("USD");
+        final FixerIoProvider fixerIoProvider = new FixerIoProvider(new HttpClient(), CurrencyPair.USD);
 
         final FxRates rates = fixerIoProvider.getRates();
 

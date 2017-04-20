@@ -1,9 +1,12 @@
 package com.coinliquidity.web.config;
 
 import com.coinliquidity.core.ExchangeConfig;
+import com.coinliquidity.core.download.HttpDownloader;
 import com.coinliquidity.core.fx.BitcoinAverageProvider;
 import com.coinliquidity.core.fx.FixerIoProvider;
 import com.coinliquidity.core.fx.FxProvider;
+import com.coinliquidity.core.model.CurrencyPair;
+import com.coinliquidity.core.util.HttpClient;
 import com.coinliquidity.web.FxCache;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.persist.DbPersister;
@@ -21,7 +24,7 @@ import java.util.List;
 @Configuration
 public class LiquidityAppConfig {
 
-    private static final String BASE_CCY = "USD";
+    private static final String BASE_CCY = CurrencyPair.USD;
 
     @Bean
     public ViewController viewController(final LiquidityCache liquidityCache) {
@@ -41,20 +44,31 @@ public class LiquidityAppConfig {
     @Bean
     public LiquidityCache liquidityCache(final ExchangeConfig exchangeConfig,
                                          final FxCache fxCache,
-                                         final LiquidityDataPersister liquidityDataPersister) {
-        return new LiquidityCache(exchangeConfig, fxCache, liquidityDataPersister);
+                                         final LiquidityDataPersister liquidityDataPersister,
+                                         final HttpDownloader httpDownloader) {
+        return new LiquidityCache(exchangeConfig, fxCache, liquidityDataPersister, httpDownloader);
     }
 
     @Bean
-    public FxCache fxCache() {
+    public FxCache fxCache(final HttpClient httpClient) {
         final List<FxProvider> fxProviders = new ArrayList<>();
-        fxProviders.add(new FixerIoProvider(BASE_CCY));
-        fxProviders.add(new BitcoinAverageProvider(BASE_CCY));
+        fxProviders.add(new FixerIoProvider(httpClient, BASE_CCY));
+        fxProviders.add(new BitcoinAverageProvider(httpClient, BASE_CCY));
         return new FxCache(fxProviders);
     }
 
     @Bean
     public LiquidityDataPersister liquidityDataPersister(final JdbcTemplate jdbcTemplate) {
         return new DbPersister(jdbcTemplate);
+    }
+
+    @Bean
+    public HttpDownloader httpDownloader(final HttpClient httpClient) {
+        return new HttpDownloader(httpClient);
+    }
+
+    @Bean
+    public HttpClient httpClient() {
+        return new HttpClient();
     }
 }
