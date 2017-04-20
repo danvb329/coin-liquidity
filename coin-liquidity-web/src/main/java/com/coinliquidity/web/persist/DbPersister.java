@@ -31,7 +31,6 @@ public class DbPersister implements LiquidityDataPersister {
     private static final LiquiditySummaryRowMapper LIQUIDITY_SUMMARY_MAPPER = new LiquiditySummaryRowMapper();
 
     private static final String INSERT = resource("database/insert.sql");
-    private static final String SELECT_SINCE = resource("database/select_since.sql");
     private static final String SELECT_LATEST = resource("database/select_latest.sql");
     private static final String SELECT_LIQUIDITY_SUMMARY = resource("database/select_liquidity_summary.sql");
     private static final String SELECT_PRICE_SUMMARY = resource("database/select_price_summary.sql");
@@ -47,64 +46,32 @@ public class DbPersister implements LiquidityDataPersister {
 
     @Override
     public void persist(final LiquidityData liquidityData) {
+        LOGGER.info("persist()");
         final Stopwatch stopwatch = Stopwatch.createStarted();
         final List<Object[]> batchArgs = Lists.newArrayList();
         for (final LiquidityDatum datum : liquidityData.getLiquidityData()) {
             batchArgs.add(toArgs(liquidityData, datum));
         }
         jdbcTemplate.batchUpdate(INSERT, batchArgs);
-        LOGGER.info("persist took {}", stopwatch.stop());
-    }
-
-    private Object[] toArgs(final LiquidityData liquidityData, final LiquidityDatum datum) {
-        final List<Object> args = new ArrayList<>();
-        args.add(Timestamp.from(liquidityData.getUpdateTime()));
-        args.add(datum.getExchange());
-        args.add(datum.getCurrencyPair().getBaseCurrency());
-        args.add(datum.getCurrencyPair().getQuoteCurrency());
-        args.add(datum.getSellCost());
-        args.add(datum.getBuyCost());
-        args.add(datum.getBestBid());
-        args.add(datum.getBestAsk());
-        args.add(datum.getPrice());
-
-        PERCENTAGES.forEach(percent -> {
-            args.add(datum.getBids(percent));
-            args.add(datum.getBidsUsd(percent));
-            args.add(datum.getAsks(percent));
-            args.add(datum.getAsksUsd(percent));
-        });
-
-        return args.toArray();
+        LOGGER.info("persist() took {}", stopwatch.stop());
     }
 
     @Override
     public Optional<LiquidityData> loadLatest() {
+        LOGGER.info("loadLatest()");
+        final Optional<LiquidityData> retVal;
+        final Stopwatch stopwatch = Stopwatch.createStarted();
         final List<LiquidityDatum> datums = jdbcTemplate.query(SELECT_LATEST, LIQUIDITY_DATUM_MAPPER);
         if (!datums.isEmpty()) {
             final LiquidityData liquidityData = new LiquidityData();
             liquidityData.setUpdateTime(datums.get(0).getUpdateTime());
             liquidityData.setLiquidityData(datums);
-            return Optional.of(liquidityData);
+            retVal = Optional.of(liquidityData);
         } else {
-            return Optional.empty();
+            retVal = Optional.empty();
         }
-    }
-
-    @Override
-    public List<LiquidityData> loadHistory(final Instant threshold) {
-        final List<LiquidityDatum> datums = jdbcTemplate.query(SELECT_SINCE,
-                new Object[] { Timestamp.from(threshold) }, LIQUIDITY_DATUM_MAPPER);
-
-        final Map<Instant, List<LiquidityDatum>> grouped =
-                new TreeMap<>(datums.stream().collect(Collectors.groupingBy(LiquidityDatum::getUpdateTime)));
-
-        return grouped.entrySet().stream().map(entry -> {
-            final LiquidityData liquidityData = new LiquidityData();
-            liquidityData.setUpdateTime(entry.getKey());
-            liquidityData.setLiquidityData(entry.getValue());
-            return liquidityData;
-        }).collect(Collectors.toList());
+        LOGGER.info("loadLatest() took {}", stopwatch.stop());
+        return retVal;
     }
 
     @Override
@@ -113,6 +80,7 @@ public class DbPersister implements LiquidityDataPersister {
                                               final String exchange,
                                               final int bidAskPercent,
                                               final ViewType viewType) {
+        LOGGER.info("loadSummary()");
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         final boolean exchangeFilter = exchange != null;
@@ -120,7 +88,6 @@ public class DbPersister implements LiquidityDataPersister {
 
         String bidsColumn;
         String asksColumn;
-
 
         if (bidAskPercent == 0) {
             bidsColumn = "total_bids";
@@ -159,7 +126,7 @@ public class DbPersister implements LiquidityDataPersister {
             }
         });
 
-        LOGGER.info("loadSummary took {}", stopwatch.stop());
+        LOGGER.info("loadSummary() took {}", stopwatch.stop());
         return liquiditySummaries;
     }
 
@@ -184,5 +151,27 @@ public class DbPersister implements LiquidityDataPersister {
         } else {
             LOGGER.info("Nothing to execute in {}", scriptName);
         }
+    }
+
+    private Object[] toArgs(final LiquidityData liquidityData, final LiquidityDatum datum) {
+        final List<Object> args = new ArrayList<>();
+        args.add(Timestamp.from(liquidityData.getUpdateTime()));
+        args.add(datum.getExchange());
+        args.add(datum.getCurrencyPair().getBaseCurrency());
+        args.add(datum.getCurrencyPair().getQuoteCurrency());
+        args.add(datum.getSellCost());
+        args.add(datum.getBuyCost());
+        args.add(datum.getBestBid());
+        args.add(datum.getBestAsk());
+        args.add(datum.getPrice());
+
+        PERCENTAGES.forEach(percent -> {
+            args.add(datum.getBids(percent));
+            args.add(datum.getBidsUsd(percent));
+            args.add(datum.getAsks(percent));
+            args.add(datum.getAsksUsd(percent));
+        });
+
+        return args.toArray();
     }
 }

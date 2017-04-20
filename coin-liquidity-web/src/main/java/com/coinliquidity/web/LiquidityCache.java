@@ -27,11 +27,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
-import static java.time.temporal.ChronoUnit.DAYS;
 
 public class LiquidityCache {
-
-    private static final int THRESHOLD_DAYS = 1;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LiquidityCache.class);
 
@@ -42,7 +39,6 @@ public class LiquidityCache {
 
     private LiquidityData liquidityData;
     private Map<String, DownloadStatus> downloadStatuses;
-    private List<LiquidityData> liquidityDataHistory;
 
     public LiquidityCache(final ExchangeConfig exchangeConfig,
                           final FxCache fxCache,
@@ -53,10 +49,6 @@ public class LiquidityCache {
         this.dataPersister = dataPersister;
         this.httpDownloader = httpDownloader;
         this.downloadStatuses = new ConcurrentSkipListMap<>();
-
-
-        final Instant threshold = Instant.now().minus(THRESHOLD_DAYS, DAYS);
-        this.liquidityDataHistory = dataPersister.loadHistory(threshold);
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
 
@@ -100,7 +92,6 @@ public class LiquidityCache {
 
         this.liquidityData = toLiquidityData(orderBooks);
         dataPersister.persist(this.liquidityData);
-        updateHistory(liquidityData);
 
         final List<DownloadStatus> statuses = new ArrayList<>();
         obds.forEach(obd -> statuses.addAll(obd.getDownloadStatuses()));
@@ -159,22 +150,12 @@ public class LiquidityCache {
         datum.setAsksUsd(percent, analyzer.getTotalAsksUsd());
     }
 
-    private void updateHistory(final LiquidityData liquidityData) {
-        final Instant threshold = Instant.now().minus(THRESHOLD_DAYS, DAYS);
-        liquidityDataHistory.add(liquidityData);
-        liquidityDataHistory.removeIf(data -> data.getUpdateTime().isBefore(threshold));
-    }
-
     public LiquidityData getLiquidityData() {
         return liquidityData;
     }
 
     public Collection<DownloadStatus> getDownloadStatuses() {
         return downloadStatuses.values();
-    }
-
-    public List<LiquidityData> getLiquidityDataHistory() {
-        return liquidityDataHistory;
     }
 
     public List<LiquiditySummary> getLiquiditySummary(final String baseCcy,
