@@ -12,11 +12,38 @@
 <body>
 
 <div class="dropdown">
-    <button onclick="showCcyDropdown()" class="dropbtn">Currencies</button>
+    <button onclick="showDropdown('ccyDropdown')" class="dropbtn" th:text="${baseCurrency}">BTC</button>
     <div id="ccyDropdown" class="dropdown-content">
-        <a th:each="currency : ${currencies}"
-           th:href="@{/liquidity/view/summary/{ccy}(ccy=${currency},days=${days},exchange=${exchange},percent=${percent},view=${view})}"
-           th:text="${currency}">BTC</a>
+        <a th:each="thisCurrency : ${currencies}"
+           th:href="@{/liquidity/view/bid-ask/{ccy}(ccy=${thisCurrency},days=${days},exchange=${exchange},percent=${percent},view=${view})}"
+           th:text="${thisCurrency}">BTC</a>
+    </div>
+</div>
+
+<div class="dropdown">
+    <button onclick="showDropdown('exchangeDropdown')" class="dropbtn" th:text="${exchange}">all</button>
+    <div id="exchangeDropdown" class="dropdown-content">
+        <a th:each="thisExchange : ${exchanges}"
+           th:href="@{/liquidity/view/bid-ask/{ccy}(ccy=${baseCurrency},days=${days},exchange=${thisExchange},percent=${percent},view=${view})}"
+           th:text="${thisExchange}">gdax.com</a>
+    </div>
+</div>
+
+<div class="dropdown">
+    <button onclick="showDropdown('percentDropdown')" class="dropbtn" th:text="${percent}">0</button>
+    <div id="percentDropdown" class="dropdown-content">
+        <a th:each="thisPercent : ${percents}"
+           th:href="@{/liquidity/view/bid-ask/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange},percent=${thisPercent},view=${view})}"
+           th:text="${thisPercent}">5</a>
+    </div>
+</div>
+
+<div class="dropdown">
+    <button onclick="showDropdown('viewDropdown')" class="dropbtn" th:text="${view}">0</button>
+    <div id="viewDropdown" class="dropdown-content">
+        <a th:each="thisView : ${views}"
+           th:href="@{/liquidity/view/bid-ask/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange},percent=${thisPercent},view=${thisView})}"
+           th:text="${thisView}">DEFAULT</a>
     </div>
 </div>
 
@@ -26,7 +53,7 @@
 var baseCurrency = /*[[${baseCurrency}]]*/ 'BTC';
 var days = /*[[${days}]]*/ 10;
 var view = /*[[${view}]]*/ 'BASE';
-var url = /*[[@{/liquidity/data/summary/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange},percent=${percent},view=${view})}]]*/ 'xyz';
+var url = /*[[@{/liquidity/data/bid-ask/{ccy}(ccy=${baseCurrency},days=${days},exchange=${exchange},percent=${percent},view=${view})}]]*/ 'xyz';
 /*]]>*/
 
 // colors

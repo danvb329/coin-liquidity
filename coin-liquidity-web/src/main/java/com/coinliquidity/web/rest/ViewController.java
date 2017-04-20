@@ -1,5 +1,6 @@
 package com.coinliquidity.web.rest;
 
+import com.coinliquidity.core.analyzer.BidAskAnalyzer;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.model.LiquidityData;
 import com.coinliquidity.web.model.ViewType;
@@ -40,8 +41,8 @@ public class ViewController {
                 .filter(exchange), "Exchange: " + exchange, model);
     }
 
-    @RequestMapping("/summary/{baseCurrency}")
-    public String summary(@PathVariable("baseCurrency") final String baseCurrency,
+    @RequestMapping("/bid-ask/{baseCurrency}")
+    public String bidAsk(@PathVariable("baseCurrency") final String baseCurrency,
                           @RequestParam(value = "days", required = false, defaultValue = "10") final Integer days,
                           @RequestParam(value = "exchange", required = false, defaultValue = "all") final String exchange,
                           @RequestParam(value = "percent", required = false, defaultValue = "0") final int bidAskPercent,
@@ -52,11 +53,17 @@ public class ViewController {
 
         model.addAttribute("baseCurrency", baseCurrency);
         model.addAttribute("days", days);
-        model.addAttribute("currencies", cache.getBaseCurrencies());
         model.addAttribute("exchange", exchange);
         model.addAttribute("percent", bidAskPercent);
         model.addAttribute("view", viewType.name());
-        return "summary";
+
+        // for drop-downs
+        model.addAttribute("currencies", cache.getBaseCurrencies());
+        model.addAttribute("exchanges", cache.getExchanges());
+        model.addAttribute("percents", BidAskAnalyzer.PERCENTAGES);
+        model.addAttribute("views", ViewType.values());
+
+        return "bid-ask";
     }
 
     private String liquidity(final LiquidityData data, final String title, final Model model) {

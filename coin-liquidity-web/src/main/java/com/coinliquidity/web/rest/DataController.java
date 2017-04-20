@@ -29,7 +29,7 @@ public class DataController {
         this.cache = cache;
     }
 
-    @RequestMapping("summary/{baseCurrency}")
+    @RequestMapping("bid-ask/{baseCurrency}")
     @ResponseBody
     public Map<String, List<Object[]>> summary(
             @PathVariable("baseCurrency") final String baseCurrency,

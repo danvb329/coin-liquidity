@@ -173,9 +173,11 @@ public class LiquidityCache {
     }
 
     public Set<String> getExchanges() {
-        return liquidityData.getLiquidityData().stream()
+        final TreeSet<String> exchanges = liquidityData.getLiquidityData().stream()
                 .map(LiquidityDatum::getExchange)
                 .collect(Collectors.toCollection(TreeSet::new));
+        exchanges.add("all");
+        return exchanges;
     }
 
     public void validateBaseCcy(final String baseCcy) {
