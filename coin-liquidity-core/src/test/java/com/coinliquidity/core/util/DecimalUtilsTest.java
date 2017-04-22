@@ -20,6 +20,11 @@ public class DecimalUtilsTest {
     }
 
     @Test
+    public void scalePrice_stripZeros() {
+        assertEquals(new BigDecimal("1234.00"), scalePrice(new BigDecimal("1234")));
+    }
+
+    @Test
     public void avgPrice() {
         final BigDecimal p1 = new BigDecimal("0.25");
         final BigDecimal p2 = new BigDecimal("0.00");

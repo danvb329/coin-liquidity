@@ -28,7 +28,7 @@ public class DecimalUtils {
 
         // 2 decimals if price >= 1
         if (price.compareTo(BigDecimal.ONE) >= 0) {
-            return price.setScale(PRICE_MIN_SCALE, RoundingMode.HALF_UP);
+            return stripZeros(price.setScale(PRICE_MIN_SCALE, RoundingMode.HALF_UP));
         } else {
             return price;
         }
