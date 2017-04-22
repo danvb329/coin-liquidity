@@ -2,6 +2,7 @@ package com.coinliquidity.core.model;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Maps;
 import lombok.Data;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 @JsonDeserialize(using = CurrencyPairDeserializer.class)
 @JsonSerialize(using = CurrencyPairSerializer.class)
 @Data
-public class CurrencyPair {
+public class CurrencyPair implements Comparable<CurrencyPair> {
 
     public static final String BTC = "BTC";
     public static final String USD = "USD";
@@ -54,5 +55,13 @@ public class CurrencyPair {
     @Override
     public String toString() {
         return baseCurrency + "/" + quoteCurrency;
+    }
+
+    @Override
+    public int compareTo(final CurrencyPair that) {
+        return ComparisonChain.start()
+                .compare(this.baseCurrency, that.baseCurrency)
+                .compare(this.quoteCurrency, that.quoteCurrency)
+                .result();
     }
 }

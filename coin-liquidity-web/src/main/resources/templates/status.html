@@ -26,8 +26,12 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="status : ${statuses}">
-        <td th:text="${status.exchange.name}">gdax.com</td>
+    <tr th:each="status : ${statuses}" >
+        <td>
+            <a th:class="${status.displayClass}"
+               th:href="${status.exchange.docUrl}"
+               th:text="${status.exchange.name}">gdax.com</a>
+        </td>
         <td>
             <a th:text="${status.currencyPair}" th:href="${status.orderBookUrl}" >BTC/USD</a>
         </td>

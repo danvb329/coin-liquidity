@@ -23,4 +23,19 @@ public class DownloadStatus {
     private Stopwatch lastOk;
     private Stopwatch lastError;
     private String lastErrorMessage;
+
+    public String getDisplayClass() {
+        if (ERROR.equals(status)) {
+            return "status_red";
+        } else if (exchange.getMaxDepth() != null &&
+                (totalAsks >= exchange.getMaxDepth() || totalBids >= exchange.getMaxDepth())) {
+            return "status_amber";
+        } else {
+            return "status_normal";
+        }
+    }
+
+    public DownloadStatusKey toKey() {
+        return new DownloadStatusKey(exchange.getName(), currencyPair);
+    }
 }

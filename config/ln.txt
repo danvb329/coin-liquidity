@@ -1,0 +1,2 @@
+ln -s /home/cl/coin-liquidity/coin-liquidity/static/css /home/cl/coin-liquidity/static/css
+ln -s /home/cl/coin-liquidity/coin-liquidity/static/js /home/cl/coin-liquidity/static/js

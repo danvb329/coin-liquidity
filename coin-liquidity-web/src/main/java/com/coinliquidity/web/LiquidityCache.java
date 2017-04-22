@@ -5,7 +5,6 @@ import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.analyzer.BidAskAnalyzer;
 import com.coinliquidity.core.download.HttpDownloader;
 import com.coinliquidity.core.fx.FxRates;
-import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
 import com.coinliquidity.web.model.LiquidityData;
@@ -13,19 +12,16 @@ import com.coinliquidity.web.model.LiquidityDatum;
 import com.coinliquidity.web.model.LiquiditySummary;
 import com.coinliquidity.web.model.ViewType;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
-import com.google.common.base.Stopwatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.Instant;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
 import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
@@ -38,19 +34,21 @@ public class LiquidityCache {
     private final LiquidityDataPersister dataPersister;
     private final FxCache fxCache;
     private final HttpDownloader httpDownloader;
+    private final StatusCache statusCache;
 
     private LiquidityData liquidityData;
-    private Map<String, DownloadStatus> downloadStatuses;
+
 
     public LiquidityCache(final ExchangeConfig exchangeConfig,
                           final FxCache fxCache,
                           final LiquidityDataPersister dataPersister,
-                          final HttpDownloader httpDownloader) {
+                          final HttpDownloader httpDownloader,
+                          final StatusCache statusCache) {
         this.exchangeConfig = exchangeConfig;
         this.fxCache = fxCache;
         this.dataPersister = dataPersister;
         this.httpDownloader = httpDownloader;
-        this.downloadStatuses = new ConcurrentSkipListMap<>();
+        this.statusCache = statusCache;
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
 
@@ -65,15 +63,33 @@ public class LiquidityCache {
     private void refresh() {
         final Exchanges exchanges = exchangeConfig.loadExchanges();
 
-        final List<OrderBookDownloader> obds = exchanges.getExchangeList().stream()
+        final List<OrderBookDownloader> downloaders = exchanges.getExchangeList().stream()
                 .map(exchange -> new OrderBookDownloader(exchange, httpDownloader))
                 .collect(Collectors.toList());
 
-        final int threads = Math.min(obds.size(), 20);
+        this.download(downloaders);
+
+        final List<OrderBook> orderBooks = downloaders.stream()
+                .map(OrderBookDownloader::getOrderBooks)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
+
+        // convert all to same base CCY
+        final FxRates fxRates = fxCache.getRates();
+        orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
+
+        this.liquidityData = toLiquidityData(orderBooks);
+        this.dataPersister.persist(this.liquidityData);
+
+        statusCache.update(downloaders);
+    }
+
+    private void download(final List<OrderBookDownloader> downloaders) {
+        final int threads = Math.min(downloaders.size(), 20);
         LOGGER.info("Creating pool of {} threads", threads);
 
         final ExecutorService executorService = Executors.newFixedThreadPool(threads);
-        obds.forEach(executorService::execute);
+        downloaders.forEach(executorService::execute);
 
         executorService.shutdown();
 
@@ -85,44 +101,6 @@ public class LiquidityCache {
                 Thread.currentThread().interrupt();
             }
         } while (!executorService.isTerminated());
-
-        final List<OrderBook> orderBooks = obds.stream()
-                .map(OrderBookDownloader::getOrderBooks)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-
-        final FxRates fxRates = fxCache.getRates();
-        orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
-
-        this.liquidityData = toLiquidityData(orderBooks);
-        this.dataPersister.persist(this.liquidityData);
-
-        final Stream<DownloadStatus> statuses = obds.stream()
-                .map(OrderBookDownloader::getDownloadStatuses)
-                .flatMap(Collection::stream);
-
-        final Stopwatch now = Stopwatch.createStarted();
-
-        statuses.forEach(status -> {
-            final String key = status.getExchange().getName() + "_" + status.getCurrencyPair();
-            final DownloadStatus current = downloadStatuses.getOrDefault(key, status);
-
-            current.setSizeBytes(status.getSizeBytes());
-            current.setStatus(status.getStatus());
-            current.setTimeElapsed(status.getTimeElapsed());
-            current.setTotalAsks(status.getTotalAsks());
-            current.setTotalBids(status.getTotalBids());
-            current.setUpdateTime(status.getUpdateTime());
-
-            if (DownloadStatus.OK.equals(status.getStatus())) {
-                current.setLastOk(now);
-            } else if (DownloadStatus.ERROR.equals(status.getStatus())) {
-                current.setLastError(now);
-                current.setLastErrorMessage(status.getLastErrorMessage());
-            }
-
-            downloadStatuses.put(key, current);
-        });
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks) {
@@ -157,10 +135,6 @@ public class LiquidityCache {
 
     public LiquidityData getLiquidityData() {
         return liquidityData;
-    }
-
-    public Collection<DownloadStatus> getDownloadStatuses() {
-        return downloadStatuses.values();
     }
 
     public List<LiquiditySummary> getLiquiditySummary(final String baseCcy,

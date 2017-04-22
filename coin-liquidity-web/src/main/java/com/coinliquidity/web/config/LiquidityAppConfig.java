@@ -9,6 +9,7 @@ import com.coinliquidity.core.model.CurrencyPair;
 import com.coinliquidity.core.util.HttpClient;
 import com.coinliquidity.web.FxCache;
 import com.coinliquidity.web.LiquidityCache;
+import com.coinliquidity.web.StatusCache;
 import com.coinliquidity.web.persist.DbPersister;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.coinliquidity.web.rest.DataController;
@@ -37,16 +38,22 @@ public class LiquidityAppConfig {
     }
 
     @Bean
-    public StatusController statusController(final LiquidityCache liquidityCache) {
+    public StatusController statusController(final StatusCache liquidityCache) {
         return new StatusController(liquidityCache);
+    }
+
+    @Bean
+    public StatusCache statusCache() {
+        return new StatusCache();
     }
 
     @Bean
     public LiquidityCache liquidityCache(final ExchangeConfig exchangeConfig,
                                          final FxCache fxCache,
                                          final LiquidityDataPersister liquidityDataPersister,
-                                         final HttpDownloader httpDownloader) {
-        return new LiquidityCache(exchangeConfig, fxCache, liquidityDataPersister, httpDownloader);
+                                         final HttpDownloader httpDownloader,
+                                         final StatusCache statusCache) {
+        return new LiquidityCache(exchangeConfig, fxCache, liquidityDataPersister, httpDownloader, statusCache);
     }
 
     @Bean
