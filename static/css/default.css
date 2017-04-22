@@ -1,3 +1,15 @@
 * {
     font-family: "Trebuchet MS", Helvetica, sans-serif;
-  }
+}
+
+.status_red {
+    color: red;
+}
+
+.status_amber {
+    color: gold;
+}
+
+.status_normal {
+    color: black;
+}
