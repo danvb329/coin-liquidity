@@ -2,13 +2,13 @@
     font-family: "Trebuchet MS", Helvetica, sans-serif;
 }
 
-tr.status_red {
-    background-color: red;
+.status_red {
+    color: red;
 }
 
-tr.status_amber {
-    background-color: gold;
+.status_amber {
+    color: gold;
 }
 
-tr.status_normal {
+.status_normal {
 }
