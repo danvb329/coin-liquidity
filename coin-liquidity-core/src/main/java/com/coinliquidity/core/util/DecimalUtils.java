@@ -26,7 +26,12 @@ public class DecimalUtils {
             return null;
         }
 
-        return stripZeros(price.setScale(PRICE_MAX_SCALE, RoundingMode.HALF_UP));
+        // 2 decimals if price >= 1
+        if (price.compareTo(BigDecimal.ONE) >= 0) {
+            return price.setScale(PRICE_MIN_SCALE, RoundingMode.HALF_UP);
+        } else {
+            return price;
+        }
     }
 
     public static BigDecimal convert(final BigDecimal price, final BigDecimal rate) {
@@ -51,7 +56,7 @@ public class DecimalUtils {
         return diff.multiply(HUNDRED).divide(d1, 0, RoundingMode.HALF_UP);
     }
 
-    public static boolean anyNull(BigDecimal... decimals) {
+    static boolean anyNull(BigDecimal... decimals) {
         return Arrays.stream(decimals).anyMatch(Objects::isNull);
     }
 

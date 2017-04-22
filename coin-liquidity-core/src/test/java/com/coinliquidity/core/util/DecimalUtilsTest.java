@@ -5,32 +5,18 @@ import org.junit.Test;
 import java.math.BigDecimal;
 
 import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class DecimalUtilsTest {
 
     @Test
-    public void scalePrice_belowMax() {
-        assertEquals(new BigDecimal("0.1234567"), scalePrice(new BigDecimal("0.1234567")));
+    public void scalePrice_large() {
+        assertEquals(new BigDecimal("1234.57"), scalePrice(new BigDecimal("1234.5678")));
     }
 
     @Test
-    public void scalePrice_aboveMax() {
-        assertEquals(new BigDecimal("0.12345679"), scalePrice(new BigDecimal("0.123456789")));
-    }
-
-    @Test
-    public void scalePrice_trim() {
-        assertEquals(new BigDecimal("0.12345"),
-                scalePrice(new BigDecimal("0.12345000")));
-    }
-
-    @Test
-    public void scalePrice_trimMin() {
-        assertEquals(new BigDecimal("500.00"),
-                scalePrice(new BigDecimal("500")));
+    public void scalePrice_small() {
+        assertEquals(new BigDecimal("0.5678"), scalePrice(new BigDecimal("0.5678")));
     }
 
     @Test

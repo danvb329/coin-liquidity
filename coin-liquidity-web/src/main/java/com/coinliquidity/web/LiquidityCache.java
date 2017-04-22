@@ -25,8 +25,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
+import static com.coinliquidity.core.util.DecimalUtils.scalePrice;
 
 public class LiquidityCache {
 
@@ -79,22 +81,25 @@ public class LiquidityCache {
             LOGGER.debug("Awaiting termination");
             try {
                 executorService.awaitTermination(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            } catch (final InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         } while (!executorService.isTerminated());
 
-        final List<OrderBook> orderBooks = new ArrayList<>();
-        obds.forEach(obd -> orderBooks.addAll(obd.getOrderBooks()));
+        final List<OrderBook> orderBooks = obds.stream()
+                .map(OrderBookDownloader::getOrderBooks)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
 
         final FxRates fxRates = fxCache.getRates();
         orderBooks.forEach(orderBook -> orderBook.convert(fxRates));
 
         this.liquidityData = toLiquidityData(orderBooks);
-        dataPersister.persist(this.liquidityData);
+        this.dataPersister.persist(this.liquidityData);
 
-        final List<DownloadStatus> statuses = new ArrayList<>();
-        obds.forEach(obd -> statuses.addAll(obd.getDownloadStatuses()));
+        final Stream<DownloadStatus> statuses = obds.stream()
+                .map(OrderBookDownloader::getDownloadStatuses)
+                .flatMap(Collection::stream);
 
         final Stopwatch now = Stopwatch.createStarted();
 
@@ -121,17 +126,17 @@ public class LiquidityCache {
     }
 
     private LiquidityData toLiquidityData(final List<OrderBook> orderBooks) {
-        final List<LiquidityDatum> dataList = new ArrayList<>();
-        orderBooks.forEach(orderBook -> {
-            final LiquidityDatum datum = new LiquidityDatum();
-            datum.setExchange(orderBook.getName());
-            datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
-            datum.setBestAsk(orderBook.getAsks().getBestPrice());
-            datum.setBestBid(orderBook.getBids().getBestPrice());
-            datum.setPrice(orderBook.getMidPrice());
-            PERCENTAGES.forEach(percent -> analyzeBidsAsks(orderBook, datum, percent));
-            dataList.add(datum);
-        });
+        final List<LiquidityDatum> dataList = orderBooks.stream()
+                .map(orderBook -> {
+                    final LiquidityDatum datum = new LiquidityDatum();
+                    datum.setExchange(orderBook.getName());
+                    datum.setCurrencyPair(orderBook.getOriginalCurrencyPair());
+                    datum.setBestAsk(scalePrice(orderBook.getAsks().getBestPrice()));
+                    datum.setBestBid(scalePrice(orderBook.getBids().getBestPrice()));
+                    datum.setPrice(orderBook.getMidPrice());
+                    PERCENTAGES.forEach(percent -> analyzeBidsAsks(orderBook, datum, percent));
+                    return datum;
+                }).collect(Collectors.toList());
 
         final LiquidityData liquidityData = new LiquidityData();
         liquidityData.setLiquidityData(dataList);
