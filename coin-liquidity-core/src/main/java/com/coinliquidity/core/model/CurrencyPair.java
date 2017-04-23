@@ -24,7 +24,6 @@ public class CurrencyPair implements Comparable<CurrencyPair> {
         CCY_NORMALIZATION = Maps.newHashMap();
         CCY_NORMALIZATION.put("XBT", BTC);
         CCY_NORMALIZATION.put("RUR", "RUB");
-        CCY_NORMALIZATION.put("USDT", USD);
         CCY_NORMALIZATION.put("DSH", "DASH");
     }
 

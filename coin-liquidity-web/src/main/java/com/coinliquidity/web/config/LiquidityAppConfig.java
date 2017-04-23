@@ -5,6 +5,7 @@ import com.coinliquidity.core.download.HttpDownloader;
 import com.coinliquidity.core.fx.BitcoinAverageProvider;
 import com.coinliquidity.core.fx.FixerIoProvider;
 import com.coinliquidity.core.fx.FxProvider;
+import com.coinliquidity.core.fx.KrakenProvider;
 import com.coinliquidity.core.model.CurrencyPair;
 import com.coinliquidity.core.util.HttpClient;
 import com.coinliquidity.web.FxCache;
@@ -61,6 +62,7 @@ public class LiquidityAppConfig {
         final List<FxProvider> fxProviders = new ArrayList<>();
         fxProviders.add(new FixerIoProvider(httpClient, BASE_CCY));
         fxProviders.add(new BitcoinAverageProvider(httpClient, BASE_CCY));
+        fxProviders.add(new KrakenProvider(httpClient));
         return new FxCache(fxProviders);
     }
 
