@@ -21,6 +21,6 @@ public class FixerIoProviderTest {
 
         assertThat(fixerIoProvider.getDataDate(), greaterThan(LocalDate.now().minusDays(5)));
         assertThat(rates.getRate("USD"), equalTo(BigDecimal.ONE));
-        assertThat(rates.getRate("EUR"), greaterThan(BigDecimal.ZERO));
+        assertThat(rates.getRate("CNY"), greaterThan(BigDecimal.ONE));
     }
 }

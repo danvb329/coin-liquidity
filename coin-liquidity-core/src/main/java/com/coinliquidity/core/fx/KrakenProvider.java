@@ -8,9 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.Collections;
-
-import static com.coinliquidity.core.util.DecimalUtils.inverseRate;
 
 /**
  * For getting USDT rate - https://www.kraken.com/help/api#get-ticker-info
@@ -40,11 +37,7 @@ public class KrakenProvider implements FxProvider {
         try {
             final JsonNode tree = httpClient.get(URL);
             final BigDecimal price = new BigDecimal(tree.findPath(PAIR).findPath("c").get(0).asText());
-            final BigDecimal rate = inverseRate(price);
-            fxRates = new FxRates(CurrencyPair.USD,
-                    Instant.now(),
-                    Collections.singletonMap(USDT, rate),
-                    Collections.singletonMap(USDT, price));
+            fxRates = new FxRates(CurrencyPair.USD, Instant.now()).putInverseRate(USDT, price);
         } catch (final Exception e) {
             LOGGER.warn("Could not refresh, current rates as of {}", fxRates.getUpdateTime());
         }

@@ -2,7 +2,6 @@ package com.coinliquidity.core.fx;
 
 import com.coinliquidity.core.util.HttpClient;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +10,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class FixerIoProvider implements FxProvider {
 
@@ -40,7 +38,7 @@ public class FixerIoProvider implements FxProvider {
     @Override
     public void refresh() {
         try {
-            final Map<String, BigDecimal> rates = new TreeMap<>();
+            final FxRates tempRates = new FxRates(baseCcy, Instant.now());
 
             final JsonNode tree = httpClient.get(url);
             final String dateStr = tree.get("date").asText();
@@ -51,10 +49,10 @@ public class FixerIoProvider implements FxProvider {
                 final Iterator<Map.Entry<String, JsonNode>> it = tree.get("rates").fields();
                 while (it.hasNext()) {
                     final Map.Entry<String, JsonNode> entry = it.next();
-                    rates.put(entry.getKey(), new BigDecimal(entry.getValue().asText()));
+                    tempRates.putRate(entry.getKey(), new BigDecimal(entry.getValue().asText()));
                 }
 
-                fxRates = new FxRates(baseCcy, Instant.now(), rates, Maps.newHashMap());
+                fxRates = tempRates;
                 dataDate = currentDate;
             }
         } catch (final Exception e) {

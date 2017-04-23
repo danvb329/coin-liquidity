@@ -1,8 +1,12 @@
 package com.coinliquidity.core.fx;
 
+import com.google.common.collect.Maps;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Map;
+
+import static com.coinliquidity.core.util.DecimalUtils.inverseRate;
 
 public class FxRates {
 
@@ -12,13 +16,11 @@ public class FxRates {
     private final Map<String, BigDecimal> inverseRates;
 
     FxRates(final String baseCcy,
-            final Instant updateTime,
-            final Map<String, BigDecimal> rates,
-            final Map<String, BigDecimal> inverseRates) {
+            final Instant updateTime) {
         this.baseCcy = baseCcy;
         this.updateTime = updateTime;
-        this.rates = rates;
-        this.inverseRates = inverseRates;
+        this.rates = Maps.newHashMap();
+        this.inverseRates = Maps.newHashMap();
     }
 
     public BigDecimal getRate(final String ccy) {
@@ -33,6 +35,18 @@ public class FxRates {
             return BigDecimal.ONE;
         }
         return inverseRates.get(ccy);
+    }
+
+    FxRates putRate(final String ccy, final BigDecimal rate) {
+        rates.put(ccy, rate);
+        inverseRates.put(ccy, inverseRate(rate));
+        return this;
+    }
+
+    FxRates putInverseRate(final String ccy, final BigDecimal inverseRate) {
+        inverseRates.put(ccy, inverseRate);
+        rates.put(ccy, inverseRate(inverseRate));
+        return this;
     }
 
     public void merge(final FxRates other) {
