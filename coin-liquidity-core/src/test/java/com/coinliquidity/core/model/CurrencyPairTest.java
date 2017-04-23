@@ -26,7 +26,6 @@ public class CurrencyPairTest {
         return Arrays.asList(new Object[][] {
                 { "XBT", "BTC" },
                 { "RUR", "RUB" },
-                { "USDT", "USD" },
                 { "DSH", "DASH" }
         });
     }
