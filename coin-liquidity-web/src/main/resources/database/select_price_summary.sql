@@ -5,7 +5,7 @@ SELECT
 FROM liquidity_history
 WHERE base_ccy = ? AND run_date > ?
 AND (
-(0 = ? AND exchange IN ('gdax.com', 'gemini.com', 'poloniex.com', 'bitfinex.com', 'bitstamp.net'))
+(0 = ? AND exchange IN ('gdax.com', 'gemini.com', 'poloniex.com', 'bitstamp.net'))
 OR (exchange = ?)
 )
 GROUP BY run_date
