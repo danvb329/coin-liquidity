@@ -6,15 +6,23 @@ import com.coinliquidity.web.model.LiquiditySummary;
 import com.coinliquidity.web.model.ViewType;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,11 +45,10 @@ public class DbPersister implements LiquidityDataPersister {
 
     private final JdbcTemplate jdbcTemplate;
 
+    @SneakyThrows
     public DbPersister(final JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
-        this.execute("database/create.sql");
-        this.execute("database/indexes.sql");
-        this.execute("database/execute.sql");
+        this.executeStartupScripts(Paths.get("db_scripts"));
     }
 
     @Override
@@ -84,7 +91,7 @@ public class DbPersister implements LiquidityDataPersister {
         final Stopwatch stopwatch = Stopwatch.createStarted();
 
         final boolean exchangeFilter = exchange != null;
-        final Object[] args = new Object[] { baseCcy, Timestamp.from(threshold), exchangeFilter, exchange };
+        final Object[] args = new Object[]{baseCcy, Timestamp.from(threshold), exchangeFilter, exchange};
 
         String bidsColumn;
         String asksColumn;
@@ -100,7 +107,7 @@ public class DbPersister implements LiquidityDataPersister {
         if (ViewType.USD.equals(viewType)) {
             bidsColumn += "_usd";
             asksColumn += "_usd";
-        }  else if (ViewType.DEFAULT.equals(viewType)) {
+        } else if (ViewType.DEFAULT.equals(viewType)) {
             bidsColumn += "_usd";
         }
 
@@ -130,29 +137,6 @@ public class DbPersister implements LiquidityDataPersister {
         return liquiditySummaries;
     }
 
-    private void execute(final String scriptName) {
-        final String sql = resource(scriptName);
-
-        if (StringUtils.isNotBlank(sql)) {
-            final Stopwatch stopwatch = Stopwatch.createStarted();
-            LOGGER.info("Executing {}", scriptName);
-
-            final String[] lines = sql.split(";\\n");
-
-            LOGGER.info("{} lines in {}", lines.length, scriptName);
-
-            try {
-                Arrays.stream(lines).forEach(jdbcTemplate::execute);
-            } catch (final Exception e) {
-                LOGGER.error("Could not execute {}", scriptName, e);
-            }
-
-            LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());
-        } else {
-            LOGGER.info("Nothing to execute in {}", scriptName);
-        }
-    }
-
     private Object[] toArgs(final LiquidityData liquidityData, final LiquidityDatum datum) {
         final List<Object> args = new ArrayList<>();
         args.add(Timestamp.from(liquidityData.getUpdateTime()));
@@ -171,5 +155,37 @@ public class DbPersister implements LiquidityDataPersister {
         });
 
         return args.toArray();
+    }
+
+    private void executeStartupScripts(final Path directory) throws IOException {
+        if (directory.toFile().isDirectory()) {
+            try (final DirectoryStream<Path> directoryStream = Files.newDirectoryStream(directory)) {
+                for (final Path path : directoryStream) {
+                    if (path.toString().endsWith(".sql")) {
+                        executeScript(path);
+                    }
+                }
+            }
+        } else {
+            LOGGER.warn("Script directory {} does not exist", directory);
+        }
+    }
+
+    private void executeScript(final Path scriptName) throws IOException {
+        final List<String> lines = Files.readAllLines(scriptName);
+
+        final Stopwatch stopwatch = Stopwatch.createStarted();
+        LOGGER.info("Executing {}, {} lines", scriptName, lines.size());
+
+        try {
+            lines.forEach(sql -> {
+                final int count = jdbcTemplate.update(sql);
+                LOGGER.info("Updated {} rows", count);
+            });
+        } catch (final Exception e) {
+            LOGGER.error("Could not execute {}", scriptName, e);
+        }
+
+        LOGGER.info("Finished {} in {}", scriptName, stopwatch.stop());
     }
 }
