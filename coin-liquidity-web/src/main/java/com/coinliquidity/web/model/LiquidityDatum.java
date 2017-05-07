@@ -22,6 +22,7 @@ public class LiquidityDatum {
     private BigDecimal bestBid;
     private Instant updateTime;
     private BigDecimal price;
+    private BigDecimal liquidityScore;
 
     private final Map<Integer, BigDecimal> bids = Maps.newHashMap();
     private final Map<Integer, BigDecimal> asks = Maps.newHashMap();
@@ -76,7 +77,11 @@ public class LiquidityDatum {
     }
 
     public BigDecimal getLiquidityScore() {
-        return score(bidsUsd).add(score(asksUsd)).divide(DecimalUtils.TWO, 0, RoundingMode.HALF_UP);
+        if (this.liquidityScore == null) {
+            this.liquidityScore = score(bidsUsd).add(score(asksUsd))
+                    .divide(DecimalUtils.TWO, 0, RoundingMode.HALF_UP);
+        }
+        return this.liquidityScore;
     }
 
     private BigDecimal score(final Map<Integer, BigDecimal> values) {
