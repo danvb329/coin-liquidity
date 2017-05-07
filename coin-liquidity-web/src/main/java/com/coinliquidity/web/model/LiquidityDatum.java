@@ -1,13 +1,16 @@
 package com.coinliquidity.web.model;
 
 import com.coinliquidity.core.model.CurrencyPair;
+import com.coinliquidity.core.util.DecimalUtils;
 import com.google.common.collect.Maps;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
 import java.util.Map;
 
+import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
 import static com.coinliquidity.core.model.CurrencyPair.BTC;
 
 @Data
@@ -72,11 +75,22 @@ public class LiquidityDatum {
         return getBidsUsd(0);
     }
 
-    public BigDecimal getOnePercentAsksUsd() {
-        return getAsksUsd(1);
+    public BigDecimal getLiquidityScore() {
+        return score(bidsUsd).add(score(asksUsd)).divide(DecimalUtils.TWO, 0, RoundingMode.HALF_UP);
     }
-    public BigDecimal getOnePercentBidsUsd() {
-        return getBidsUsd(1);
+
+    private BigDecimal score(final Map<Integer, BigDecimal> values) {
+        BigDecimal score = BigDecimal.ZERO;
+        BigDecimal prev = BigDecimal.ZERO;
+        for (final Integer percent : PERCENTAGES) {
+            if (percent != 0 && values.containsKey(percent)) {
+                final BigDecimal current = values.get(percent);
+                final BigDecimal diff = current.subtract(prev);
+                score = score.add(diff.divide(BigDecimal.valueOf(percent), 0, RoundingMode.HALF_UP));
+                prev = current;
+            }
+        }
+        return score;
     }
 
     public boolean matches(final String baseCurrency, final String quoteCurrency) {

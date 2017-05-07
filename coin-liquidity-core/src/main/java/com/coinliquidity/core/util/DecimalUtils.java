@@ -10,7 +10,7 @@ public class DecimalUtils {
     private static final int PRICE_MIN_SCALE = 2;
     private static final int PRICE_MAX_SCALE = 8;
 
-    private static final BigDecimal TWO = new BigDecimal(2);
+    public static final BigDecimal TWO = new BigDecimal(2);
     public static final BigDecimal HUNDRED = new BigDecimal(100);
     public static final BigDecimal MAX = new BigDecimal(Long.MAX_VALUE);
 

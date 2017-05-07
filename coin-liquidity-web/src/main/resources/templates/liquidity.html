@@ -43,8 +43,7 @@ $(function() {
     <tr>
         <th>Exchange</th>
         <th>Pair</th>
-        <th>1% Bids (USD)</th>
-        <th>1% Asks (USD)</th>
+        <th>Liquidity Score</th>
         <th>Best Bid</th>
         <th>Best Ask</th>
         <th>Total Bids (USD)</th>
@@ -59,8 +58,7 @@ $(function() {
         <td>
             <a th:href="@{'/liquidity/view/currency/' + ${datum.currencyPair}}" th:text="${datum.currencyPair}">BTC/USD</a>
         </td>
-        <td th:text="${#numbers.formatDecimal(datum.onePercentBidsUsd, 0, 'COMMA', 0, 'POINT')}">3500</td>
-        <td th:text="${#numbers.formatDecimal(datum.onePercentAsksUsd, 0, 'COMMA', 0, 'POINT')}">1234</td>
+        <td th:text="${#numbers.formatDecimal(datum.liquidityScore, 0, 'COMMA', 0, 'POINT')}">123,456</td>
         <td th:text="${datum.bestBid} ?: 'n/a'">100.42</td>
         <td th:text="${datum.bestAsk} ?: 'n/a'">100.43</td>
         <td th:text="${#numbers.formatDecimal(datum.totalBidsUsd, 0, 'COMMA', 0, 'POINT')}">3500</td>

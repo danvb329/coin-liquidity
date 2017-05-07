@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import static com.coinliquidity.core.analyzer.BidAskAnalyzer.PERCENTAGES;
+
 public class LiquidityDatumRowMapper implements RowMapper<LiquidityDatum> {
 
     @Override
@@ -21,8 +23,12 @@ public class LiquidityDatumRowMapper implements RowMapper<LiquidityDatum> {
         datum.setBestAsk(rs.getBigDecimal("best_ask"));
         datum.setBestBid(rs.getBigDecimal("best_bid"));
 
-        datum.setAsksUsd(1, rs.getBigDecimal("asks_1_usd"));
-        datum.setBidsUsd(1, rs.getBigDecimal("bids_1_usd"));
+        for (final Integer percent : PERCENTAGES) {
+            if (percent != 0) {
+                datum.setAsksUsd(percent, rs.getBigDecimal("asks_" + percent + "_usd"));
+                datum.setBidsUsd(percent, rs.getBigDecimal("bids_" + percent + "_usd"));
+            }
+        }
 
         datum.setAsks(0, rs.getBigDecimal("total_asks"));
         datum.setBids(0, rs.getBigDecimal("total_bids"));
