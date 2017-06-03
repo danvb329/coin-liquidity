@@ -16,7 +16,7 @@ public class KrakenProviderTest {
         final KrakenProvider krakenProvider = new KrakenProvider(new HttpClient());
         krakenProvider.refresh();
         final FxRates rates = krakenProvider.getRates();
-        assertThat(rates.getRate(USDT), greaterThan(BigDecimal.ONE));
+        assertThat(rates.getRate(USDT), greaterThan(new BigDecimal("0.8")));
     }
 
 }
