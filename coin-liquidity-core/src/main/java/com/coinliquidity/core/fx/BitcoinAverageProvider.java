@@ -15,9 +15,6 @@ public class BitcoinAverageProvider implements FxProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BitcoinAverageProvider.class);
 
-    // Wed, 05 Apr 2017 13:28:25 -0000
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss XXXX");
-
     private final HttpClient httpClient;
     private final String baseCcy;
     private final String url;
