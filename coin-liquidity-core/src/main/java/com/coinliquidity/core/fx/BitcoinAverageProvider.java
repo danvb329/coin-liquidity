@@ -25,7 +25,7 @@ public class BitcoinAverageProvider implements FxProvider {
     public BitcoinAverageProvider(final HttpClient httpClient, final String baseCcy) {
         this.httpClient = httpClient;
         this.baseCcy = baseCcy;
-        this.url = "https://api.bitcoinaverage.com/ticker/" + baseCcy;
+        this.url = "https://apiv2.bitcoinaverage.com/indices/global/ticker/BTC" + baseCcy;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class BitcoinAverageProvider implements FxProvider {
 
     private Instant parseUpdateTime(final JsonNode tree) {
         try {
-            return Instant.from(FORMATTER.parse(tree.get("timestamp").asText()));
+            return Instant.ofEpochSecond(Long.parseLong(tree.get("timestamp").asText()));
         } catch (final Exception e) {
             LOGGER.warn("Could not parse timestamp", e);
             return null;
