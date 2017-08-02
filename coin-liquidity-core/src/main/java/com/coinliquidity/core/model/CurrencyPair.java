@@ -25,6 +25,7 @@ public class CurrencyPair implements Comparable<CurrencyPair> {
         CCY_NORMALIZATION.put("XBT", BTC);
         CCY_NORMALIZATION.put("RUR", "RUB");
         CCY_NORMALIZATION.put("DSH", "DASH");
+        CCY_NORMALIZATION.put("BCC", "BCH");
     }
 
     private final String baseCurrency;
