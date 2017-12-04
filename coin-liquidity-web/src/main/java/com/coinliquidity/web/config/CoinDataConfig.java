@@ -25,7 +25,7 @@ public class CoinDataConfig {
 
     @Bean
     public CoinDataDownloader coinDataDownloader(final HttpClient httpClient) {
-        return new CoinDataDownloader("https://api.coinmarketcap.com/v1/ticker", httpClient);
+        return new CoinDataDownloader("https://api.coinmarketcap.com/v1/ticker?limit=0", httpClient);
     }
 
     @Bean
