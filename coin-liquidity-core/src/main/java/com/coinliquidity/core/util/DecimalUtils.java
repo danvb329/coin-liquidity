@@ -56,6 +56,14 @@ public class DecimalUtils {
         return diff.multiply(HUNDRED).divide(d1, 0, RoundingMode.HALF_UP);
     }
 
+    public static BigDecimal percent(final BigDecimal d1, final BigDecimal d2, final int scale) {
+        if (anyNull(d1, d2)) {
+            return MAX;
+        }
+
+        return d1.multiply(HUNDRED).divide(d2, scale, RoundingMode.HALF_UP);
+    }
+
     static boolean anyNull(BigDecimal... decimals) {
         return Arrays.stream(decimals).anyMatch(Objects::isNull);
     }

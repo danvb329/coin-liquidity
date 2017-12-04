@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcOperations;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,8 @@ public class CoinDataDao {
 
     private static final CoinDataMapper MAPPER = new CoinDataMapper();
     private static final String SELECT_LATEST = resource("database/coindata/select_latest.sql");
+    private static final String SELECT_HISTORICAL = resource("database/coindata/select_historical.sql");
+    private static final String SELECT_MAX_DATE = resource("database/coindata/select_max_date.sql");
     private static final String INSERT = resource("database/coindata/insert.sql");
     private static final String CREATE = resource("database/coindata/create.sql");
 
@@ -35,6 +38,20 @@ public class CoinDataDao {
         final List<CoinDatum> coinData = jdbc.query(SELECT_LATEST, MAPPER);
         LOGGER.info("getLatestCoinData() took {}", stopwatch.stop());
         return coinData;
+    }
+
+    public List<CoinDatum> getHistoricalCoinData(final Instant runDate) {
+        LOGGER.info("getHistoricalCoinData()");
+        final Stopwatch stopwatch = Stopwatch.createStarted();
+        final Object[] args = new Object[] { Timestamp.from(runDate) };
+        final List<CoinDatum> coinData = jdbc.query(SELECT_HISTORICAL, args, MAPPER);
+        LOGGER.info("getHistoricalCoinData() took {}", stopwatch.stop());
+        return coinData;
+    }
+
+    public Instant getMaxDate() {
+        final Timestamp timestamp = jdbc.queryForObject(SELECT_MAX_DATE, Timestamp.class);
+        return timestamp == null ? null : timestamp.toInstant();
     }
 
     public void persisCoinData(final List<CoinDatum> coinData) {

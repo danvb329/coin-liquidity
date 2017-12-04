@@ -19,4 +19,7 @@ public class CoinDatum {
     private BigDecimal maxSupply;
     private Instant lastUpdated;
 
+    private BigDecimal inflation;
+    private BigDecimal percentMined;
+
 }

@@ -1,0 +1,1 @@
+SELECT max(run_date) from coin_data;

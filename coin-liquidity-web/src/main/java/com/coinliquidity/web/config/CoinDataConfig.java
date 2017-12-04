@@ -4,12 +4,18 @@ import com.coinliquidity.core.coindata.CoinDataDownloader;
 import com.coinliquidity.core.util.HttpClient;
 import com.coinliquidity.web.CoinDataCache;
 import com.coinliquidity.web.persist.CoinDataDao;
+import com.coinliquidity.web.rest.CoinViewController;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 @Configuration
 public class CoinDataConfig {
+
+    @Bean
+    public CoinViewController coinViewController(final CoinDataCache coinDataCache) {
+        return new CoinViewController(coinDataCache);
+    }
 
     @Bean
     public CoinDataCache coinDataCache(final CoinDataDownloader coinDataDownloader,

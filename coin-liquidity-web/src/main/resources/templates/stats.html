@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Coin Statistics</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="https://coinliquidity.com/themes/blue/style.css" type="text/css" media="all"/>
+    <link rel="stylesheet" href="https://coinliquidity.com/css/default.css" type="text/css" media="all"/>
+    <script type="text/javascript" src="https://coinliquidity.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="https://coinliquidity.com/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" id="js">
+        $.tablesorter.addParser({
+            id: 'thousands',
+            is: function(s) {
+                return false;
+            },
+            format: function(s) {
+                if (s == 'n/a') return "99999999999999";
+                return s.replace('$','').replace(/,/g,'');
+            },
+            type: 'numeric'
+        });
+
+        $(function() {
+            $("table").tablesorter({
+                headers: {
+                    2: { sorter:'thousands' },
+                    3: { sorter:'thousands' },
+                    4: { sorter:'thousands' }
+                },
+                sortList: [[2,1]]
+            });
+        });
+
+    </script>
+</head>
+<body>
+<h1>Coin Statistics</h1>
+<table class="tablesorter">
+    <thead>
+    <tr>
+        <th>Symbol</th>
+        <th>Price (USD)</th>
+        <th>Market Cap (USD)</th>
+        <th>Available Supply</th>
+        <th>Max Supply</th>
+        <th>% Mined</th>
+        <th>% Inflation</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="coinDatum : ${coinData}" >
+        <td th:text="${coinDatum.symbol}">BTC</td>
+        <td th:text="${coinDatum.priceUsd} ? ${#numbers.formatDecimal(coinDatum.priceUsd, 1, 'COMMA', 2, 'POINT')}">100.0</td>
+        <td th:text="${coinDatum.marketCapUsd} ? ${#numbers.formatDecimal(coinDatum.marketCapUsd, 1, 'COMMA', 0, 'POINT')}">100000</td>
+        <td th:text="${coinDatum.availableSupply} ? ${#numbers.formatDecimal(coinDatum.availableSupply, 1, 'COMMA', 0, 'POINT')}">16700000</td>
+        <td th:text="${coinDatum.maxSupply} ? ${#numbers.formatDecimal(coinDatum.maxSupply, 1, 'COMMA', 0, 'POINT')}">21000000</td>
+        <td th:text="${coinDatum.percentMined} ? ${#numbers.formatDecimal(coinDatum.percentMined, 1, 'COMMA', 1, 'POINT')}">79.8</td>
+        <td th:text="${coinDatum.inflation} ? ${#numbers.formatDecimal(coinDatum.inflation, 1, 'COMMA', 1, 'POINT')}">4.0</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+SELECT * FROM coin_data WHERE run_date = ?
