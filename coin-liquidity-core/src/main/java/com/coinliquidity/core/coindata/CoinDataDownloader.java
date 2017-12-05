@@ -17,6 +17,8 @@ public class CoinDataDownloader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CoinDataDownloader.class);
 
+    private static final BigDecimal MIN_MARKET_CAP = BigDecimal.valueOf(10_000_000);
+
     private final HttpClient httpClient;
     private final String url;
 
@@ -35,20 +37,24 @@ public class CoinDataDownloader {
 
             // to prevent duplicates
             if (!symbols.contains(symbol)) {
-                final CoinDatum coinDatum = new CoinDatum();
-                coinDatum.setRunDate(now);
-                coinDatum.setSymbol(symbol);
-                coinDatum.setPriceUsd(toDecimal(coinNode, "price_usd"));
-                coinDatum.setPriceBtc(toDecimal(coinNode, "price_btc"));
-                coinDatum.setVolume24hUsd(toDecimal(coinNode, "24h_volume_usd"));
-                coinDatum.setMarketCapUsd(toDecimal(coinNode, "market_cap_usd"));
-                coinDatum.setAvailableSupply(toDecimal(coinNode, "available_supply"));
-                coinDatum.setTotalSupply(toDecimal(coinNode, "total_supply"));
-                coinDatum.setMaxSupply(toDecimal(coinNode, "max_supply"));
-                coinDatum.setLastUpdated(Instant.ofEpochSecond(coinNode.get("last_updated").asLong()));
+                final BigDecimal marketCap = toDecimal(coinNode, "market_cap_usd");
 
-                coinData.add(coinDatum);
-                symbols.add(symbol);
+                if (marketCap != null && marketCap.compareTo(MIN_MARKET_CAP) >= 0) {
+                    final CoinDatum coinDatum = new CoinDatum();
+                    coinDatum.setRunDate(now);
+                    coinDatum.setSymbol(symbol);
+                    coinDatum.setPriceUsd(toDecimal(coinNode, "price_usd"));
+                    coinDatum.setPriceBtc(toDecimal(coinNode, "price_btc"));
+                    coinDatum.setVolume24hUsd(toDecimal(coinNode, "24h_volume_usd"));
+                    coinDatum.setMarketCapUsd(marketCap);
+                    coinDatum.setAvailableSupply(toDecimal(coinNode, "available_supply"));
+                    coinDatum.setTotalSupply(toDecimal(coinNode, "total_supply"));
+                    coinDatum.setMaxSupply(toDecimal(coinNode, "max_supply"));
+                    coinDatum.setLastUpdated(Instant.ofEpochSecond(coinNode.get("last_updated").asLong()));
+
+                    coinData.add(coinDatum);
+                    symbols.add(symbol);
+                }
             } else {
                 //LOGGER.warn("Duplicate symbol: {}", symbol);
             }
