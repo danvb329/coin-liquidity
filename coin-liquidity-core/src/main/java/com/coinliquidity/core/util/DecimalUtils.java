@@ -64,7 +64,7 @@ public class DecimalUtils {
         return d1.multiply(HUNDRED).divide(d2, scale, RoundingMode.HALF_UP);
     }
 
-    static boolean anyNull(BigDecimal... decimals) {
+    public static boolean anyNull(BigDecimal... decimals) {
         return Arrays.stream(decimals).anyMatch(Objects::isNull);
     }
 

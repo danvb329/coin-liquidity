@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.coinliquidity.core.util.DecimalUtils.anyNull;
 import static com.coinliquidity.core.util.DecimalUtils.percent;
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -76,6 +77,11 @@ public class CoinDataCache {
     BigDecimal calculateInflation(final CoinDatum current, final CoinDatum prior, final int days) {
         final BigDecimal currentSupply = current.getAvailableSupply();
         final BigDecimal priorSupply = prior.getAvailableSupply();
+
+        if (anyNull(currentSupply, priorSupply)) {
+            return null;
+        }
+
         final BigDecimal increase = currentSupply.subtract(priorSupply);
         final BigDecimal percentIncrease = percent(increase, priorSupply, 8);
         return percentIncrease.multiply(BigDecimal.valueOf(365)).divide(BigDecimal.valueOf(days), 1, RoundingMode.HALF_UP);
