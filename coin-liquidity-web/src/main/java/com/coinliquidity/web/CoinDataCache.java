@@ -29,6 +29,7 @@ public class CoinDataCache {
 
     private final CoinDataDownloader coinDataDownloader;
     private final CoinDataDao coinDataDao;
+    private List<CoinDatum> coinData;
 
     public CoinDataCache(final CoinDataDownloader coinDataDownloader,
                          final CoinDataDao coinDataDao) {
@@ -45,12 +46,20 @@ public class CoinDataCache {
             LOGGER.info("Saving data for {}", now);
             final List<CoinDatum> coinData = coinDataDownloader.downloadData(now);
             coinDataDao.persisCoinData(coinData);
+            calculateCoinData();
         } else {
             LOGGER.info("Already saved data for {}", now);
         }
     }
 
     public List<CoinDatum> getCoinData() {
+        if (coinData == null) {
+            calculateCoinData();
+        }
+        return coinData;
+    }
+
+    private void calculateCoinData() {
         final List<CoinDatum> currentData = coinDataDao.getLatestCoinData();
         final Instant currentDate = currentData.get(0).getRunDate();
         final Instant priorDate = currentDate.minus(INFLATION_DAYS, DAYS);
@@ -71,7 +80,7 @@ public class CoinDataCache {
             }
         }
 
-        return currentData;
+        this.coinData = currentData;
     }
 
     BigDecimal calculateInflation(final CoinDatum current, final CoinDatum prior, final int days) {
