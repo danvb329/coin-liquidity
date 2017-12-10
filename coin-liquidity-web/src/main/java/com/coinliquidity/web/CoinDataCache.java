@@ -23,8 +23,6 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 public class CoinDataCache {
 
-    private static final int INFLATION_DAYS = 1;
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CoinDataCache.class);
 
     private final CoinDataDownloader coinDataDownloader;
@@ -62,28 +60,38 @@ public class CoinDataCache {
     private void calculateCoinData() {
         final List<CoinDatum> currentData = coinDataDao.getLatestCoinData();
         final Instant currentDate = currentData.get(0).getRunDate();
-        final Instant priorDate = currentDate.minus(INFLATION_DAYS, DAYS);
-        final List<CoinDatum> priorData = coinDataDao.getHistoricalCoinData(priorDate);
-        final Map<String, CoinDatum> priorMap = priorData.stream()
-                .collect(Collectors.toMap(CoinDatum::getSymbol, Function.identity()));
+
+        final Map<String, CoinDatum> priorMap1d = priorData(currentDate, 1);
+        final Map<String, CoinDatum> priorMap7d = priorData(currentDate, 7);
+        final Map<String, CoinDatum> priorMap30d = priorData(currentDate, 30);
 
         for (final CoinDatum currentDatum : currentData) {
+            final String symbol = currentDatum.getSymbol();
+
             if (currentDatum.getMaxSupply() != null) {
                 currentDatum.setPercentMined(percent(currentDatum.getAvailableSupply(), currentDatum.getMaxSupply(), 1));
             } else {
                 currentDatum.setPercentMined(BigDecimal.ZERO);
             }
 
-            final CoinDatum priorDatum = priorMap.get(currentDatum.getSymbol());
-            if (priorDatum != null) {
-                currentDatum.setInflation(calculateInflation(currentDatum, priorDatum, INFLATION_DAYS));
-            }
+            currentDatum.setInflation1d(calculateInflation(currentDatum, priorMap1d.get(symbol), 1));
+            currentDatum.setInflation7d(calculateInflation(currentDatum, priorMap7d.get(symbol), 7));
+            currentDatum.setInflation30d(calculateInflation(currentDatum, priorMap30d.get(symbol), 30));
         }
 
         this.coinData = currentData;
     }
 
+    private Map<String, CoinDatum> priorData(final Instant currentDate, final int days) {
+        final List<CoinDatum> priorList = coinDataDao.getHistoricalCoinData(currentDate.minus(days, DAYS));
+        return priorList.stream().collect(Collectors.toMap(CoinDatum::getSymbol, Function.identity()));
+    }
+
     BigDecimal calculateInflation(final CoinDatum current, final CoinDatum prior, final int days) {
+        if (prior == null) {
+            return null;
+        }
+
         final BigDecimal currentSupply = current.getAvailableSupply();
         final BigDecimal priorSupply = prior.getAvailableSupply();
 

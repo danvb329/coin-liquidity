@@ -44,7 +44,9 @@
         <th>Available Supply</th>
         <th>Max Supply</th>
         <th>% Mined</th>
-        <th>% Inflation</th>
+        <th>% Inflation (1d)</th>
+        <th>% Inflation (7d)</th>
+        <th>% Inflation (30d)</th>
     </tr>
     </thead>
     <tbody>
@@ -54,8 +56,10 @@
         <td th:text="${coinDatum.marketCapUsd} ? ${#numbers.formatDecimal(coinDatum.marketCapUsd, 1, 'COMMA', 0, 'POINT')}">100000</td>
         <td th:text="${coinDatum.availableSupply} ? ${#numbers.formatDecimal(coinDatum.availableSupply, 1, 'COMMA', 0, 'POINT')}">16700000</td>
         <td th:text="${coinDatum.maxSupply} ? ${#numbers.formatDecimal(coinDatum.maxSupply, 1, 'COMMA', 0, 'POINT')}">21000000</td>
-        <td th:text="${coinDatum.percentMined} ? ${#numbers.formatDecimal(coinDatum.percentMined, 1, 'COMMA', 1, 'POINT')}">79.8</td>
-        <td th:text="${coinDatum.inflation} ? ${#numbers.formatDecimal(coinDatum.inflation, 1, 'COMMA', 1, 'POINT')}">4.0</td>
+        <td th:text="${coinDatum.percentMined != null} ? ${#numbers.formatDecimal(coinDatum.percentMined, 1, 'COMMA', 1, 'POINT')}">79.8</td>
+        <td th:text="${coinDatum.inflation1d != null} ? ${#numbers.formatDecimal(coinDatum.inflation1d, 1, 'COMMA', 1, 'POINT')}">4.0</td>
+        <td th:text="${coinDatum.inflation7d != null} ? ${#numbers.formatDecimal(coinDatum.inflation7d, 1, 'COMMA', 1, 'POINT')}">4.1</td>
+        <td th:text="${coinDatum.inflation30d != null} ? ${#numbers.formatDecimal(coinDatum.inflation30d, 1, 'COMMA', 1, 'POINT')}">4.2</td>
     </tr>
     </tbody>
 </table>
