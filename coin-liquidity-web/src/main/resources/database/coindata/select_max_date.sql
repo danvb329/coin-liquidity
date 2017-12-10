@@ -1,1 +1,1 @@
-SELECT max(run_date) from coin_data;
+SELECT max(run_date) from coin_data_2;

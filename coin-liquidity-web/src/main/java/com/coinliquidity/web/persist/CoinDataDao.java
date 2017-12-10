@@ -41,11 +41,11 @@ public class CoinDataDao {
     }
 
     public List<CoinDatum> getHistoricalCoinData(final Instant runDate) {
-        LOGGER.info("getHistoricalCoinData()");
+        LOGGER.info("getHistoricalCoinData({})", runDate);
         final Stopwatch stopwatch = Stopwatch.createStarted();
         final Object[] args = new Object[] { Timestamp.from(runDate) };
         final List<CoinDatum> coinData = jdbc.query(SELECT_HISTORICAL, args, MAPPER);
-        LOGGER.info("getHistoricalCoinData() took {}", stopwatch.stop());
+        LOGGER.info("getHistoricalCoinData({}) took {}", runDate, stopwatch.stop());
         return coinData;
     }
 
@@ -68,6 +68,8 @@ public class CoinDataDao {
     private Object[] toArgs(final CoinDatum coinDatum) {
         final List<Object> args = Lists.newArrayList();
         args.add(Timestamp.from(coinDatum.getRunDate()));
+        args.add(coinDatum.getId());
+        args.add(coinDatum.getName());
         args.add(coinDatum.getSymbol());
         args.add(coinDatum.getPriceUsd());
         args.add(coinDatum.getPriceBtc());

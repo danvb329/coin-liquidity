@@ -1,1 +1,1 @@
-SELECT * FROM coin_data WHERE run_date = (SELECT max(run_date) from coin_data)
+SELECT * FROM coin_data_2 WHERE run_date = (SELECT max(run_date) from coin_data_2)

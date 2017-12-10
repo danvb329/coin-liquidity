@@ -9,6 +9,8 @@ import java.time.Instant;
 public class CoinDatum {
 
     private Instant runDate;
+    private String id;
+    private String name;
     private String symbol;
     private BigDecimal priceUsd;
     private BigDecimal priceBtc;

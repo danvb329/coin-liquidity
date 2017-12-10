@@ -1,5 +1,7 @@
-CREATE TABLE IF NOT EXISTS coin_data (
+CREATE TABLE IF NOT EXISTS coin_data_2 (
     run_date timestamp not null,
+    id varchar(255) not null,
+    name varchar(255) not null,
     symbol varchar(10) not null,
     price_usd decimal,
     price_btc decimal,
@@ -9,5 +11,5 @@ CREATE TABLE IF NOT EXISTS coin_data (
     total_supply decimal,
     max_supply decimal,
     last_updated timestamp,
-    PRIMARY KEY(run_date, symbol)
+    PRIMARY KEY(id, symbol)
 );
