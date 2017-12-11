@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -35,6 +36,7 @@ public class CoinDataCache {
         this.coinDataDao = coinDataDao;
     }
 
+    @PostConstruct
     @Scheduled(cron = "0 1 * * * *")
     public void updateCoinData() {
         final Instant maxDate = coinDataDao.getMaxDate();
