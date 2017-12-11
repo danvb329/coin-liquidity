@@ -43,7 +43,7 @@ public class CoinDataCacheTest {
     }
 
     @Test
-    public void calculateInflationUsd() {
+    public void calculateSubsidyUsd() {
         CoinDatum current = new CoinDatum();
         current.setAvailableSupply(BigDecimal.valueOf(1100));
         current.setPriceUsd(BigDecimal.valueOf(50));
@@ -51,7 +51,7 @@ public class CoinDataCacheTest {
         CoinDatum prior = new CoinDatum();
         prior.setAvailableSupply(BigDecimal.valueOf(1000));
 
-        BigDecimal inflationUsd = coinDataCache.calculateInflationUsd(current, prior, 5);
+        BigDecimal inflationUsd = coinDataCache.calculateSubsidyUsd(current, prior, 5);
         assertThat(inflationUsd, equalTo(new BigDecimal("1000")));
     }
 }

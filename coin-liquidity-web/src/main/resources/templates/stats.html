@@ -63,7 +63,7 @@
         <td th:text="${coinDatum.inflation1d != null} ? ${#numbers.formatDecimal(coinDatum.inflation1d, 1, 'COMMA', 1, 'POINT')}">4.0</td>
         <td th:text="${coinDatum.inflation7d != null} ? ${#numbers.formatDecimal(coinDatum.inflation7d, 1, 'COMMA', 1, 'POINT')}">4.1</td>
         <td th:text="${coinDatum.inflation30d != null} ? ${#numbers.formatDecimal(coinDatum.inflation30d, 1, 'COMMA', 1, 'POINT')}">4.2</td>
-        <td th:text="${coinDatum.inflationUsd != null} ? ${#numbers.formatDecimal(coinDatum.inflationUsd, 1, 'COMMA', 0, 'POINT')}">4.2</td>
+        <td th:text="${coinDatum.dailySubsidyUsd != null} ? ${#numbers.formatDecimal(coinDatum.dailySubsidyUsd, 1, 'COMMA', 0, 'POINT')}">4.2</td>
     </tr>
     </tbody>
 </table>
