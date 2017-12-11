@@ -79,6 +79,7 @@ public class CoinDataCache {
             currentDatum.setInflation1d(calculateInflation(currentDatum, priorMap1d.get(id), 1));
             currentDatum.setInflation7d(calculateInflation(currentDatum, priorMap7d.get(id), 7));
             currentDatum.setInflation30d(calculateInflation(currentDatum, priorMap30d.get(id), 30));
+            currentDatum.setInflationUsd(calculateInflationUsd(currentDatum, priorMap7d.get(id), 7));
         }
 
         this.coinData = currentData;
@@ -90,6 +91,24 @@ public class CoinDataCache {
     }
 
     BigDecimal calculateInflation(final CoinDatum current, final CoinDatum prior, final int days) {
+        final BigDecimal increase = calculateIncrease(current, prior);
+        if (increase == null) {
+            return null;
+        }
+
+        final BigDecimal percentIncrease = percent(increase, prior.getAvailableSupply(), 8);
+        return percentIncrease.multiply(BigDecimal.valueOf(365)).divide(BigDecimal.valueOf(days), 1, RoundingMode.HALF_UP);
+    }
+
+    BigDecimal calculateInflationUsd(final CoinDatum current, final CoinDatum prior, int days) {
+        final BigDecimal increase = calculateIncrease(current, prior);
+        if (increase == null) {
+            return null;
+        }
+        return increase.multiply(current.getPriceUsd()).divide(BigDecimal.valueOf(days), 0, BigDecimal.ROUND_HALF_UP);
+    }
+
+    private BigDecimal calculateIncrease(final CoinDatum current, final CoinDatum prior) {
         if (prior == null) {
             return null;
         }
@@ -101,9 +120,7 @@ public class CoinDataCache {
             return null;
         }
 
-        final BigDecimal increase = currentSupply.subtract(priorSupply);
-        final BigDecimal percentIncrease = percent(increase, priorSupply, 8);
-        return percentIncrease.multiply(BigDecimal.valueOf(365)).divide(BigDecimal.valueOf(days), 1, RoundingMode.HALF_UP);
+        return currentSupply.subtract(priorSupply);
     }
 
 }

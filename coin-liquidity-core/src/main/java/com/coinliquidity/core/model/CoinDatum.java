@@ -24,6 +24,7 @@ public class CoinDatum {
     private BigDecimal inflation1d;
     private BigDecimal inflation7d;
     private BigDecimal inflation30d;
+    private BigDecimal inflationUsd;
     private BigDecimal percentMined;
 
 }

@@ -45,9 +45,10 @@
         <th>Available Supply</th>
         <th>Max Supply</th>
         <th>% Mined</th>
-        <th>% Inflation (1d)</th>
-        <th>% Inflation (7d)</th>
-        <th>% Inflation (30d)</th>
+        <th>% Infl (1d)</th>
+        <th>% Infl (7d)</th>
+        <th>% Infl (30d)</th>
+        <th>Daily Subsidy (USD)</th>
     </tr>
     </thead>
     <tbody>
@@ -62,6 +63,7 @@
         <td th:text="${coinDatum.inflation1d != null} ? ${#numbers.formatDecimal(coinDatum.inflation1d, 1, 'COMMA', 1, 'POINT')}">4.0</td>
         <td th:text="${coinDatum.inflation7d != null} ? ${#numbers.formatDecimal(coinDatum.inflation7d, 1, 'COMMA', 1, 'POINT')}">4.1</td>
         <td th:text="${coinDatum.inflation30d != null} ? ${#numbers.formatDecimal(coinDatum.inflation30d, 1, 'COMMA', 1, 'POINT')}">4.2</td>
+        <td th:text="${coinDatum.inflationUsd != null} ? ${#numbers.formatDecimal(coinDatum.inflationUsd, 1, 'COMMA', 0, 'POINT')}">4.2</td>
     </tr>
     </tbody>
 </table>
