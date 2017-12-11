@@ -1,0 +1,10 @@
+{
+  "bitcoin-cash": {
+    "id": "bcash",
+    "name": "Bcash"
+  },
+  "zcash": {
+    "max_supply": 21000000,
+    "ref": "https://z.cash/blog/funding.html"
+  }
+}
