@@ -1,1 +1,1 @@
-SELECT * FROM coin_data_2 WHERE run_date = ?
+SELECT * FROM coin_data WHERE run_date = ?

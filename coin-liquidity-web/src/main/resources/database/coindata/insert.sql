@@ -1,4 +1,4 @@
-INSERT INTO coin_data_2 (
+INSERT INTO coin_data (
   run_date,
   id,
   name,
