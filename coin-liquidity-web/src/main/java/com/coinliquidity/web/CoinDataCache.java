@@ -79,7 +79,7 @@ public class CoinDataCache {
             currentDatum.setInflation1d(calculateInflation(currentDatum, priorMap1d.get(id), 1));
             currentDatum.setInflation7d(calculateInflation(currentDatum, priorMap7d.get(id), 7));
             currentDatum.setInflation30d(calculateInflation(currentDatum, priorMap30d.get(id), 30));
-            currentDatum.setDailySubsidyUsd(calculateSubsidyUsd(currentDatum, priorMap7d.get(id), 7));
+            currentDatum.setDailySubsidyUsd(calculateSubsidyUsd(currentDatum, priorMap1d.get(id), 1));
         }
 
         this.coinData = currentData;
