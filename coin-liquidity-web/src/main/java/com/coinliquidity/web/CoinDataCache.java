@@ -87,9 +87,7 @@ public class CoinDataCache {
 
     private Map<String, CoinDatum> priorData(final Instant currentDate, final int days) {
         final List<CoinDatum> priorList = coinDataDao.getHistoricalCoinData(currentDate.minus(days, DAYS));
-        return priorList.stream()
-                .filter(coinDatum -> coinDatum.getId() != null)
-                .collect(Collectors.toMap(CoinDatum::getId, Function.identity()));
+        return priorList.stream().collect(Collectors.toMap(CoinDatum::getId, Function.identity()));
     }
 
     BigDecimal calculateInflation(final CoinDatum current, final CoinDatum prior, final int days) {

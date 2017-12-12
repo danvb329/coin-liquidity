@@ -13,6 +13,7 @@ public class CoinDataMapper implements RowMapper<CoinDatum> {
     public CoinDatum mapRow(final ResultSet rs, final int i) {
         final CoinDatum coinDatum = new CoinDatum();
         coinDatum.setRunDate(rs.getTimestamp("run_date").toInstant());
+        coinDatum.setId(rs.getString("id"));
         coinDatum.setName(rs.getString("name"));
         coinDatum.setSymbol(rs.getString("symbol"));
         coinDatum.setPriceUsd(rs.getBigDecimal("price_usd"));
