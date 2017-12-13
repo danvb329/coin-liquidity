@@ -33,21 +33,24 @@ public class CoinDataDownloader {
 
         for (final JsonNode coinNode : tree) {
             final JsonNode override = overrides.path(coinNode.get("id").asText());
-            final BigDecimal marketCap = getDecimal(coinNode, override,"market_cap_usd");
+            final BigDecimal marketCap = getDecimalRounded(coinNode, override,"market_cap_usd");
 
             if (marketCap != null && marketCap.compareTo(MIN_MARKET_CAP) >= 0) {
                 final CoinDatum coinDatum = new CoinDatum();
                 coinDatum.setRunDate(now);
+
                 coinDatum.setId(getString(coinNode, override, "id"));
                 coinDatum.setName(getString(coinNode, override, "name"));
                 coinDatum.setSymbol(getString(coinNode, override, "symbol"));
+
                 coinDatum.setPriceUsd(getDecimal(coinNode, override,"price_usd"));
                 coinDatum.setPriceBtc(getDecimal(coinNode, override,"price_btc"));
-                coinDatum.setVolume24hUsd(getDecimal(coinNode, override,"24h_volume_usd"));
+
+                coinDatum.setVolume24hUsd(getDecimalRounded(coinNode, override,"24h_volume_usd"));
                 coinDatum.setMarketCapUsd(marketCap);
-                coinDatum.setAvailableSupply(getDecimal(coinNode, override,"available_supply"));
-                coinDatum.setTotalSupply(getDecimal(coinNode, override,"total_supply"));
-                coinDatum.setMaxSupply(getDecimal(coinNode, override,"max_supply"));
+                coinDatum.setAvailableSupply(getDecimalRounded(coinNode, override,"available_supply"));
+                coinDatum.setTotalSupply(getDecimalRounded(coinNode, override,"total_supply"));
+                coinDatum.setMaxSupply(getDecimalRounded(coinNode, override,"max_supply"));
                 coinDatum.setLastUpdated(Instant.ofEpochSecond(coinNode.get("last_updated").asLong()));
 
                 coinData.add(coinDatum);
@@ -58,7 +61,12 @@ public class CoinDataDownloader {
 
     private BigDecimal getDecimal(final JsonNode node, final JsonNode override, final String field) {
         final String value = getString(node, override, field);
-        return value == null ? null : new BigDecimal(value).setScale(0, RoundingMode.DOWN);
+        return value == null ? null : new BigDecimal(value);
+    }
+
+    private BigDecimal getDecimalRounded(final JsonNode node, final JsonNode override, final String field) {
+        final BigDecimal value = getDecimal(node, override, field);
+        return value == null ? null : value.setScale(0, RoundingMode.HALF_UP);
     }
 
     private String getString(final JsonNode node, final JsonNode override, final String field) {
