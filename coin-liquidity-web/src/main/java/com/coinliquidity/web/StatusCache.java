@@ -4,12 +4,15 @@ import com.coinliquidity.core.OrderBookDownloader;
 import com.coinliquidity.core.model.DownloadStatus;
 import com.coinliquidity.core.model.DownloadStatusKey;
 import com.google.common.base.Stopwatch;
+import com.google.common.collect.Sets;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class StatusCache {
@@ -21,10 +24,17 @@ public class StatusCache {
                 .map(OrderBookDownloader::getDownloadStatuses)
                 .flatMap(Collection::stream);
 
+        process(statuses);
+    }
+
+    void process(final Stream<DownloadStatus> statuses) {
         final Stopwatch now = Stopwatch.createStarted();
+
+        final Set<DownloadStatusKey> currentKeys = Sets.newHashSet();
 
         statuses.forEach(status -> {
             final DownloadStatusKey key = status.toKey();
+            currentKeys.add(key);
             final DownloadStatus current = downloadStatuses.getOrDefault(key, status);
 
             current.setSizeBytes(status.getSizeBytes());
@@ -49,6 +59,8 @@ public class StatusCache {
 
             downloadStatuses.put(key, current);
         });
+
+        downloadStatuses.keySet().removeIf(key -> !currentKeys.contains(key));
     }
 
     public Collection<DownloadStatus> getDownloadStatuses() {
