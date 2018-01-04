@@ -37,7 +37,7 @@ public class StatusCache {
             if (DownloadStatus.OK.equals(status.getStatus())) {
                 current.setLastOk(now);
                 // clear old errors
-                if (current.getLastError().elapsed(TimeUnit.HOURS) > 1) {
+                if (current.getLastError() != null && current.getLastError().elapsed(TimeUnit.HOURS) > 1) {
                     current.setLastError(null);
                     current.setLastErrorMessage(null);
                 }
