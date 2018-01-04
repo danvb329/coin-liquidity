@@ -14,6 +14,7 @@ public class Exchange {
     private String docUrl;
     private Integer rateLimit = 1;
     private Integer maxDepth;
+    private String location;
 
     @Override
     public String toString() {

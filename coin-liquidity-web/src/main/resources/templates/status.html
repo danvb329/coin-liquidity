@@ -14,6 +14,7 @@
     <thead>
     <tr>
         <th>Exchange</th>
+        <th>Location</th>
         <th>Pair</th>
         <th>Max Depth</th>
         <th>Bids</th>
@@ -33,6 +34,7 @@
                th:href="${status.exchange.docUrl}"
                th:text="${status.exchange.name}">gdax.com</a>
         </td>
+        <td th:text="${status.exchange.location}">USA</td>
         <td>
             <a th:text="${status.currencyPair}" th:href="${status.orderBookUrl}" >BTC/USD</a>
         </td>
