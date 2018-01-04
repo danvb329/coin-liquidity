@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 public class StatusCache {
@@ -35,9 +36,15 @@ public class StatusCache {
 
             if (DownloadStatus.OK.equals(status.getStatus())) {
                 current.setLastOk(now);
+                // clear old errors
+                if (current.getLastError().elapsed(TimeUnit.HOURS) > 1) {
+                    current.setLastError(null);
+                    current.setLastErrorMessage(null);
+                }
             } else if (DownloadStatus.ERROR.equals(status.getStatus())) {
                 current.setLastError(now);
                 current.setLastErrorMessage(status.getLastErrorMessage());
+                current.setErrorCount(current.getErrorCount() + 1);
             }
 
             downloadStatuses.put(key, current);

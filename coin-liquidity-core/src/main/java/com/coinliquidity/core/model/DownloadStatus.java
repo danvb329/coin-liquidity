@@ -22,6 +22,7 @@ public class DownloadStatus {
     private LocalDateTime updateTime;
     private Stopwatch lastOk;
     private Stopwatch lastError;
+    private int errorCount;
     private String lastErrorMessage;
 
     public String getDisplayClass() {

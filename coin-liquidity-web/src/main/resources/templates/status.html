@@ -23,6 +23,7 @@
         <th>Last OK</th>
         <th>Last Error</th>
         <th>Last Error Msg</th>
+        <th>Error Count</th>
     </tr>
     </thead>
     <tbody>
@@ -44,6 +45,7 @@
         <td th:text="${status.lastOk}">5 m</td>
         <td th:text="${status.lastError}">20 h</td>
         <td th:text="${status.lastErrorMessage}">Read timed out</td>
+        <td th:text="${status.errorCount}">Error Count</td>
     </tr>
     </tbody>
 </table>
