@@ -8,11 +8,11 @@ public class LabeledParser extends AbstractParser {
 
     @Override
     JsonNode getPrice(final JsonNode orderNode) {
-        return path(orderNode, "price");
+        return path(orderNode, "price", "Rate");
     }
 
     @Override
     JsonNode getUnits(final JsonNode orderNode) {
-        return path(orderNode, "amount", "size", "qty", "volume", "quantity");
+        return path(orderNode, "amount", "size", "qty", "volume", "quantity", "Quantity");
     }
 }
