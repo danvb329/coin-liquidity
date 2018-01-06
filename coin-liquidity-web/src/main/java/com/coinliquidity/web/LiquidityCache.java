@@ -7,10 +7,8 @@ import com.coinliquidity.core.download.HttpDownloader;
 import com.coinliquidity.core.fx.FxRates;
 import com.coinliquidity.core.model.Exchanges;
 import com.coinliquidity.core.model.OrderBook;
-import com.coinliquidity.web.model.LiquidityData;
-import com.coinliquidity.web.model.LiquidityDatum;
-import com.coinliquidity.web.model.LiquiditySummary;
-import com.coinliquidity.web.model.ViewType;
+import com.coinliquidity.web.model.*;
+import com.coinliquidity.web.persist.LiquidityAggregateDao;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +33,7 @@ public class LiquidityCache {
     private final FxCache fxCache;
     private final HttpDownloader httpDownloader;
     private final StatusCache statusCache;
+    private final LiquidityAggregateDao liquidityAggregateDao;
 
     private LiquidityData liquidityData;
 
@@ -43,12 +42,13 @@ public class LiquidityCache {
                           final FxCache fxCache,
                           final LiquidityDataPersister dataPersister,
                           final HttpDownloader httpDownloader,
-                          final StatusCache statusCache) {
+                          final StatusCache statusCache, LiquidityAggregateDao liquidityAggregateDao) {
         this.exchangeConfig = exchangeConfig;
         this.fxCache = fxCache;
         this.dataPersister = dataPersister;
         this.httpDownloader = httpDownloader;
         this.statusCache = statusCache;
+        this.liquidityAggregateDao = liquidityAggregateDao;
 
         final Optional<LiquidityData> latestData = dataPersister.loadLatest();
 
@@ -175,5 +175,12 @@ public class LiquidityCache {
         if (!(bidAskPercent == 0 || PERCENTAGES.contains(bidAskPercent))) {
             throw new IllegalFilterException("Invalid bidAskPercent");
         }
+    }
+
+    public List<LiquidityAggregate> getLiquidityAggregates(final String type) {
+        if (!type.equals("fiat") && !type.equals("btc")) {
+            throw new IllegalFilterException("Invalid type. Must be either fiat or btc.");
+        }
+        return liquidityAggregateDao.getLatest(type);
     }
 }

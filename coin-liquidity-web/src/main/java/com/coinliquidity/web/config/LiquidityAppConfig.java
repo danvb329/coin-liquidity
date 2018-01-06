@@ -12,6 +12,7 @@ import com.coinliquidity.web.FxCache;
 import com.coinliquidity.web.LiquidityCache;
 import com.coinliquidity.web.StatusCache;
 import com.coinliquidity.web.persist.DbPersister;
+import com.coinliquidity.web.persist.LiquidityAggregateDao;
 import com.coinliquidity.web.persist.LiquidityDataPersister;
 import com.coinliquidity.web.rest.DataController;
 import com.coinliquidity.web.rest.ViewController;
@@ -53,8 +54,10 @@ public class LiquidityAppConfig {
                                          final FxCache fxCache,
                                          final LiquidityDataPersister liquidityDataPersister,
                                          final HttpDownloader httpDownloader,
-                                         final StatusCache statusCache) {
-        return new LiquidityCache(exchangeConfig, fxCache, liquidityDataPersister, httpDownloader, statusCache);
+                                         final StatusCache statusCache,
+                                         final LiquidityAggregateDao liquidityAggregateDao) {
+        return new LiquidityCache(exchangeConfig,
+                fxCache, liquidityDataPersister, httpDownloader, statusCache, liquidityAggregateDao);
     }
 
     @Bean
@@ -69,6 +72,11 @@ public class LiquidityAppConfig {
     @Bean
     public LiquidityDataPersister liquidityDataPersister(final JdbcTemplate jdbcTemplate) {
         return new DbPersister(jdbcTemplate);
+    }
+
+    @Bean
+    public LiquidityAggregateDao liquidityAggregateDao(final JdbcTemplate jdbcTemplate) {
+        return new LiquidityAggregateDao(jdbcTemplate);
     }
 
     @Bean

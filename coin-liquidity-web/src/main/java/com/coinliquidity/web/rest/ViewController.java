@@ -66,6 +66,12 @@ public class ViewController {
         return "bid-ask";
     }
 
+    @RequestMapping("/aggregate/{type}")
+    public String aggregate(@PathVariable("type") final String type, final Model model) {
+        model.addAttribute("aggregates", cache.getLiquidityAggregates(type));
+        return "aggregate";
+    }
+
     private String liquidity(final LiquidityData data, final String title, final Model model) {
         model.addAttribute("title", title);
         model.addAttribute("liquidityData", data);

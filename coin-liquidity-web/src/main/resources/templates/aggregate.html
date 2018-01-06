@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Coin Statistics</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel="stylesheet" href="https://coinliquidity.com/themes/blue/style.css" type="text/css" media="all"/>
+    <link rel="stylesheet" href="https://coinliquidity.com/css/default.css" type="text/css" media="all"/>
+    <script type="text/javascript" src="https://coinliquidity.com/jquery-latest.js"></script>
+    <script type="text/javascript" src="https://coinliquidity.com/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" id="js">
+        $.tablesorter.addParser({
+            id: 'thousands',
+            is: function(s) {
+                return false;
+            },
+            format: function(s) {
+                if (s === 'n/a') return "99999999999999";
+                return s.replace('$','').replace(/,/g,'');
+            },
+            type: 'numeric'
+        });
+
+        $(function() {
+            $("table").tablesorter({
+                headers: {
+                    1: { sorter:'thousands' },
+                    2: { sorter:'thousands' },
+                    3: { sorter:'thousands' },
+                    4: { sorter:'thousands' },
+                    5: { sorter:'thousands' },
+                    6: { sorter:'thousands' }
+                },
+                sortList: [[1,1]]
+            });
+        });
+
+    </script>
+</head>
+<body>
+<h1>Coin Statistics</h1>
+<table class="tablesorter">
+    <thead>
+    <tr>
+        <th>Base Ccy</th>
+        <th>1% Bids</th>
+        <th>1% Asks</th>
+        <th>5% Bids</th>
+        <th>5% Asks</th>
+        <th>10% Bids</th>
+        <th>10% Asks</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="aggregate : ${aggregates}" >
+        <td th:text="${aggregate.baseCcy}">BTC</td>
+        <td th:text="${aggregate.bids1} ? ${#numbers.formatDecimal(aggregate.bids1, 1, 'COMMA', 0, 'POINT')}">100.0</td>
+        <td th:text="${aggregate.asks1} ? ${#numbers.formatDecimal(aggregate.asks1, 1, 'COMMA', 0, 'POINT')}">100000</td>
+        <td th:text="${aggregate.bids5} ? ${#numbers.formatDecimal(aggregate.bids5, 1, 'COMMA', 0, 'POINT')}">100.0</td>
+        <td th:text="${aggregate.asks5} ? ${#numbers.formatDecimal(aggregate.asks5, 1, 'COMMA', 0, 'POINT')}">100000</td>
+        <td th:text="${aggregate.bids10} ? ${#numbers.formatDecimal(aggregate.bids10, 1, 'COMMA', 0, 'POINT')}">100.0</td>
+        <td th:text="${aggregate.asks10} ? ${#numbers.formatDecimal(aggregate.asks10, 1, 'COMMA', 0, 'POINT')}">100000</td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
