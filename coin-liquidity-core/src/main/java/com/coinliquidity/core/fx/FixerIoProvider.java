@@ -23,10 +23,10 @@ public class FixerIoProvider implements FxProvider {
     private LocalDate dataDate;
     private FxRates fxRates;
 
-    public FixerIoProvider(final HttpClient httpClient, final String baseCcy) {
+    public FixerIoProvider(final HttpClient httpClient, final String baseCcy, final String accessKey) {
         this.httpClient = httpClient;
         this.baseCcy = baseCcy;
-        this.url = "https://api.fixer.io/latest?base=" + baseCcy;
+        this.url = "http://data.fixer.io/api/latest?access_key=" + accessKey;
         this.refresh();
     }
 
@@ -42,14 +42,23 @@ public class FixerIoProvider implements FxProvider {
 
             final JsonNode tree = httpClient.get(url);
             final String dateStr = tree.get("date").asText();
+            final String jsonBase = tree.get("base").asText();
             final LocalDate currentDate = LocalDate.parse(dateStr);
+
+            BigDecimal factor = BigDecimal.ONE;
+            if (!baseCcy.equals(jsonBase)) {
+                factor = new BigDecimal(tree.get("rates").get(baseCcy).asText());
+            }
 
             if (!currentDate.equals(dataDate)) {
                 LOGGER.info("Rates updated for {}", currentDate);
                 final Iterator<Map.Entry<String, JsonNode>> it = tree.get("rates").fields();
                 while (it.hasNext()) {
                     final Map.Entry<String, JsonNode> entry = it.next();
-                    tempRates.putRate(entry.getKey(), new BigDecimal(entry.getValue().asText()));
+                    if (!baseCcy.equals(entry.getKey())) {
+                        final BigDecimal rate = new BigDecimal(entry.getValue().asText());
+                        tempRates.putRate(entry.getKey(), rate.divide(factor, 8, BigDecimal.ROUND_HALF_EVEN));
+                    }
                 }
 
                 fxRates = tempRates;

@@ -62,8 +62,9 @@ public class LiquidityAppConfig {
 
     @Bean
     public FxCache fxCache(final HttpClient httpClient) {
+        final String accessKey = System.getenv("FIXER_IO_ACCESS_KEY");
         final List<FxProvider> fxProviders = new ArrayList<>();
-        fxProviders.add(new FixerIoProvider(httpClient, BASE_CCY));
+        fxProviders.add(new FixerIoProvider(httpClient, BASE_CCY, accessKey));
         fxProviders.add(new BitcoinAverageProvider(httpClient, BASE_CCY));
         fxProviders.add(new KrakenProvider(httpClient));
         return new FxCache(fxProviders);
