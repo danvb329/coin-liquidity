@@ -28,6 +28,7 @@ import java.util.List;
 public class LiquidityAppConfig {
 
     private static final String BASE_CCY = CurrencyPair.USD;
+    private static final String FIXER_IO_ACCESS_KEY = "FIXER_IO_ACCESS_KEY";
 
     @Bean
     public ViewController viewController(final LiquidityCache liquidityCache) {
@@ -62,9 +63,12 @@ public class LiquidityAppConfig {
 
     @Bean
     public FxCache fxCache(final HttpClient httpClient) {
-        final String accessKey = System.getenv("FIXER_IO_ACCESS_KEY");
+        String accessKey = System.getenv(FIXER_IO_ACCESS_KEY);
+        if (accessKey == null) {
+            accessKey = System.getProperty(FIXER_IO_ACCESS_KEY);
+        }
         if (accessKey == null || accessKey.length() < 1) {
-            throw new IllegalStateException("Env variable FIXER_IO_ACCESS_KEY not set!");
+            throw new IllegalStateException("Env variable " + FIXER_IO_ACCESS_KEY + " not set!");
         }
         final List<FxProvider> fxProviders = new ArrayList<>();
         fxProviders.add(new FixerIoProvider(httpClient, BASE_CCY, accessKey));
