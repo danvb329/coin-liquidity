@@ -21,6 +21,7 @@ public class FixerIoProvider implements FxProvider {
     private final String url;
 
     private LocalDate dataDate;
+    private LocalDate lastLoadDate;
     private FxRates fxRates;
 
     public FixerIoProvider(final HttpClient httpClient, final String baseCcy, final String accessKey) {
@@ -37,6 +38,10 @@ public class FixerIoProvider implements FxProvider {
 
     @Override
     public void refresh() {
+        if (lastLoadDate != null && lastLoadDate.equals(LocalDate.now())) {
+            LOGGER.info("Already have FX rates for " + lastLoadDate);
+            return;
+        }
         try {
             final FxRates tempRates = new FxRates(baseCcy, Instant.now());
 
@@ -63,6 +68,7 @@ public class FixerIoProvider implements FxProvider {
 
                 fxRates = tempRates;
                 dataDate = currentDate;
+                lastLoadDate = LocalDate.now();
             }
         } catch (final Exception e) {
             LOGGER.warn("Could not refresh, current rates as of {}", dataDate);

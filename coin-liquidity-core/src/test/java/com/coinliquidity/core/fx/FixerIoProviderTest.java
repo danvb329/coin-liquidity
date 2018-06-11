@@ -22,6 +22,7 @@ public class FixerIoProviderTest {
         }
         final FixerIoProvider fixerIoProvider = new FixerIoProvider(new HttpClient(), CurrencyPair.USD, accessKey);
         final FxRates rates = fixerIoProvider.getRates();
+        fixerIoProvider.refresh();
         System.out.println(rates);
         assertThat(fixerIoProvider.getDataDate(), greaterThan(LocalDate.now().minusDays(5)));
         assertThat(rates.getRate("USD"), equalTo(BigDecimal.ONE));
